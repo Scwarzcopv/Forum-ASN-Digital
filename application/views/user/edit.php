@@ -43,7 +43,7 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="text-center">
-                                                <img alt="Charles Hall" src="<?= base_url('assets/img/avatars/') . $user['image']; ?>" class="rounded-circle img-responsive mt-2" width="128" height="128" />
+                                                <img alt="User Image" src="<?= base_url('assets/img/avatars/') . $user['image']; ?>" class="rounded-circle img-responsive mt-2" width="128" height="128" />
                                                 <div class="mt-2">
                                                     <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalUpload"><i class="fas fa-upload"></i> Upload</button>
                                                 </div>
@@ -124,7 +124,7 @@
             </div>
             <div class="modal-body">
                 <div class="img-container">
-                    <img id="image" src="../images/picture.jpg" alt="Picture">
+                    <img id="image" src="<?= base_url('assets/img/avatars/') . $user['image']; ?>" alt="Picture">
                 </div>
             </div>
             <div class="modal-footer">
