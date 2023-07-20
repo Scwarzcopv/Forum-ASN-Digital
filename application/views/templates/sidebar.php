@@ -5,13 +5,12 @@
     <div class="sidebar-content js-simplebar">
         <a class="sidebar-brand" href="index.html">
             <span class="sidebar-brand-text align-middle">
-                <span class="sidebar-brand-text align-middle d-flex align-items-center">
+                <!-- <span class="sidebar-brand-text align-middle d-flex align-items-center">
                     <span class="ext-light position relative me-2">
                         <i class="fa-solid fa-circle fs-1 bg-danger px-3 py-1 rounded-2"></i>
                         <span class="position-absolute text-dark fw-bold miring" style="right: 76.3%; top: 3.2%; font-weight: bolder;">卐</span>
-                    </span>
-                    <?= $role; ?>
-                </span>
+                    </span> -->
+                <?= $role; ?>
             </span>
         </a>
 

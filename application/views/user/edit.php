@@ -32,7 +32,7 @@
                                 <h5 class="card-title mb-0">Basic Info</h5>
                             </div>
                             <div class="card-body">
-                                <form>
+                                <form method="POST" enctype="multipart/form-data">
                                     <div class="row">
                                         <div class="col-md-8">
                                             <div class="mb-3">
@@ -45,7 +45,7 @@
                                             <div class="text-center">
                                                 <img alt="User Image" src="<?= base_url('assets/img/avatars/') . $user['image']; ?>" class="rounded-circle img-responsive mt-2" width="128" height="128" />
                                                 <div class="mt-2">
-                                                    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalUpload"><i class="fas fa-upload"></i> Upload</button>
+                                                    <span class="btn btn-primary btn-file"><i class="fas fa-upload"></i> Upload <input type="file" accept=".jpg, .jpeg, .png" id="upload_image"></span>
                                                 </div>
                                                 <small>Ukuran file maks 5mb</small>
                                             </div>
@@ -56,7 +56,7 @@
                             </div>
                         </div>
 
-                        <div class="card">
+                        <div class=" card">
                             <div class="card-header">
 
                                 <h5 class="card-title mb-0">More info</h5>
@@ -115,21 +115,31 @@
         </div>
     </div>
 </main>
-<div class="modal fade" id="modalUpload" tabindex="-1" role="dialog" aria-labelledby="modal_upload" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="modal_upload">Crop Gambar</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h1 class="modal-title fs-5" id="modalLabel">Crop Gambar</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
             </div>
             <div class="modal-body">
                 <div class="img-container">
-                    <img id="image" src="<?= base_url('assets/img/avatars/') . $user['image']; ?>" alt="Picture">
+                    <div class="row">
+                        <div class="col-8 col-md-8 d-flex d-md-block">
+                            <div class="col-12">
+                                <img src="" id="sample_image" class=" fit-image " />
+                            </div>
+                        </div>
+                        <div class="col-4 col-md-4 d-flex align-items-center justify-content-center ">
+                            <div class="preview rounded-circle"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="crop">Crop</button>
             </div>
         </div>
     </div>
@@ -183,26 +193,79 @@
     // }
     // var name = localStorage.getItem('name');
     // console.log(name)
-
-
-    window.addEventListener('DOMContentLoaded', function() {
-        var image = document.getElementById('image');
-        var cropBoxData;
-        var canvasData;
+</script>
+<script>
+    $(document).ready(function() {
+        var $modal = $('#modal');
+        var image = $('#sample_image')[0];
         var cropper;
+        $('#upload_image').change(function(event) {
+            var files = event.target.files;
+            var done = function(url) {
+                image.src = url;
+                $modal.modal('show');
+            };
+            if (files && files.length > 0) {
+                reader = new FileReader();
+                reader.onload = function(event) {
+                    done(reader.result);
+                };
+                reader.readAsDataURL(files[0]);
+            }
+        });
 
-        $('#modal').on('shown.bs.modal', function() {
+        $modal.on('shown.bs.modal', function() {
             cropper = new Cropper(image, {
-                autoCropArea: 0.5,
-                ready: function() {
-                    //Should set crop box data first here
-                    cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
-                }
+                aspectRatio: 1,
+                viewMode: 3,
+                preview: '.preview'
             });
         }).on('hidden.bs.modal', function() {
-            cropBoxData = cropper.getCropBoxData();
-            canvasData = cropper.getCanvasData();
             cropper.destroy();
+            cropper = null;
         });
+
+        $("#crop").click(function() {
+            canvas = cropper.getCroppedCanvas({
+                width: 400,
+                height: 400,
+            });
+
+            canvas.toBlob(function(blob) {
+                var reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = function() {
+                    var base64data = reader.result;
+
+                    $.ajax({
+                        url: "process/upload-pp.php",
+                        method: "POST",
+                        data: {
+                            image: base64data
+                        },
+                        success: function(data) {
+                            console.log(data);
+                            $modal.modal('hide');
+                            const Custom2 = Swal.mixin({
+                                timer: 3000,
+                                timerProgressBar: true,
+                                keydownListenerCapture: true,
+                                didOpen: (toast) => {
+                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                }
+                            })
+                            Custom2.fire({
+                                icon: 'success',
+                                title: 'Profile photo successfully changed',
+                            }).then(function() {
+                                window.location = 'index.php';
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
     });
 </script>
