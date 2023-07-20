@@ -1,0 +1,174 @@
+$settings-width: 350px;
+
+.settings {
+  display: none;
+  direction: ltr;
+
+  @include media-breakpoint-up(xl) {
+    display: block;
+  }
+}
+
+.settings-toggle {
+  background: $primary;
+  color: $static-white;
+  padding: $spacer;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  cursor: pointer;
+
+  &:hover {
+    background: darken($primary, 7.5%);
+  }
+
+  svg {
+    margin-top: -0.25rem;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.settings-panel {
+  background: $white;
+  border-left: $card-border-width solid $card-border-color;
+  box-shadow: $box-shadow-lg;
+  display: block;
+  height: 100%;
+  position: fixed;
+  width: $settings-width;
+  z-index: 100;
+  top: 0;
+  bottom: 0;
+  right: -$settings-width;
+  transition: right .2s ease-in-out;
+
+  .settings.open &:before {
+    content: "";
+    background: rgba($static-black, 0.325);
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .settings.open & {
+    right: 0;
+  }
+}
+
+.settings-content {
+  height: 100%;
+  overflow: auto;
+  position: relative;
+  background: $white;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-title {
+  padding: $spacer*1.35 $spacer*1.5;
+  font-size: .875rem;
+  background: $white;
+  color: $black;
+  border-bottom: 1px solid $gray-200;
+
+  h4,
+  .close {
+    color: $black;
+  }
+}
+
+.settings-body {
+  padding: $spacer $spacer*1.5;
+  flex: 1;
+}
+
+.settings-footer {
+  padding: $spacer $spacer*1.5;
+}
+
+.settings-scheme-label {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.settings-scheme-label + .settings-scheme {
+  border: 2px solid $gray-300;
+}
+
+.settings-scheme-label:checked + .settings-scheme {
+  border: 2px solid $primary;
+  color: $primary;
+}
+
+.settings-scheme {
+  background: $white;
+  height: 86px;
+  border-radius: $border-radius-lg;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-base;
+  position: relative;
+}
+
+.settings-scheme-theme {
+  width: 50px;
+  height: 50px;
+  background: red;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px $static-white;
+  position: relative;
+}
+
+.settings-scheme-theme-default {
+  background-image: linear-gradient(-45deg, #222E3C 50%, darken($static-gray-100, 2%) 50%);
+}
+
+.settings-scheme-theme-colored {
+  background-image: linear-gradient(-45deg, $primary 50%, darken($static-gray-100, 2%) 50%);
+}
+
+.settings-scheme-theme-dark {
+  background: #222E3C;
+}
+
+.settings-scheme-theme-light {
+  background: darken($static-gray-100, 2%);
+}
+
+.settings-button-label {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.settings-button-label + .settings-button {
+  background: $gray-200;
+  color: $dark;
+  border-radius: 5px;
+  padding: $input-btn-padding-y-lg $input-btn-padding-x-lg;
+  font-size: $input-btn-font-size;
+  border-radius: $btn-border-radius-lg;
+  cursor: pointer;
+}
+
+.settings-button-label:checked + .settings-button {
+  background: $primary;
+  color: $static-white;
+
+  &:after {
+    opacity: 1;
+  }
+}

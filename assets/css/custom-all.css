@@ -1,0 +1,29 @@
+body {
+    overflow: auto;
+}
+
+.error {
+    color: red;
+    font-size: 0.8em;
+}
+
+.miring {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+}
+.tippy-box[data-theme~='tomato'] {
+    background-color: #222e3c;
+    color: #f5f7fb;
+}
+
+.tippy-box[data-theme~='tomato'][data-placement^='bottom']>.tippy-arrow::before {
+    border-bottom-color: #222e3c;
+}
+
+.confirmButtonSwall {
+    margin: 0 !important;
+}
+
+.tittleSwall {
+    margin: 0 !important;
+}

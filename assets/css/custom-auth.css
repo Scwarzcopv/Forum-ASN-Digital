@@ -1,0 +1,15 @@
+.divider:after,
+.divider:before {
+    content: "";
+    flex: 1;
+    height: 3px;
+    background: #eee;
+}
+.overflow-hidden {
+    overflow-x: hidden;
+    overflow-y: auto !important;
+}
+.comicsans {
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    color: rgb(141, 141, 142) !important;
+}

@@ -1,0 +1,20 @@
+.wrapper {
+  align-items: stretch;
+  display: flex;
+  width: 100%;
+  @include theme("theme", "background", $sidebar-bg);
+}
+
+body[data-layout=boxed] {
+  .wrapper {
+    max-width: 1800px;
+    margin: 0 auto;
+    border-left: 1px solid $gray-300;
+    border-right: 1px solid $gray-300;
+    overflow: hidden;
+
+    @include media-breakpoint-up(xxl) {
+      width: 90vw;
+    }
+  }
+}
