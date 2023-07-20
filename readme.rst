@@ -1,4 +1,9 @@
 ###################
+Config
+###################
+*nama_folder*/application/config/config.php : $config['base_url'] = 'http://localhost/*nama_folder*/';
+
+###################
 What is CodeIgniter
 ###################
 
