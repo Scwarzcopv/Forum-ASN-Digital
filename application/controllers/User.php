@@ -3,17 +3,22 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class User extends CI_Controller
 {
+    private $data;
     public function __construct()
     {
         parent::__construct();
         $this->load->model('Time_model', 'time');
         $this->load->model('SweetAlert2_model', 'sa2');
         is_log_in();
+        $this->data = array(
+            "user" => $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array(),
+        );
     }
     public function index()
     {
-        $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
+        $data['user'] = $this->data['user'];
 
+        // Title
         $data['title'] = 'User';
         // Waktu create akun
         $data['timeAgo'] = $this->time->getTimeAgo($data['user']['date_created']);
@@ -29,6 +34,7 @@ class User extends CI_Controller
         } elseif ($role == 3) {
             $data['role'] = 'Member';
         }
+        // Load View
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidebar', $data);
         $this->load->view('templates/topbar', $data);
@@ -37,8 +43,9 @@ class User extends CI_Controller
     }
     public function edit()
     {
-        $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
+        $data['user'] = $this->data['user'];
 
+        // Title
         $data['title'] = 'Edit Profile';
         // Active Sidebar
         $data['sidebar'] = 'Edit Profile';
@@ -51,6 +58,7 @@ class User extends CI_Controller
         } elseif ($role == 3) {
             $data['role'] = 'Member';
         }
+        // Load View
         $this->form_validation->set_message('required', '{field} tidak boleh kosong.');
         $this->form_validation->set_rules('name', 'Nama', 'required|trim');
         if ($this->form_validation->run() == false) {
@@ -60,22 +68,22 @@ class User extends CI_Controller
             $this->load->view('user/edit', $data);
             $this->load->view('templates/footer');
         } else {
+            $username = $this->session->userdata('username');
+            // $username = $this->input->post('username');
             $name = htmlspecialchars($this->input->post('name'));
-            $username = htmlspecialchars($this->input->post('username'));
-
-            //Cek jika ada gambar yang diupload
 
             $this->db->set('name', $name);
             $this->db->where('username', $username);
             $this->db->update('user');
 
             $this->sa2->sweetAlert2Toast('Profil berhasil diperbarui', 'success');
-            redirect('user');
+            redirect('user/edit');
         }
     }
     public function editgambar()
     {
         $username = $this->session->userdata('username');
+        // $username = $this->input->post('username');
         $image = $this->input->post('image');
         $imageOld = $this->input->post('oldImage');
 

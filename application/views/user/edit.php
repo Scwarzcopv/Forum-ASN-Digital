@@ -71,7 +71,7 @@
                                         </div>
                                     </div> -->
                                     <div class="mb-3">
-                                        <label class="form-label" for="inputAddress">Name</label>
+                                        <label class="form-label" for="name">Name</label>
                                         <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="<?= $user['name']; ?>">
                                         <?= form_error('name', '<small class="text-danger">', '</small>'); ?>
                                     </div>
@@ -194,13 +194,15 @@
                 reader.onloadend = function() {
                     var base64data = reader.result;
                     var img = $('#upload_image').attr('data-img');
+                    // var username = $('#username').val();
 
                     $.ajax({
                         url: "editgambar",
                         method: "POST",
                         data: {
                             image: base64data,
-                            oldImage: img
+                            oldImage: img,
+                            // username: username,
                         },
                         success: function(response) {
                             $modal.modal('hide');
