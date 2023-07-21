@@ -151,11 +151,11 @@ class User extends CI_Controller
                 if ($currentpw == $pw1) {
                     echo json_encode(['status' => 'error', 'error' => 'Password baru harus beda dengan password lama']);
                 } else {
-                    $password_hash = password_hash($pw1, PASSWORD_DEFAULT);
+                    $pw_hash = password_hash($pw1, PASSWORD_DEFAULT);
 
-                    // $this->db->set('password', $password_hash);
-                    // $this->db->where('username', $this->session->userdata('username'));
-                    // $this->db->update('user');
+                    $this->db->set('password', $pw_hash);
+                    $this->db->where('username', $this->session->userdata('username'));
+                    $this->db->update('user');
                     echo json_encode(['status' => 'success', 'success' => 'Password berhasil diperbarui']);
                 }
             } else {
