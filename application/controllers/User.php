@@ -64,27 +64,6 @@ class User extends CI_Controller
             $username = htmlspecialchars($this->input->post('username'));
 
             //Cek jika ada gambar yang diupload
-            $uploadImg = $_FILES['image']['name'];
-            if ($uploadImg) {
-                $config['allowed_types'] = 'gif|jpg|png';
-                $config['max_size'] = '5120'; //5mb
-                $config['upload_path'] = './assets/img/avatars/';
-                $this->load->library('upload', $config);
-
-                if ($this->upload->do_upload('image')) {
-                    $old_img = $data['user']['image'];
-                    if ($old_img != 'default.png') {
-                        if (file_exists(FCPATH . 'assets/img/avatars/' . $old_img)) {
-                            unlink(FCPATH . 'assets/img/avatars/' . $old_img);
-                        }
-                    }
-
-                    $new_img = $this->upload->data('file_name');
-                    $this->db->set('image', $new_img);
-                } else {
-                    echo $this->upload->display_errors();
-                }
-            }
 
             $this->db->set('name', $name);
             $this->db->where('username', $username);
@@ -96,44 +75,30 @@ class User extends CI_Controller
     }
     public function editgambar()
     {
-        $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
-
-        $data['title'] = 'User';
-        // Waktu create akun
-        $data['timeAgo'] = $this->time->getTimeAgo($data['user']['date_created']);
-        $data['timeSince'] = $this->time->getTimeSince($data['user']['date_created']);
-        // Active Sidebar
-        $data['sidebar'] = 'My Profile';
-        // Judul Sidebar
-        $role = $this->session->userdata('role_id');
-        if ($role == 1) {
-            $data['role'] = 'Super Administrator';
-        } elseif ($role == 2) {
-            $data['role'] = 'Administrator';
-        } elseif ($role == 3) {
-            $data['role'] = 'Member';
-        }
         $username = $this->session->userdata('username');
-        $data = $this->input->post('image');
+        $image = $this->input->post('image');
+        $imageOld = $this->input->post('oldImage');
 
-        $image_array = explode(";", $data);
+        $image_array = explode(";", $image);
         $image_array_1 = explode(",", $image_array[1]);
-        $data = base64_decode($image_array_1[1]);
+        $image = base64_decode($image_array_1[1]);
         $imageName = FCPATH . 'assets/img/avatars/' . $username . '.png';
 
         //Insert ke dbs
-        if ($_SESSION['img-user'] != "") {
-            unlink('../images/img-user/' . $_SESSION['img-user']);
+        if (file_exists(FCPATH . 'assets/img/avatars/' . $imageOld) && $imageOld != 'default.png') {
+            unlink(FCPATH . 'assets/img/avatars/' . $imageOld);
         }
         $filename = $username . '.png';
-        $update = "UPDATE akun SET images = '$filename' WHERE username='$username'";
-        mysqli_query($conn, $update);
-        $sql = "SELECT * FROM akun WHERE username='$username'";
-        $result = mysqli_query($conn, $sql);
-        $row = mysqli_fetch_assoc($result);
-        $_SESSION['img-user'] = $row['images'];
+        $this->db->set('image', $filename);
+        $this->db->where('username', $username);
+        $this->db->update('user');
+        // $sql = "SELECT * FROM akun WHERE username='$username'";
+        // $result = mysqli_query($conn, $sql);
+        // $row = mysqli_fetch_assoc($result);
+        // $_SESSION['img-user'] = $row['images'];
 
-        file_put_contents($imageName, $data);
+        file_put_contents($imageName, $image);
+        $this->sa2->sweetAlert2Toast('Gambar Berhasil diubah', 'success');
     }
     public function hapusgambar()
     {

@@ -26,6 +26,7 @@
                 <div class="tab-content">
                     <!-- TAB PANEL UBAH AKUN -->
                     <div class="tab-pane fade show active" id="account" role="tabpanel">
+                        <!-- BASIC INFO -->
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title mb-0">Basic Info</h5>
@@ -43,7 +44,7 @@
                                         <div class="text-center">
                                             <img alt="User Image" src="<?= base_url('assets/img/avatars/') . $user['image']; ?>" class="rounded-circle img-responsive mt-2" width="128" height="128" />
                                             <div class="mt-2">
-                                                <span class="btn btn-primary btn-file"><i class="fas fa-upload"></i> Upload <input type="file" accept=".jpg, .jpeg, .png" id="upload_image"></span>
+                                                <span class="btn btn-primary btn-file"><i class="fas fa-upload"></i> Upload <input type="file" accept=".jpg, .jpeg, .png" id="upload_image" data-img="<?= $user['image']; ?>"></span>
                                             </div>
                                             <small>Format jpg/jpeg/png</small>
                                         </div>
@@ -52,13 +53,14 @@
                             </div>
                         </div>
 
+                        <!-- MORE INFO -->
                         <div class=" card">
                             <div class="card-header">
                                 <h5 class="card-title mb-0">More info</h5>
                             </div>
                             <div class="card-body">
-                                <?= form_open_multipart('user/edit'); ?>
-                                <!-- <div class="row">
+                                <form method="POST" action="<?= base_url('user/edit') ?>">
+                                    <!-- <div class="row">
                                         <div class="mb-3 col-md-6">
                                             <label class="form-label" for="inputFirstName">First name</label>
                                             <input type="text" class="form-control" id="inputFirstName" placeholder="First name">
@@ -68,12 +70,12 @@
                                             <input type="text" class="form-control" id="inputLastName" placeholder="Last name">
                                         </div>
                                     </div> -->
-                                <div class="mb-3">
-                                    <label class="form-label" for="inputAddress">Name</label>
-                                    <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="<?= $user['name']; ?>">
-                                    <?= form_error('name', '<small class="text-danger">', '</small>'); ?>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="inputAddress">Name</label>
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="<?= $user['name']; ?>">
+                                        <?= form_error('name', '<small class="text-danger">', '</small>'); ?>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                 </form>
                             </div>
                         </div>
@@ -87,7 +89,7 @@
 
                                 <form>
                                     <div class="mb-3">
-                                        <label class="form-label" for="inputPasswordCurrent">Current password</label>
+                                        <label class="form-label" for="inputPasswordCurrent">Password sekarang</label>
                                         <input type="password" class="form-control" id="inputPasswordCurrent">
                                         <small><a href="#">Forgot your password?</a></small>
                                     </div>
@@ -148,6 +150,7 @@
 </div>
 <?= $this->session->flashdata('message'); ?>
 <script>
+    var base_url = $('#baseUrl').val();
     $(document).ready(function() {
         var $modal = $('#modal_edit_modal');
         var image = $('#sample_image')[0];
@@ -190,30 +193,18 @@
                 reader.readAsDataURL(blob);
                 reader.onloadend = function() {
                     var base64data = reader.result;
+                    var img = $('#upload_image').attr('data-img');
 
                     $.ajax({
                         url: "editgambar",
                         method: "POST",
                         data: {
-                            image: base64data
+                            image: base64data,
+                            oldImage: img
                         },
                         success: function(response) {
                             $modal.modal('hide');
-                            const Custom2 = Swal.mixin({
-                                // timer: 3000,
-                                timerProgressBar: true,
-                                keydownListenerCapture: true,
-                                // didOpen: (toast) => {
-                                //     toast.addEventListener('mouseenter', Swal.stopTimer)
-                                //     toast.addEventListener('mouseleave', Swal.resumeTimer)
-                                // }
-                            })
-                            Custom2.fire({
-                                icon: 'success',
-                                title: response,
-                            }).then(function() {
-                                window.location = 'index.php';
-                            });
+                            window.location = base_url + 'user/edit';
                         }
                     });
                 }
