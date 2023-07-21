@@ -4,7 +4,7 @@
             <i class="hamburger align-self-center"></i>
         </a>
 
-        <form class="d-none d-sm-inline-block">
+        <form class="d-inline-block">
             <div class="input-group input-group-navbar">
                 <button class="btn" type="button">
                     <i class="fa-regular fa-compass"></i> <?= $title; ?>
