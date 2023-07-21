@@ -24,46 +24,41 @@
 
             <div class="col-md-9 col-xl-10">
                 <div class="tab-content">
+                    <!-- TAB PANEL UBAH AKUN -->
                     <div class="tab-pane fade show active" id="account" role="tabpanel">
-
                         <div class="card">
                             <div class="card-header">
-
                                 <h5 class="card-title mb-0">Basic Info</h5>
                             </div>
                             <div class="card-body">
-                                <form method="POST" enctype="multipart/form-data">
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="username">Username</label>
-                                                <input type="text" class="d-none" id="username" name="username" value="<?= $user['username']; ?>" readonly>
-                                                <input type=" text" class="form-control" value="<?= $user['username']; ?>" readonly disabled>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="text-center">
-                                                <img alt="User Image" src="<?= base_url('assets/img/avatars/') . $user['image']; ?>" class="rounded-circle img-responsive mt-2" width="128" height="128" />
-                                                <div class="mt-2">
-                                                    <span class="btn btn-primary btn-file"><i class="fas fa-upload"></i> Upload <input type="file" accept=".jpg, .jpeg, .png" id="upload_image"></span>
-                                                </div>
-                                                <small>Ukuran file maks 5mb</small>
-                                            </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="username">Username</label>
+                                            <input type="text" class="d-none" id="username" name="username" value="<?= $user['username']; ?>" readonly>
+                                            <input type=" text" class="form-control" value="<?= $user['username']; ?>" readonly disabled>
                                         </div>
                                     </div>
-                                </form>
-
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <img alt="User Image" src="<?= base_url('assets/img/avatars/') . $user['image']; ?>" class="rounded-circle img-responsive mt-2" width="128" height="128" />
+                                            <div class="mt-2">
+                                                <span class="btn btn-primary btn-file"><i class="fas fa-upload"></i> Upload <input type="file" accept=".jpg, .jpeg, .png" id="upload_image"></span>
+                                            </div>
+                                            <small>Format jpg/jpeg/png</small>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class=" card">
                             <div class="card-header">
-
                                 <h5 class="card-title mb-0">More info</h5>
                             </div>
                             <div class="card-body">
-                                <form>
-                                    <!-- <div class="row">
+                                <?= form_open_multipart('user/edit'); ?>
+                                <!-- <div class="row">
                                         <div class="mb-3 col-md-6">
                                             <label class="form-label" for="inputFirstName">First name</label>
                                             <input type="text" class="form-control" id="inputFirstName" placeholder="First name">
@@ -73,18 +68,18 @@
                                             <input type="text" class="form-control" id="inputLastName" placeholder="Last name">
                                         </div>
                                     </div> -->
-                                    <div class="mb-3">
-                                        <label class="form-label" for="inputAddress">Name</label>
-                                        <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="<?= $user['name']; ?>">
-                                        <?= form_error('name', '<small class="text-danger">', '</small>'); ?>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                <div class="mb-3">
+                                    <label class="form-label" for="inputAddress">Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="<?= $user['name']; ?>">
+                                    <?= form_error('name', '<small class="text-danger">', '</small>'); ?>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                 </form>
-
                             </div>
                         </div>
-
                     </div>
+
+                    <!-- TAB PANEL UBAH PASSWORD -->
                     <div class="tab-pane fade" id="password" role="tabpanel">
                         <div class="card">
                             <div class="card-body">
@@ -115,7 +110,8 @@
         </div>
     </div>
 </main>
-<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+<!-- MODAL EDIT IMAGE -->
+<div class="modal fade" id="modal_edit_modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -144,6 +140,7 @@
         </div>
     </div>
 </div>
+<!-- END MODAL -->
 
 
 
@@ -151,54 +148,11 @@
 </div>
 <?= $this->session->flashdata('message'); ?>
 <script>
-    // Ambil gambar
-    $('.custom-file-input').on('change', function() {
-        let fileName = $(this).val().split('\\').pop();
-        $(this).next('.custom-file-label').addClass("selected").html(fileName);
-    });
-
-    // Hapus gambar
-    $('#btnHapusImg').on('click', function() {
-        Swal.fire({
-            icon: 'warning',
-            title: "Hapus gambar tersimpan?",
-            showDenyButton: false,
-            showCancelButton: true,
-            confirmButtonText: 'Yes'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var img = $(this).attr('data-img');
-                var username = $(this).attr('data-username');
-                var username =
-                    // Ajax config
-                    $.ajax({
-                        type: "POST",
-                        url: '<?= base_url('user/hapusgambar'); ?>',
-                        data: {
-                            img: img,
-                            username: username
-                        },
-                        beforeSend: function() {},
-                        success: function(response) {
-                            document.location.href = "<?= base_url('user/edit/'); ?>";
-                        }
-                    });
-
-
-            }
-        });
-    });
-    // window.onload = function() {
-    //     localStorage.setItem("name", $('#name').val());
-    // }
-    // var name = localStorage.getItem('name');
-    // console.log(name)
-</script>
-<script>
     $(document).ready(function() {
-        var $modal = $('#modal');
+        var $modal = $('#modal_edit_modal');
         var image = $('#sample_image')[0];
         var cropper;
+        // Konfigurasi image cropper
         $('#upload_image').change(function(event) {
             var files = event.target.files;
             var done = function(url) {
@@ -225,12 +179,12 @@
             cropper = null;
         });
 
+        // Trigger crop
         $("#crop").click(function() {
             canvas = cropper.getCroppedCanvas({
                 width: 400,
                 height: 400,
             });
-
             canvas.toBlob(function(blob) {
                 var reader = new FileReader();
                 reader.readAsDataURL(blob);
@@ -238,26 +192,25 @@
                     var base64data = reader.result;
 
                     $.ajax({
-                        url: "process/upload-pp.php",
+                        url: "editgambar",
                         method: "POST",
                         data: {
                             image: base64data
                         },
-                        success: function(data) {
-                            console.log(data);
+                        success: function(response) {
                             $modal.modal('hide');
                             const Custom2 = Swal.mixin({
-                                timer: 3000,
+                                // timer: 3000,
                                 timerProgressBar: true,
                                 keydownListenerCapture: true,
-                                didOpen: (toast) => {
-                                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                                }
+                                // didOpen: (toast) => {
+                                //     toast.addEventListener('mouseenter', Swal.stopTimer)
+                                //     toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                // }
                             })
                             Custom2.fire({
                                 icon: 'success',
-                                title: 'Profile photo successfully changed',
+                                title: response,
                             }).then(function() {
                                 window.location = 'index.php';
                             });
@@ -266,6 +219,7 @@
                 }
             });
         });
+
 
     });
 </script>
