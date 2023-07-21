@@ -296,7 +296,6 @@
                             // username: username,
                         },
                         success: function(response) {
-                            $modal.modal('hide');
                             window.location = base_url + 'user/edit';
                         }
                     });
