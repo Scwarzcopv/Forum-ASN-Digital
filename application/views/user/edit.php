@@ -294,7 +294,8 @@
                             // username: username,
                         },
                         success: function(response) {
-                            window.location = base_url + 'user/edit';
+                            // window.location = base_url + 'user/edit';
+                            location.reload();
                         }
                     });
                 }
