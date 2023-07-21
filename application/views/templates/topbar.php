@@ -23,7 +23,7 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-icon pe-md-0 dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                        <img src="<?= base_url('assets'); ?>/img/avatars/<?= $user['image']; ?>" class="avatar img-fluid rounded" alt="avatar.jpg" />
+                        <img src="<?= base_url('assets'); ?>/img/avatars/<?= $user['image']; ?>" class="avatar img-fluid rounded-circle" alt="avatar.jpg" />
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
                         <a class="dropdown-item" href="pages-profile.html"><i class="align-middle me-1" data-feather="user"></i> Profile</a>
