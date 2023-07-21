@@ -1,10 +1,6 @@
 <main class="content">
     <div class="container-fluid p-0">
 
-        <div class="mb-3">
-            <h1 class="h2 d-inline align-middle"><?= $title; ?></h1>
-        </div>
-
         <div class="row">
             <div class="col-12">
                 <div class="card">

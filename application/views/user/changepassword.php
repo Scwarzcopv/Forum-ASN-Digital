@@ -1,6 +1,5 @@
 <main class="content">
     <div class="container-fluid p-0">
-        <h1 class="h3 mb-3"><?= $title; ?></h1>
         <div class="col-12 col-xl-12">
             <div class="card">
                 <form action="<?= base_url('user/change_password'); ?>" method="POST">

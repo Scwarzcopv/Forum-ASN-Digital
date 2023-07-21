@@ -1,6 +1,5 @@
 <main class="content">
     <div class="container-fluid p-0">
-        <h1 class="h3 mb-3">Registrasi User</h1>
         <div class="card">
             <div class="card-body">
                 <div class="m-sm-4">
