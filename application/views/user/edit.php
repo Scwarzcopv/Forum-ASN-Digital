@@ -12,10 +12,10 @@
                     </div>
 
                     <div class="list-group list-group-flush" role="tablist">
-                        <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#account" role="tab">
+                        <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#page_account" role="tab">
                             Account
                         </a>
-                        <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#password" role="tab">
+                        <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#page_edit_password" role="tab">
                             Password
                         </a>
                     </div>
@@ -25,7 +25,7 @@
             <div class="col-md-9 col-xl-10">
                 <div class="tab-content">
                     <!-- TAB PANEL UBAH AKUN -->
-                    <div class="tab-pane fade show active" id="account" role="tabpanel">
+                    <div class="tab-pane fade show active" role="tabpanel" id="page_account">
                         <!-- BASIC INFO -->
                         <div class="card">
                             <div class="card-header">
@@ -82,26 +82,28 @@
                     </div>
 
                     <!-- TAB PANEL UBAH PASSWORD -->
-                    <div class="tab-pane fade" id="password" role="tabpanel">
+                    <div class="tab-pane fade" role="tabpanel" id="page_edit_password">
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Password</h5>
 
-                                <form>
+                                <form method="POST" action="<?= base_url('user/change_password') ?>" id="formUbahPassword">
                                     <div class="mb-3">
-                                        <label class="form-label" for="inputPasswordCurrent">Password sekarang</label>
-                                        <input type="password" class="form-control" id="inputPasswordCurrent">
-                                        <small><a href="#">Forgot your password?</a></small>
+                                        <label class="form-label" for="currentpassword">Password sekarang</label>
+                                        <input type="password" class="form-control" id="currentpassword" name="currentpassword">
+                                        <!-- <small><a href="#">Forgot your password?</a></small> -->
+                                        <?= form_error('currentpassword', '<small class="text-danger">', '</small>'); ?>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="inputPasswordNew">New password</label>
-                                        <input type="password" class="form-control" id="inputPasswordNew">
+                                        <label class="form-label" for="newpassword1">Password Baru</label>
+                                        <input type="password" class="form-control" id="newpassword1" name="newpassword1">
+                                        <?= form_error('newpassword1', '<small class="text-danger">', '</small>'); ?>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="inputPasswordNew2">Verify password</label>
-                                        <input type="password" class="form-control" id="inputPasswordNew2">
+                                        <label class="form-label" for="newpassword2">Verifikasi password</label>
+                                        <input type="password" class="form-control" id="newpassword2" name="newpassword2">
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                    <button type="submit" class="btn btn-primary" id="simpanPerubahan">Simpan Perubahan</button>
                                 </form>
 
                             </div>
@@ -150,8 +152,97 @@
 </div>
 <?= $this->session->flashdata('message'); ?>
 <script>
-    var base_url = $('#baseUrl').val();
-    $(document).ready(function() {
+    function save_edit() {
+        var validatorEdit = $('#formUbahPassword').validate({
+            rules: {
+                currentpassword: {
+                    required: true,
+                },
+                newpassword1: {
+                    required: true,
+                    minlength: 5,
+                    // maxlength: 15
+                },
+                newpassword2: {
+                    required: true,
+                    remote: {
+                        // remote: base_url + "user/cekpassword",
+                        url: base_url + "user/cekconfirm",
+                        type: "POST",
+                        data: {
+                            newpassword1: function() {
+                                return $("#formUbahPassword input[name='newpassword1']").val();
+                            },
+                            newpassword2: function() {
+                                return $("#formUbahPassword input[name='newpassword2']").val();
+                            },
+                        }
+                    },
+                }
+            },
+            messages: {
+                currentpassword: {
+                    required: "Password tidak boleh kosong",
+                },
+                newpassword1: {
+                    required: "Pasword baru tidak boleh kosong",
+                    minlength: jQuery.validator.format("Setidaknya {0} karakter dibutuhkan"),
+                    // maxlength: jQuery.validator.format("Karakter melebihi {0}")
+                },
+                newpassword2: {
+                    required: "Konfirmasi password tidak boleh kosong",
+                    remote: "Konfirmasi password tidak sama",
+                }
+            },
+            highlight: function(element, errorClass) {
+                $(element).closest("#currentpassword").addClass("is-invalid").removeClass("is-valid");
+                $(element).closest("#newpassword1").addClass("is-invalid").removeClass("is-valid");
+                $(element).closest("#newpassword2").addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function(element, errorClass) {
+                $(element).closest("#currentpassword").removeClass("is-invalid").addClass("is-valid");
+                $(element).closest("#newpassword1").removeClass("is-invalid").addClass("is-valid");
+                $(element).closest("#newpassword2").removeClass("is-invalid").addClass("is-valid");
+            },
+            submitHandler: function(form) {
+                $.ajax({
+                    type: "POST",
+                    url: $(form).attr('action'),
+                    data: $(form).serializeArray(),
+                    dataType: 'json',
+                    beforeSend: function() {
+                        $('#simpanPerubahan').attr('disabled', true).html("Processing...");
+                    },
+                    success: function(resp) {
+                        if (resp.status == 'success') {
+                            $('#simpanPerubahan').attr('disabled', false).html("Simpan Perubahan");
+                            resetForm(form)
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Perubahan berhasil',
+                                text: resp.success
+                            }).then(function() {
+                                window.location = base_url + 'user/edit';
+                            });
+                        } else if (resp.status == 'error') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Perubahan Gagal',
+                                text: resp.error
+                            });
+                            $('#simpanPerubahan').attr('disabled', false).html("Simpan Perubahan");
+                        }
+                    }
+                });
+            }
+        });
+        $('#modalEdit').on('hidden.bs.modal', function() {
+            $('#formEdit input[type=text]').removeClass('is-valid is-invalid');
+            validatorEdit.resetForm();
+        });
+    }
+
+    function editImage() {
         var $modal = $('#modal_edit_modal');
         var image = $('#sample_image')[0];
         var cropper;
@@ -212,7 +303,14 @@
                 }
             });
         });
+    }
 
-
+    function resetForm(selector) {
+        $(selector)[0].reset();
+    }
+    var base_url = $('#baseUrl').val();
+    $(document).ready(function() {
+        editImage();
+        save_edit();
     });
 </script>

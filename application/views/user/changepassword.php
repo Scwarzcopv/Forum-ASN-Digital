@@ -3,7 +3,7 @@
         <h1 class="h3 mb-3"><?= $title; ?></h1>
         <div class="col-12 col-xl-12">
             <div class="card">
-                <form action="<?= base_url('user/changepassword'); ?>" method="POST">
+                <form action="<?= base_url('user/change_password'); ?>" method="POST">
                     <div class="card-body">
                         <div class="mb-3 row">
                             <label class="col-form-label col-sm-2 text-sm-end" for="username">Username</label>
