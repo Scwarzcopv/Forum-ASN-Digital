@@ -286,7 +286,7 @@
                     // var username = $('#username').val();
 
                     $.ajax({
-                        url: "editgambar",
+                        url: base_url + "user/editgambar",
                         method: "POST",
                         data: {
                             image: base64data,
@@ -294,8 +294,8 @@
                             // username: username,
                         },
                         success: function(response) {
-                            // window.location = base_url + 'user/edit';
-                            location.reload();
+                            window.location = base_url + 'user/edit';
+                            // location.reload(true);
                         }
                     });
                 }

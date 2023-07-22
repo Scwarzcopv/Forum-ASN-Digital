@@ -88,13 +88,14 @@ class User extends CI_Controller
         $image_array = explode(";", $image);
         $image_array_1 = explode(",", $image_array[1]);
         $image = base64_decode($image_array_1[1]);
-        $imageName = FCPATH . 'assets/img/avatars/' . $username . '.png';
+        $time = time();
+        $imageName = FCPATH . 'assets/img/avatars/' . $username . '-' . $time . '.png';
 
         //Insert ke Dbs
         if (file_exists(FCPATH . 'assets/img/avatars/' . $imageOld) && $imageOld != 'default.png') {
             unlink(FCPATH . 'assets/img/avatars/' . $imageOld);
         }
-        $filename = $username . '.png';
+        $filename = $username . '-' . $time . '.png';
         $this->db->set('image', $filename);
         $this->db->where('username', $username);
         $this->db->update('user');
