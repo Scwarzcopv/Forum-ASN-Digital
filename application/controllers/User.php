@@ -3,17 +3,26 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class User extends CI_Controller
 {
+    private $data;
     public function __construct()
     {
         parent::__construct();
         $this->load->model('Time_model', 'time');
         $this->load->model('SweetAlert2_model', 'sa2');
+        $this->load->model('Sidebar_model', 'sidebar');
         is_log_in();
+        // Get data 'user'
+        $this->data = array(
+            "user" => $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array(),
+        );
+        // Get session 'role_id'
+        $this->role = $this->session->userdata('role_id');
     }
     public function index()
     {
-        $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
-
+        // Session
+        $data['user'] = $this->data['user'];
+        // Title
         $data['title'] = 'User';
         // Waktu create akun
         $data['timeAgo'] = $this->time->getTimeAgo($data['user']['date_created']);
@@ -21,14 +30,9 @@ class User extends CI_Controller
         // Active Sidebar
         $data['sidebar'] = 'My Profile';
         // Judul Sidebar
-        $role = $this->session->userdata('role_id');
-        if ($role == 1) {
-            $data['role'] = 'Super Administrator';
-        } elseif ($role == 2) {
-            $data['role'] = 'Administrator';
-        } elseif ($role == 3) {
-            $data['role'] = 'Member';
-        }
+        $data['role'] = $this->sidebar->sidebar($this->role);
+
+        // Load View
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidebar', $data);
         $this->load->view('templates/topbar', $data);
@@ -37,20 +41,16 @@ class User extends CI_Controller
     }
     public function edit()
     {
-        $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
-
+        // Session
+        $data['user'] = $this->data['user'];
+        // Title
         $data['title'] = 'Edit Profile';
         // Active Sidebar
         $data['sidebar'] = 'Edit Profile';
         // Judul Sidebar
-        $role = $this->session->userdata('role_id');
-        if ($role == 1) {
-            $data['role'] = 'Super Administrator';
-        } elseif ($role == 2) {
-            $data['role'] = 'Administrator';
-        } elseif ($role == 3) {
-            $data['role'] = 'Member';
-        }
+        $data['role'] = $this->sidebar->sidebar($this->role);
+
+        // Load View
         $this->form_validation->set_message('required', '{field} tidak boleh kosong.');
         $this->form_validation->set_rules('name', 'Nama', 'required|trim');
         if ($this->form_validation->run() == false) {
@@ -60,140 +60,104 @@ class User extends CI_Controller
             $this->load->view('user/edit', $data);
             $this->load->view('templates/footer');
         } else {
+            $username = $this->session->userdata('username');
+            // $username = $this->input->post('username');
             $name = htmlspecialchars($this->input->post('name'));
-            $username = htmlspecialchars($this->input->post('username'));
-
-            //Cek jika ada gambar yang diupload
-            $uploadImg = $_FILES['image']['name'];
-            if ($uploadImg) {
-                $config['allowed_types'] = 'gif|jpg|png';
-                $config['max_size'] = '5120'; //5mb
-                $config['upload_path'] = './assets/img/avatars/';
-                $this->load->library('upload', $config);
-
-                if ($this->upload->do_upload('image')) {
-                    $old_img = $data['user']['image'];
-                    if ($old_img != 'default.png') {
-                        if (file_exists(FCPATH . 'assets/img/avatars/' . $old_img)) {
-                            unlink(FCPATH . 'assets/img/avatars/' . $old_img);
-                        }
-                    }
-
-                    $new_img = $this->upload->data('file_name');
-                    $this->db->set('image', $new_img);
-                } else {
-                    echo $this->upload->display_errors();
-                }
-            }
 
             $this->db->set('name', $name);
             $this->db->where('username', $username);
             $this->db->update('user');
 
             $this->sa2->sweetAlert2Toast('Profil berhasil diperbarui', 'success');
-            redirect('user');
+            redirect('user/edit');
         }
     }
     public function editgambar()
     {
-        $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
-
-        $data['title'] = 'User';
-        // Waktu create akun
-        $data['timeAgo'] = $this->time->getTimeAgo($data['user']['date_created']);
-        $data['timeSince'] = $this->time->getTimeSince($data['user']['date_created']);
-        // Active Sidebar
-        $data['sidebar'] = 'My Profile';
-        // Judul Sidebar
-        $role = $this->session->userdata('role_id');
-        if ($role == 1) {
-            $data['role'] = 'Super Administrator';
-        } elseif ($role == 2) {
-            $data['role'] = 'Administrator';
-        } elseif ($role == 3) {
-            $data['role'] = 'Member';
+        if (empty($this->input->post('image')) || empty($this->input->post('oldImage'))) {
+            redirect('user/edit');
         }
+
+        // Get Post Data
         $username = $this->session->userdata('username');
-        $data = $this->input->post('image');
+        // $username = $this->input->post('username');
+        $image = $this->input->post('image');
+        $imageOld = $this->input->post('oldImage');
 
-        $image_array = explode(";", $data);
+        // Manage Data
+        $image_array = explode(";", $image);
         $image_array_1 = explode(",", $image_array[1]);
-        $data = base64_decode($image_array_1[1]);
-        $imageName = FCPATH . 'assets/img/avatars/' . $username . '.png';
+        $image = base64_decode($image_array_1[1]);
+        $time = time();
+        $imageName = FCPATH . 'assets/img/avatars/' . $username . '-' . $time . '.png';
 
-        //Insert ke dbs
-        if ($_SESSION['img-user'] != "") {
-            unlink('../images/img-user/' . $_SESSION['img-user']);
+        //Insert ke Dbs
+        if (file_exists(FCPATH . 'assets/img/avatars/' . $imageOld) && $imageOld != 'default.png') {
+            unlink(FCPATH . 'assets/img/avatars/' . $imageOld);
         }
-        $filename = $username . '.png';
-        $update = "UPDATE akun SET images = '$filename' WHERE username='$username'";
-        mysqli_query($conn, $update);
-        $sql = "SELECT * FROM akun WHERE username='$username'";
-        $result = mysqli_query($conn, $sql);
-        $row = mysqli_fetch_assoc($result);
-        $_SESSION['img-user'] = $row['images'];
-
-        file_put_contents($imageName, $data);
-    }
-    public function hapusgambar()
-    {
-        $username = $this->input->post('username');
-        $old_img = $this->input->post('img');
-        if (file_exists(FCPATH . 'assets/img/avatars/' . $old_img)) {
-            unlink(FCPATH . 'assets/img/avatars/' . $old_img);
-        }
-        $default = 'default.png';
-        $this->db->set('image', $default);
+        $filename = $username . '-' . $time . '.png';
+        $this->db->set('image', $filename);
         $this->db->where('username', $username);
         $this->db->update('user');
+        file_put_contents($imageName, $image);
+
+        $this->sa2->sweetAlert2Toast('Gambar Berhasil diubah', 'success');
     }
+
+    public function cekconfirm()
+    {
+        if (empty($this->input->post('newpassword1')) || empty($this->input->post('newpassword2'))) {
+            redirect('user/edit');
+        }
+
+        // Get Post Data
+        $pw1 = $this->input->post('newpassword1');
+        $pw2 = $this->input->post('newpassword2');
+
+        // Set kondisi
+        if (!isset($pw1) || !isset($pw2)) {
+            $remote = "true";
+        } else {
+            if ($pw1 === $pw2) {
+                $remote = "true";
+            } else {
+                $remote = "false";
+            }
+        }
+        echo $remote;
+    }
+
     public function change_password()
     {
-        $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
-
-        $data['title'] = 'Change Password';
-        // Active Sidebar
-        $data['sidebar'] = 'Change Password';
-        // Judul Sidebar
-        $role = $this->session->userdata('role_id');
-        if ($role == 1) {
-            $data['role'] = 'Super Administrator';
-        } elseif ($role == 2) {
-            $data['role'] = 'Administrator';
-        } elseif ($role == 3) {
-            $data['role'] = 'Member';
+        if (empty($this->input->post('currentpassword'))) {
+            redirect('user/edit');
         }
-        $this->form_validation->set_message('required', '{field} tidak boleh kosong.');
-        $this->form_validation->set_message('matches', '{field} harus sama dengan {param}.');
-        $this->form_validation->set_message('min_length', '{field} setidaknya harus {param} karakter.');
-        $this->form_validation->set_rules('currentpassword', 'Password Sekarang', 'required|trim');
-        $this->form_validation->set_rules('newpassword1', 'New Password', 'required|trim|min_length[3]|matches[newpassword2]');
-        $this->form_validation->set_rules('newpassword2', 'Konfirmasi New Password', 'required|trim|min_length[3]|matches[newpassword1]');
-        if ($this->form_validation->run() == false) {
-            $this->load->view('templates/header', $data);
-            $this->load->view('templates/sidebar', $data);
-            $this->load->view('templates/topbar', $data);
-            $this->load->view('user/changepassword', $data);
-            $this->load->view('templates/footer');
-        } else {
-            $currentpassword = $this->input->post('currentpassword');
-            $newpassword = $this->input->post('newpassword1');
-            if (!password_verify($currentpassword, $data['user']['password'])) {
-                $this->sa2->sweetAlert2Toast('Password salah', 'error');
-                redirect('user/changepassword');
-            } else {
-                if ($currentpassword == $newpassword) {
-                    $this->sa2->sweetAlert2Toast('Password baru harus beda dengan password lama', 'error');
-                    redirect('user/changepassword');
-                } else {
-                    $password_hash = password_hash($newpassword, PASSWORD_DEFAULT);
 
-                    $this->db->set('password', $password_hash);
+        // Session
+        $data['user'] = $this->data['user'];
+
+        // Get Post Data
+        $currentpw = $this->input->post('currentpassword');
+        $pw1 = $this->input->post('newpassword1');
+        $pw2 = $this->input->post('newpassword2');
+
+        // Proses Data
+        if (!password_verify($currentpw, $data['user']['password'])) {
+            echo json_encode(['status' => 'error', 'error' => 'Password Salah']);
+        } else {
+            if ($pw1 == $pw2) {
+                if ($currentpw == $pw1) {
+                    echo json_encode(['status' => 'error', 'error' => 'Password baru harus beda dengan password lama']);
+                } else {
+                    $pw_hash = password_hash($pw1, PASSWORD_DEFAULT);
+
+                    $this->db->set('password', $pw_hash);
                     $this->db->where('username', $this->session->userdata('username'));
                     $this->db->update('user');
-                    $this->sa2->sweetAlert2Toast('Password berhasil diperbarui', 'success');
-                    redirect('user/changepassword');
+                    echo json_encode(['status' => 'success', 'success' => 'Password berhasil diperbarui']);
                 }
+            } else {
+                echo json_encode(['status' => 'error', 'error' => 'Konfirmasi Password Harus Sama']);
             }
         }
     }

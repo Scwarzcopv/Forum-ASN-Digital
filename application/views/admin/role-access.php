@@ -1,6 +1,5 @@
 <main class="content">
     <div class="container-fluid p-0">
-        <h1 class="h2"><?= $title; ?></h1>
         <h5 class="mb-4">Role : <?php if (!empty($user_role)) : ?><?= $user_role['role']; ?><?php endif; ?></h5>
         <div class="col-12 col-xl-12">
             <div class="card">
