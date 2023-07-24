@@ -7,10 +7,10 @@ class User extends CI_Controller
     public function __construct()
     {
         parent::__construct();
+        is_log_in();
         $this->load->model('Time_model', 'time');
         $this->load->model('SweetAlert2_model', 'sa2');
         $this->load->model('Sidebar_model', 'sidebar');
-        is_log_in();
         // Get data 'user'
         $this->data = array(
             "user" => $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array(),

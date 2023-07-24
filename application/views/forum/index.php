@@ -24,7 +24,7 @@
                     <div class="card-body px-4 pt-2">
                         <table class="text-break">
                             <tr>
-                                <td><i class="fa-solid fa-calendar-check"></i></td>
+                                <td class="pe-2"><i class="fa-solid fa-calendar-check"></i></td>
                                 <td>Kamis, 20 Juli 2023</td>
                             </tr>
                             <tr>

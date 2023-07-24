@@ -1,24 +1,37 @@
+<script type="text/javascript">
+    $(document).ajaxStart(function() {
+        $("#ajax-wait").css({
+            left: ($(window).width() - 32) / 2 + "px", // 32 = lebar gambar
+            top: ($(window).height() - 32) / 2 + "px", // 32 = tinggi gambar
+            display: "block"
+        })
+    }).ajaxComplete(function() {
+        $("#ajax-wait").fadeOut();
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $.ajax({
+            type: 'POST',
+            url: "<?= base_url(); ?>/menu/showMenuManajemen",
+            cache: false,
+            success: function(data) {
+                $("#tampil").html(data);
+            }
+        });
+
+    });
+</script>
 <main class="content">
     <div class="container-fluid p-0">
         <div class="col-12 col-xl-12">
-            <!-- TRIGGER  MODAL TAMBAH DATA -->
-            <button type="button" class="btn btn-primary mb-3 btn-lg" data-bs-toggle="modal" data-bs-target="#modalTambah" id="btnTambahMenu" name="btnTambahMenu">
-                <i class="fa-solid fa-circle-plus"></i> Tambah menu baru
-            </button>
-            <!-- END TRIGGER  MODAL TAMBAH DATA -->
-            <div class="card">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>No.</th>
-                                <th style="width: 80%;">Menu</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="menu-list">
-                        </tbody>
-                    </table>
+            <div id="tampil">
+                <!-- DATA TAMPIL -->
+            </div>
+            <div class="position-absolute top-50 start-50 translate-middle">
+                <div id='ajax-wait'>
+                    <img alt='loading...' src='<?php echo base_url() ?>/assets/img/icons/Rolling-1s-84px.png' />
                 </div>
             </div>
         </div>
@@ -107,6 +120,7 @@
 <!-- Tutup elemen dari topbar.php -->
 
 </div>
+
 <?= $this->session->flashdata('message'); ?>
 <?= form_error(
     'menu',
@@ -131,4 +145,3 @@
         </script>'
 ) ?>
 <script src="<?= base_url('assets'); ?>/js/customsweetalert.js"></script>
-<script src="<?= base_url('assets'); ?>/js/customajax-menumanajemen.js"></script>

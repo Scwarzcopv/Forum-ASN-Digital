@@ -3,31 +3,38 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Menu extends CI_Controller
 {
+    private $data;
     public function __construct()
     {
         parent::__construct();
         is_log_in();
-        $this->load->model('Menu_model', 'menu');
+        $this->load->model('Sidebar_model', 'sidebar');
+        // $this->load->model('Menu_model', 'menu');
+        $this->load->model('MenuManajemen_model', 'model_menuManajemen');
         $this->load->model('SweetAlert2_model', 'sa2');
+        // Get data 'user'
+        $this->data = array(
+            "user" => $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array(),
+        );
+        // Get session 'role_id'
+        $this->role = $this->session->userdata('role_id');
     }
     // MENU MANAJEMEN
     public function index()
     {
-        $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
-
+        // Session
+        $data['user'] = $this->data['user'];
         // Title
         $data['title'] = 'Menu Manajemen';
         // Active Sidebar
         $data['sidebar'] = 'Menu Manajemen';
         // Judul Sidebar
-        $role = $this->session->userdata('role_id');
-        if ($role == 1) {
-            $data['role'] = 'Super Administrator';
-        } elseif ($role == 2) {
-            $data['role'] = 'Administrator';
-        }
+        $data['role'] = $this->sidebar->sidebar($this->role);
+
+        // Data menu
         $data['menu'] = $this->db->get('user_menu')->result_array();
 
+        // Load View
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidebar', $data);
         $this->load->view('templates/topbar', $data);
@@ -35,131 +42,107 @@ class Menu extends CI_Controller
         $this->load->view('templates/footer');
     }
 
-    //MENU MANAJEMEN
-    //------------------------------------------- AJAX -------------------------------------------
+    //------------------------------------------- MENU MANAJEMEN -------------------------------------------
     //----- Show data
-    public function all()
+    public function get_items()
     {
-        $data = $this->db->get('user_menu')->result_array();
-        echo json_encode($data);
+        $draw = intval($this->input->get("draw"));
+        $start = intval($this->input->get("start"));
+        $length = intval($this->input->get("length"));
+        $query = $this->db->get("items");
+        $data = [];
+        foreach ($query->result() as $r) {
+            $data[] = array(
+                $r->id,
+                $r->title,
+                $r->description
+            );
+        }
+        $result = array(
+            "draw" => $draw,
+            "recordsTotal" => $query->num_rows(),
+            "recordsFiltered" => $query->num_rows(),
+            "data" => $data
+        );
+        echo json_encode($result);
+        exit();
     }
-    //----- Cek unique data
-    public function cekdata()
+    public function showMenuManajemen()
     {
-        $menu = $this->input->get('menu_Tambah');
-        $data = $this->db->get_where('user_menu', ['menu' => $menu])->row_array();
-        if (!isset($data)) {
-            echo "true";
-        } else echo "false";
+        $data['result'] = $this->model_menuManajemen->showMenuManajemen();
+        $this->load->view('menu/menumanajemen/data-menu', $data);
     }
-    public function cekdata2()
+    //----- Tambah
+    public function cekMenuManajemenTambah()
+    {
+        $menu = $this->input->get('menu');
+        $this->model_menuManajemen->cekTambah($menu);
+    }
+    public function tambahMenuManajemen()
+    {
+        $action = $this->input->post('action');
+        $this->load->view('menu/menumanajemen/tambah', $action);
+    }
+    //----- Edit
+    public function cekMenuManajemenEdit()
     {
         $id = $this->input->get('id');
         $menu = $this->input->get('menu');
-        $data = $this->db->get_where('user_menu', ['menu' => $menu])->row_array();
-        $menu = strtolower($menu);
-        // Ambil data menu lama
-        $dataLama = $this->db->get_where('user_menu', ['id' => $id])->row_array();
-        $menuLama = $dataLama['menu'];
-        $menuLama = strtolower($menuLama);
-        // $data2 = $this->db->get_where('user_menu', ['menu' => $menuLama])->row_array();
-        // Set kondisi
-        if (!isset($data)) {
-            $remote = "true";
-        } else {
-            if ($menuLama == $menu) {
-                $remote = "true";
-            } else {
-                $remote = "false";
-            }
-        }
-        echo $remote;
+        $this->model_menuManajemen->cekEdit($id, $menu);
     }
-    //----- Submit tambahkan data
-    public function tambahdata()
+    public function editMenuManajemen()
     {
-        $menu = htmlspecialchars($this->input->post('menu_Tambah', true));
+        $id = $this->input->post('id');
+        $data['result'] = $this->model_menuManajemen->getId($id);
+        $this->load->view('menu/menumanajemen/edit', $data);
+    }
+    public function __hapusMenuManajemen()
+    {
+        $id = $this->input->post('id');
+        $data['result'] = $this->model_menuManajemen->getId($id);
+        $this->load->view('menu/menumanajemen/hapus', $data);
+    }
+    public function saveMenuManajemen()
+    {
+        // Get Data
+        $menu = $this->input->post('menu');
+        $menu = htmlspecialchars($menu);
         $menu = strtolower($menu);
         $menu = ucwords($menu);
-
-        $this->db->insert('user_menu', ['menu' => $menu]);
-        echo json_encode(['status' => 'success', 'success' => $menu]);
-    }
-    //----- Input field update data
-    public function getdata()
-    {
-        $id = $this->input->get('id');
-        $data = $this->db->get_where('user_menu', ['id' => $id])->row_array();
-        echo json_encode($data);
-    }
-    //----- Submit ubah data
-    public function ubahdata()
-    {
-        $id = $this->input->post('id_Edit');
-        $menu = htmlspecialchars($this->input->post('menu_Edit', true));
-        $menu = strtolower($menu);
-        $menu = ucwords($menu);
-        // Masukkan data ke array
+        // Insert Data
         $data = array(
             'menu' => $menu
         );
-        // Ambil data menu lama
+        $this->db->insert('user_menu', $data);
+        // Return Resutl
+        if ($this->db->affected_rows() > 0) {
+            echo json_encode(['status' => 'success', 'success' => $menu]);
+        }
+    }
+    public function saveEditMenuManajemen()
+    {
+        // Get Data
+        $id = $this->input->post('id');
+        $menu = $this->input->post('menu');
+        $menu = htmlspecialchars($menu);
+        $menu = strtolower($menu);
+        $menu = ucwords($menu);
         $dataLama = $this->db->get_where('user_menu', ['id' => $id])->row_array();
         $menuLama = $dataLama['menu'];
-        // Update data menu
+        // Insert Data
+        $data = array(
+            'menu' => $menu
+        );
         $this->db->where('id', $id);
         $this->db->update('user_menu', $data);
+        // Return Result
         echo json_encode(['status' => 'success', 'success' => $menu, 'menuLama' => $menuLama]);
     }
-    //---- Hapus data
-    public function hapusmenu()
+    public function hapusMenuManajemen()
     {
         $id = $this->input->post('id');
-        $this->menu->hapusData('user_menu', $id);
+        $this->db->delete('user_menu', array('id' => $id));
     }
-    //----------------------------------------- END AJAX -----------------------------------------
 
-
-
-
-
-    // SUB MENU MANAJEMEN
-    public function submenu()
-    {
-        $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
-
-        $data['title'] = 'Sub Menu Manajemen';
-        $data['sidebar'] = 'Sub Menu Manajemen';
-        if ($this->session->userdata('role_id') == 1) {
-            $data['role'] = 'Administrator';
-        } else {
-            $data['role'] = 'User';
-        }
-        $data['subMenu'] = $this->menu->getSubMenu();
-        $data['menu'] = $this->db->get('user_menu')->result_array();
-
-        $this->form_validation->set_rules('title', 'Title', 'required');
-        $this->form_validation->set_rules('menu_id', 'Menu', 'required');
-        $this->form_validation->set_rules('url', 'URL', 'required');
-        $this->form_validation->set_rules('icon', 'Icon', 'required');
-        $this->form_validation->set_message('required', 'Field tidak boleh kosong.');
-        if ($this->form_validation->run() == FALSE) {
-            $this->load->view('templates/header', $data);
-            $this->load->view('templates/sidebar', $data);
-            $this->load->view('templates/topbar', $data);
-            $this->load->view('menu/submenu', $data);
-            $this->load->view('templates/footer');
-        } else {
-            $data = [
-                'title' => $this->input->post('title'),
-                'menu_id' => $this->input->post('menu_id'),
-                'url' => $this->input->post('url'),
-                'icon' => $this->input->post('icon'),
-                'is_active' => $this->input->post('id_active')
-            ];
-            $this->db->insert('user_sub_menu', $data);
-            $this->sa2->sweetAlert2Toast('Submenu ditambahkan', 'success');
-            redirect('menu/submenu');
-        }
-    }
+    //----------------------------------------- END MENU MANAJEMEN -----------------------------------------
 }
