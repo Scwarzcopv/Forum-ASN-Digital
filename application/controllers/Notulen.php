@@ -9,6 +9,9 @@ class Notulen extends CI_Controller
         is_log_in();
         $this->load->model('Menu_model', 'menu');
         $this->load->model('SweetAlert2_model', 'sa2');
+        $this->load->model([
+            'Dt_notulen'
+        ]);
     }
     public function index()
     {
@@ -55,5 +58,25 @@ class Notulen extends CI_Controller
         $this->load->view('templates/topbar', $data);
         $this->load->view('notulen/persetujuan', $data);
         $this->load->view('templates/footer');
+    }
+
+    public function get_list_notulen()
+    {
+        $notulens = $this->Dt_notulen->get_datatables();
+        $no         = $this->input->post('start');
+
+        foreach ($notulens as $notulen) {
+            $no++;
+            $notulen->no = $no . '. ';
+        }
+
+        $output = [
+            "draw"              => $this->input->post('draw'),
+            "recordsTotal"      => $this->Dt_notulen->count_all(),
+            "recordsFiltered"   => $this->Dt_notulen->count_filtered(),
+            "data"              => $notulens,
+        ];
+
+        echo json_encode($output);
     }
 }
