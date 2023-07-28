@@ -19,7 +19,6 @@
 <script src="assets/plugins/daterangepicker/daterangepicker.js"></script>
 <script src="assets/plugins/moment/moment.min.js"></script>
 <script src="assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-<script src="assets/js/adminlte.min.js"></script>
 <script src="assets/plugins/fullcalendar/main.js"></script>
 <script src="assets/plugins/daterangepicker/daterangepicker.js"></script>
 <script src="assets/plugins/datatables/jquery.dataTables.min.js"></script>

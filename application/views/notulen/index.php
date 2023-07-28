@@ -520,10 +520,4 @@
         $('#list_peserta').attr('hidden', true)
     }
 
-    tippyjs('notulen-edit', 'Edit Notulen');
-    tippyjs('notulen-pdf', 'Preview Notulen');
-    tippyjs('notulen-qr', 'Generate QR');
-    tippyjs('notulen-peserta', 'Lihat Perserta');
-    tippyjs('notulen-kirim', 'Kirim ke Pimpinan');
-    tippyjs('notulen-hapus', 'Hapus Notulen');
 </script>

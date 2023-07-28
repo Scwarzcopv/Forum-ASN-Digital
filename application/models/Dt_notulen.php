@@ -16,10 +16,8 @@ class Dt_notulen extends CI_Model
 
     private function _base_query()
     {
-        $user = loggedUser();
-		unset($user['acl']);
-        $nip = $user['nip'];
-        $id = $user['id'];
+        $nip = $this->session->userdata('nip');
+        $id = $this->session->userdata('id');
 
 
         $temp = $this->db->query("select group_concat(id) as id FROM (SELECT no.id
@@ -33,9 +31,9 @@ class Dt_notulen extends CI_Model
         GROUP BY `no`.`id`) AS temp")->row();
         $subquery = explode(',', $temp->id);
 
-        $query1 = $this->db->select('notu.id, notu.no_surat, notu.tgl_mulai, notu.agenda_rapat, notu.nama_notulis, COALESCE(u.name, "-") AS pimpinan_rapat, notu.verified, notu.kirim')->from('notulen_hasil_rapat notu')->join('users u','notu.pimpinan_rapat = u.id','left')->where(['notu._active' => 1, 'id_notulis' => $id])
+        $query1 = $this->db->select('notu.id, notu.no_surat, notu.tgl_mulai, notu.agenda_rapat, notu.nama_notulis, COALESCE(u.name, "-") AS pimpinan_rapat, notu.verified, notu.kirim')->from('notulen_hasil_rapat notu')->join('user u','notu.pimpinan_rapat = u.id','left')->where(['notu._active' => 1, 'id_notulis' => $id])
             ->get_compiled_select();
-        $this->db->select('no.id, no.no_surat, no.tgl_mulai, no.agenda_rapat, no.nama_notulis, COALESCE(u.name, "-") AS pimpinan_rapat, no.verified, no.kirim')->from('notulen_hasil_rapat no')->join('users u','no.pimpinan_rapat=u.id','left')->join('notulen_peserta np','no.id=np.id_notulen','left')
+        $this->db->select('no.id, no.no_surat, no.tgl_mulai, no.agenda_rapat, no.nama_notulis, COALESCE(u.name, "-") AS pimpinan_rapat, no.verified, no.kirim')->from('notulen_hasil_rapat no')->join('user u','no.pimpinan_rapat=u.id','left')->join('notulen_peserta np','no.id=np.id_notulen','left')
         ->where(['no._active' => 1, 'no.verified' => 1]);
         if(is_null($subquery)){
             $this->db->where(['no.id' => null]);
@@ -116,7 +114,7 @@ class Dt_notulen extends CI_Model
                 ->where(['d.time !='=>NULL,'p.time !='=>NULL])
                 ->group_by('np.users_id')
                 ->get_compiled_select();
-            $query2 = $this->db->select('no.id, no.nama_notulis, CONCAT("/pdf/notulen/pdf/",md5(concat(no.id,no.id_notulis)),".pdf") AS url, cek_pimpinan')->from('notulen_hasil_rapat no')->join('users u','no.pimpinan_rapat=u.id','left')->join('notulen_peserta np','no.id=np.id_notulen AND np.skpd_id IN ('.$subquery.')','left')
+            $query2 = $this->db->select('no.id, no.nama_notulis, CONCAT("/pdf/notulen/pdf/",md5(concat(no.id,no.id_notulis)),".pdf") AS url, cek_pimpinan')->from('notulen_hasil_rapat no')->join('user u','no.pimpinan_rapat=u.id','left')->join('notulen_peserta np','no.id=np.id_notulen AND np.skpd_id IN ('.$subquery.')','left')
             ->where(['no._active' => 1, 'no.verified' => 1, 'no_surat' => $get_surat->no_surat, 'np.skpd_id' => $get_surat->skpd_id])->get_compiled_select();
             $list_notulen = $this->db->from("($query1 UNION $query2) subquery")->get()->result();
             // return $this->db->last_query();die();
