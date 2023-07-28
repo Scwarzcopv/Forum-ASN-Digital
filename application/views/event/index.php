@@ -2,61 +2,29 @@
     <div class="container-fluid p-0">
         <div class="row">
             <div class="col-12">
-                <div class="card box shadow-rapat rounded-4" data-id="1">
+                <div class="card box shadow-rapat rounded-3" data-id="1">
                     <div class="p-3">
-                        <table>
-                            <tr>
-                                <td>
-                                    <img src="<?= base_url('assets'); ?>/img/icons/envelope2.png" alt="Christina Mason" class="img-fluid" width="100" height="100" />
-                                </td>
-                                <td>
-                                    <table class="ms-3">
-                                        <tr>
-                                            <td class="fw-bold m-0 p-0 card-title">KADIN OPD UJI COBA 1</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="h3 fs-2 fw-bold m-0 p-0 "><a href="">Cek Kesehatan</a></td>
-                                        </tr>
-                                        <tr>
-                                            <td> 005/535/000.000/2023</td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="row">
+                            <div class="mx-auto col-8 col-sm-4 col-lg-1 d-flex justify-content-center align-items-center pb-2 pb-sm-0 p-0">
+                                <div class="col-12">
+                                    <img src="<?= base_url('assets'); ?>/img/icons/envelope2.png" alt="Envelope" class="img-thumbnail-custom rounded mx-auto d-block bg-transparent border-0" />
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-9 my-auto">
+                                <div class="fw-bold m-0 p-0 card-title">KADIN OPD UJI COBA 1</div>
+                                <div class="m-0 p-0">
+                                    <button class="btn fs-3 fw-bold m-0 p-0 border-0 text-primary  text-start lh-1 ">Fraud Detection and Investigation, and Prevention at Digital Era</button>
+                                </div>
+                                <div class="">005/535/000.000/2023</div>
+                            </div>
+                            <div class="col-12 col-sm-2 col-lg-2 my-auto">
+                                <button class="btn fs-3 fw-bold m-0 p-0 border-0 text-secondary lh-1 float-end me-lg-3" id="download"><i class="fa-solid fa-download fa-lg"></i></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- <div class="row">
-
-            <div class="col-12 col-md-6 col-lg-3" id="card_forum" name="card_forum">
-                <div class="card box" data-id="1">
-                    <div class="card-header px-4 pt-4">
-                        <h5 class="card-title mb-0">Cek Kesehatan</h5>
-                        <div class="badge my-2 bg-info text-wrap"> KADIN OPD UJI COBA 1</div>
-                    </div>
-                    <div class="card-body px-4 pt-2">
-                        <table class="text-break">
-                            <tr>
-                                <td class="pe-2"><i class="fa-solid fa-calendar-check"></i></td>
-                                <td>Kamis, 20 Juli 2023</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fa-solid fa-envelope-open-text"></i></td>
-                                <td>005/535/000.000/2023</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fa-solid fa-location-dot"></i></td>
-                                <td>Kediriiiiiiiiiiiiiiiiii</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-        </div> -->
     </div>
 </main>
 
@@ -66,5 +34,21 @@
 <!-- Tutup elemen dari topbar.php -->
 </div>
 <?= $this->session->flashdata('message'); ?>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
 <script>
+    tippy('#download', {
+        content: "Download PDF",
+        placement: "bottom",
+        delay: [700, 0]
+    });
+    // $(function() {
+    //     $('[data-bs-toggle="tooltip"]').tooltip({
+    //         trigger: 'hover'
+    //     });
+
+    //     $('[data-bs-toggle="tooltip"]').on('click', function() {
+    //         $(this).tooltip('hide')
+    //     });
+    // });
 </script>

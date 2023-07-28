@@ -61,3 +61,11 @@ body {
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 }
 /* END IMG MODAL */
+.img-thumbnail-custom {
+    /* padding: .25rem; */
+    background-color: #fff;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .375rem;
+    width: 80%;
+    height: auto!important
+}
