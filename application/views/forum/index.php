@@ -15,7 +15,7 @@
 <main class="content">
     <div class="container-fluid p-0">
         <div class="row">
-            <div class="col-12 bg-dark m-0 py-0 pe-0 ps-2 rounded-2 shadow-rapat">
+            <div class="col-12 bg-dark mb-3 py-0 pe-0 ps-2 rounded-2 shadow-rapat">
                 <div class="card box border_radius-card mb-0" data-id="1">
                     <div class="p-3">
                         <div class="row">
@@ -32,15 +32,15 @@
                                 <table class="text-break">
                                     <tr>
                                         <td class="pe-2"><i class="fa-solid fa-calendar-check"></i></td>
-                                        <td>Kamis, 20 Juli 2023</td>
+                                        <td class="text-secondary ">Kamis, 20 Juli 2023</td>
                                     </tr>
                                     <tr>
                                         <td><i class="fa-solid fa-envelope-open-text"></i></td>
-                                        <td>005/535/000.000/2023</td>
+                                        <td class="text-secondary ">005/535/000.000/2023</td>
                                     </tr>
                                     <tr>
                                         <td><i class="fa-solid fa-location-dot"></i></td>
-                                        <td>Kediriiiiiiiiiiiiiiiiii</td>
+                                        <td class="text-secondary ">Kediriiiiiiiiiiiiiiiiii</td>
                                     </tr>
                                 </table>
                             </div>
