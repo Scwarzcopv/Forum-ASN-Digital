@@ -9,6 +9,7 @@ class Event extends CI_Controller
         parent::__construct();
         is_log_in();
         $this->load->model('Sidebar_model', 'sidebar');
+        $this->load->model('InfiniteScroll_model', 'iscroll');
         // Get data 'user'
         $this->data = array(
             "user" => $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array(),
@@ -27,11 +28,39 @@ class Event extends CI_Controller
         // Judul Sidebar
         $data['role'] = $this->sidebar->sidebar($this->role);
 
-        // Load View
+        // Infinite Scroll
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidebar', $data);
         $this->load->view('templates/topbar', $data);
         $this->load->view('event/index', $data);
-        $this->load->view('templates/footer');
+        $this->load->view('templates/footer', $data);
+    }
+
+    function fetch()
+    {
+        $output = '';
+        $limit = $this->input->post('limit');
+        $start = $this->input->post('start');
+        $id_user = $this->data['user']['id'];
+        $keyword = $this->input->post('keyword');
+        $order = $this->input->post('order');
+        $data = $this->iscroll->notulen_peserta($limit, $start, $id_user, $keyword, $order);
+        $result = $data['3']->result_array();
+        $num_rows_1 = $data['num_rows_1'];
+        $num_rows_2 = $data['num_rows_2'];
+        $num_rows_3 = $data['num_rows_3'];
+        if ($num_rows_1 > 0) {
+            if ($num_rows_3 > 0) {
+                foreach ($result as $result['row']) {
+                    // var_dump($result['row']) $result['row']['id_notulen']
+                    $output .= $this->load->view('event/data_event', $result, true);
+                }
+            } else {
+                $output = 'null2';
+            }
+        } else {
+            $output = 'null';
+        }
+        echo json_encode(['data' => $output, 'num_rows' => $num_rows_2]);
     }
 }

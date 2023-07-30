@@ -1,3 +1,30 @@
+<!-- <footer class="footer">
+    <div class="container-fluid">
+        <div class="row text-muted">
+            <div class="col-6 text-start">
+                <p class="mb-0">
+                    <a href="#" class="text-muted"><strong>Copyright &copy; 2023 Pemerintah Kota Kediri.</strong></a>
+                </p>
+            </div>
+            <div class="col-6 text-end">
+                <ul class="list-inline">
+                    <li class="list-inline-item">
+                        <a class="text-muted fw-bolder" href="#">FORUM ASN DIGITAL</a>
+                    </li>
+                    <li class="list-inline-item">
+                        <span>|</span>
+                    </li>
+                    <li class="list-inline-item">
+                        <span>Version 0.0.0.1</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer> 
+Tutup elemen dari topbar.php
+</div>
+-->
 </div>
 <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
 <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
