@@ -5,7 +5,7 @@
                 <div class="input-group">
                     <span class="card-title my-auto me-3 d-none d-md-block">Urut Berdasar :</span>
                     <!-- <div class="col-md-4 col-lg-5 me-3"> -->
-                    <select class="form-select flex-grow-1 rounded me-3" id="order" style="max-width: 10rem;">
+                    <select class="form-select flex-grow-1 rounded me-3 form-select-lg " id="order" style="max-width: 10rem;">
                         <option value="ASC" selected>Data Baru</option>
                         <option value="DESC">Data Lama</option>
                     </select>

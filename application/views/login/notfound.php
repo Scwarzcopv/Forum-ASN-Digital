@@ -45,9 +45,9 @@
                     <div class="d-table-cell align-middle">
 
                         <div class="text-center">
-                            <h1 class="display-1 font-weight-bold">403</h1>
-                            <p class="h1">Access Forbidden</p>
-                            <p class="h2 font-weight-normal mt-3 mb-4">Mohon maaf, anda tidak memiliki akses untuk masuk ke halaman ini.
+                            <h1 class="display-1 font-weight-bold">404</h1>
+                            <p class="h1">Page Not Found</p>
+                            <p class="h2 font-weight-normal mt-3 mb-4">Mohon maaf, halaman yang anda cari mungkin telah dihapus.
                             </p>
                             <a href="<?= base_url('user'); ?>" class="btn btn-primary btn-lg">Return to website</a>
                         </div>

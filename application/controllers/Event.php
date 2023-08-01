@@ -38,6 +38,7 @@ class Event extends CI_Controller
 
     function fetch()
     {
+        if (!$this->input->post('limit')) redirect('event');
         $output = '';
         $limit = $this->input->post('limit');
         $start = $this->input->post('start');

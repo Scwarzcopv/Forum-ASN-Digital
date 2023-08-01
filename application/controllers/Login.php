@@ -81,4 +81,8 @@ class Login extends CI_Controller
     {
         $this->load->view('login/blocked');
     }
+    public function notfound()
+    {
+        $this->load->view('login/notfound');
+    }
 }
