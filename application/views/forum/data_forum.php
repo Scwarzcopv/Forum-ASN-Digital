@@ -31,14 +31,40 @@
                 </div>
                 <?php if ($user['role_id'] <= 2) : ?>
                     <div class="col-12 col-sm-2 col-lg-2 user-select-none d-flex align-items-center justify-content-end ">
-                        <label class="card-title my-auto me-3" id="label_saklar" for="active_forum_<?= $row['id']; ?>">Active</label>
-                        <div class="form-check form-switch">
-                            <div class="d-flex align-content-center justify-content-start d-none p-0 m-0" id="spinner_saklar">
-                                <div class="spinner-border text-primary m-0 p-0" role="status">
-                                    <span class="visually-hidden">Loading...</span>
+                        <div class="row ">
+                            <div class="col-12 d-flex justify-content-end">
+                                <label class="card-title my-auto me-3" id="label_saklar_1" for="active_forum_<?= $row['id']; ?>">Forum</label>
+                                <div class="form-check form-switch">
+                                    <div class="d-flex align-content-center justify-content-start d-none p-0 m-0" id="spinner_saklar_1">
+                                        <div class="spinner-border text-primary m-0 p-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <input class="form-check-input" type="checkbox" name="active_forum" id="active_forum_<?= $row['id']; ?>" style="width: 40px; height: 20px;" <?php if ($row['forum_active'] == 1) echo 'checked'; ?>>
                                 </div>
                             </div>
-                            <input class="form-check-input" type="checkbox" name="active_forum" id="active_forum_<?= $row['id']; ?>" style="width: 40px; height: 20px;" <?php if ($row['forum_active'] == 1) echo 'checked'; ?>>
+                            <div class="col-12 d-flex justify-content-end py-1">
+                                <label class="card-title my-auto me-3" id="label_saklar_2" for="active_tanya_<?= $row['id']; ?>">Pertanyaan</label>
+                                <div class="form-check form-switch">
+                                    <div class="d-flex align-content-center justify-content-start d-none p-0 m-0" id="spinner_saklar_2">
+                                        <div class="spinner-border text-primary m-0 p-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <input class="form-check-input" type="checkbox" name="active_tanya" id="active_tanya_<?= $row['id']; ?>" style="width: 40px; height: 20px;" <?php if ($row['tanya_active'] == 1) echo 'checked'; ?>>
+                                </div>
+                            </div>
+                            <div class="col-12 d-flex justify-content-end">
+                                <label class="card-title my-auto me-3" id="label_saklar_3" for="active_komentar_<?= $row['id']; ?>">Komentar</label>
+                                <div class="form-check form-switch">
+                                    <div class="d-flex align-content-center justify-content-start d-none p-0 m-0" id="spinner_saklar_3">
+                                        <div class="spinner-border text-primary m-0 p-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <input class="form-check-input" type="checkbox" name="active_komentar" id="active_komentar_<?= $row['id']; ?>" style="width: 40px; height: 20px;" <?php if ($row['komentar_active'] == 1) echo 'checked'; ?>>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 <?php endif; ?>

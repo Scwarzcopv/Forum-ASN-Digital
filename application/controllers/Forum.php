@@ -81,6 +81,28 @@ class Forum extends CI_Controller
         $this->db->where('id', $id_forum);
         $this->db->update('forum', $data);
     }
+    function saklar_tanya()
+    {
+        if (!$this->input->post('id_forum')) redirect('forum');
+        $id_forum = $this->input->post('id_forum');
+        $tanya_active = $this->input->post('tanya_active');
+        $data = array(
+            'tanya_active' => $tanya_active
+        );
+        $this->db->where('id', $id_forum);
+        $this->db->update('forum', $data);
+    }
+    function saklar_komentar()
+    {
+        if (!$this->input->post('id_forum')) redirect('forum');
+        $id_forum = $this->input->post('id_forum');
+        $komentar_active = $this->input->post('komentar_active');
+        $data = array(
+            'komentar_active' => $komentar_active
+        );
+        $this->db->where('id', $id_forum);
+        $this->db->update('forum', $data);
+    }
 
 
 

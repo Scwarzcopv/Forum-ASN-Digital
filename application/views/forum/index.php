@@ -43,8 +43,8 @@
             });
             var id_forum = data['id_forum'];
             $(this).addClass('d-none');
-            $(this).parent().closest('article').find('#label_saklar').removeClass('me-3');
-            $(this).parent().closest('article').find('#spinner_saklar').removeClass('d-none');
+            $(this).parent().closest('article').find('#label_saklar_1').removeClass('me-3');
+            $(this).parent().closest('article').find('#spinner_saklar_1').removeClass('d-none');
             if ($(this).is(":checked")) {
                 $.ajax({
                     url: "<?php echo base_url(); ?>forum/saklar_forum",
@@ -55,8 +55,8 @@
                     },
                     success: function(resp) {
                         self.removeClass('d-none');
-                        self_find.find('#label_saklar').addClass('me-3');
-                        self_find.find('#spinner_saklar').addClass('d-none');
+                        self_find.find('#label_saklar_1').addClass('me-3');
+                        self_find.find('#spinner_saklar_1').addClass('d-none');
                         Custom.fire({
                             icon: 'success',
                             title: 'Forum Telah Aktif'
@@ -76,11 +76,131 @@
                     },
                     success: function(resp) {
                         self.removeClass('d-none');
-                        self_find.find('#label_saklar').addClass('me-3');
-                        self_find.find('#spinner_saklar').addClass('d-none');
+                        self_find.find('#label_saklar_1').addClass('me-3');
+                        self_find.find('#spinner_saklar_1').addClass('d-none');
                         Custom.fire({
                             icon: 'success',
                             title: 'Forum Dinonaktifkan'
+                        });
+                    },
+                    error: function() {
+                        Swal.fire('Error');
+                    }
+                })
+            }
+
+        });
+    }
+
+    function saklar_tanya() {
+        $(document).delegate("input[type=checkbox][name=active_tanya]", "change", function() {
+            var self = $(this);
+            var self_find = $(this).parent().closest('article');
+            var dataArray = $(this).parent().closest('article').find('.closest input[type=text]').serializeArray(),
+                data = {};
+            $(dataArray).each(function(i, field) {
+                data[field.name] = field.value;
+            });
+            var id_forum = data['id_forum'];
+            $(this).addClass('d-none');
+            $(this).parent().closest('article').find('#label_saklar_2').removeClass('me-3');
+            $(this).parent().closest('article').find('#spinner_saklar_2').removeClass('d-none');
+            if ($(this).is(":checked")) {
+                $.ajax({
+                    url: "<?php echo base_url(); ?>forum/saklar_tanya",
+                    method: "POST",
+                    data: {
+                        id_forum: id_forum,
+                        tanya_active: 1
+                    },
+                    success: function(resp) {
+                        self.removeClass('d-none');
+                        self_find.find('#label_saklar_2').addClass('me-3');
+                        self_find.find('#spinner_saklar_2').addClass('d-none');
+                        Custom.fire({
+                            icon: 'success',
+                            title: 'Pertanyaan Telah Aktif'
+                        });
+                    },
+                    error: function() {
+                        Swal.fire('Error');
+                    }
+                })
+            } else {
+                $.ajax({
+                    url: "<?php echo base_url(); ?>forum/saklar_tanya",
+                    method: "POST",
+                    data: {
+                        id_forum: id_forum,
+                        tanya_active: 0
+                    },
+                    success: function(resp) {
+                        self.removeClass('d-none');
+                        self_find.find('#label_saklar_2').addClass('me-3');
+                        self_find.find('#spinner_saklar_2').addClass('d-none');
+                        Custom.fire({
+                            icon: 'success',
+                            title: 'Pertanyaan Dinonaktifkan'
+                        });
+                    },
+                    error: function() {
+                        Swal.fire('Error');
+                    }
+                })
+            }
+
+        });
+    }
+
+    function saklar_komentar() {
+        $(document).delegate("input[type=checkbox][name=active_komentar]", "change", function() {
+            var self = $(this);
+            var self_find = $(this).parent().closest('article');
+            var dataArray = $(this).parent().closest('article').find('.closest input[type=text]').serializeArray(),
+                data = {};
+            $(dataArray).each(function(i, field) {
+                data[field.name] = field.value;
+            });
+            var id_forum = data['id_forum'];
+            $(this).addClass('d-none');
+            $(this).parent().closest('article').find('#label_saklar_3').removeClass('me-3');
+            $(this).parent().closest('article').find('#spinner_saklar_3').removeClass('d-none');
+            if ($(this).is(":checked")) {
+                $.ajax({
+                    url: "<?php echo base_url(); ?>forum/saklar_komentar",
+                    method: "POST",
+                    data: {
+                        id_forum: id_forum,
+                        komentar_active: 1
+                    },
+                    success: function(resp) {
+                        self.removeClass('d-none');
+                        self_find.find('#label_saklar_3').addClass('me-3');
+                        self_find.find('#spinner_saklar_3').addClass('d-none');
+                        Custom.fire({
+                            icon: 'success',
+                            title: 'Komentar Telah Aktif'
+                        });
+                    },
+                    error: function() {
+                        Swal.fire('Error');
+                    }
+                })
+            } else {
+                $.ajax({
+                    url: "<?php echo base_url(); ?>forum/saklar_komentar",
+                    method: "POST",
+                    data: {
+                        id_forum: id_forum,
+                        komentar_active: 0
+                    },
+                    success: function(resp) {
+                        self.removeClass('d-none');
+                        self_find.find('#label_saklar_3').addClass('me-3');
+                        self_find.find('#spinner_saklar_3').addClass('d-none');
+                        Custom.fire({
+                            icon: 'success',
+                            title: 'Komentar Dinonaktifkan'
                         });
                     },
                     error: function() {
@@ -199,5 +319,7 @@
         });
 
         saklar_forum();
+        saklar_tanya();
+        saklar_komentar();
     });
 </script>
