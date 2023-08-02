@@ -39,6 +39,10 @@
     <link href="<?= base_url('assets'); ?>/css/cropper.css" rel="stylesheet" />
     <script src="<?= base_url('assets'); ?>/js/cropper.js"></script>
 
+    <!-- Magnific Popup -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" integrity="sha512-+EoPw+Fiwh6eSeRK7zwIKG2MA8i3rV/DGa3tdttQGgWyatG/SkncT53KHQaS5Jh9MNOT3dmFL0FjTY08And/Cw==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+    <link href="<?= base_url('assets'); ?>/css/magnific-popup.css" rel="stylesheet">
+
     <!-- Custom -->
     <link href="<?= base_url('assets'); ?>/css/custom-all.css" rel="stylesheet">
 </head>

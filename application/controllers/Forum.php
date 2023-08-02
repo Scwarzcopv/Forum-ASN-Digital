@@ -11,6 +11,7 @@ class Forum extends CI_Controller
         $this->load->model('Sidebar_model', 'sidebar');
         $this->load->model('InfiniteScroll_model', 'iscroll');
         $this->load->model('Forum_model', 'forum');
+        $this->load->model('Time_model', 'time');
         is_log_in();
         // Get data 'user'
         $this->data = array(
@@ -89,18 +90,23 @@ class Forum extends CI_Controller
 
 
 
-    public function forum_diskusi($id_form)
+    public function forum_diskusi($id_forum)
     {
         // Session
         $data['user'] = $this->data['user'];
         // Cek Akses
-        $this->forum->cek_forum_access($id_form, $data['user']['id']);
+        $this->forum->cek_forum_access($id_forum, $data['user']['id']);
         // Title
         $data['title'] = 'Forum';
         // Active Sidebar
         $data['sidebar'] = 'Forum';
         // Judul Sidebar
         $data['role'] = $this->sidebar->sidebar($this->role);
+        // Get Foto Dokumentasi
+        $data['foto_dokumentasi'] = $this->forum->foto_dokumentasi($id_forum)->result_array();
+        $data['info_notulen'] = $this->forum->info_notulen($id_forum)->row_array();
+        $data['info_notulen']['tgl_selesai'] = strtotime($data['info_notulen']['tgl_selesai']);
+        $data['info_notulen']['tgl_selesai'] = $this->time->getTimeSince($data['info_notulen']['tgl_selesai']) . ' (' . $this->time->getTimeAgo($data['info_notulen']['tgl_selesai']) . ')';
 
         // Load View
         $this->load->view('templates/header', $data);

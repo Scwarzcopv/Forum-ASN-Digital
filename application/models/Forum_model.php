@@ -32,4 +32,23 @@ class Forum_model extends CI_Model
             }
         }
     }
+    function foto_dokumentasi($id_forum)
+    {
+        $this->db->select('*');
+        $this->db->from('notulen_foto');
+        $this->db->where('rapat', $id_forum);
+        $this->db->where('_active', 1);
+        $result = $this->db->get();
+        return $result;
+    }
+    function info_notulen($id_forum)
+    {
+        // ['id_notulen a', '* b']
+        $this->db->select('*');
+        $this->db->from('forum a');
+        $this->db->where('a.id', $id_forum);
+        $this->db->join('notulen_hasil_rapat b', 'a.id_notulen = b.id', 'left');
+        $result = $this->db->get();
+        return $result;
+    }
 }

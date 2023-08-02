@@ -1,31 +1,7 @@
-<style>
-    .img-carrousel {
-        height: 200px;
-        object-fit: cover;
-    }
-
-    .transition-02 {
-        -webkit-transition: all 0.2s ease-in-out;
-        -moz-transition: all 0.2s ease-in-out;
-        -o-transition: all 0.2s ease-in-out;
-        transition: all 0.2s ease-in-out;
-    }
-
-    .transition-05 {
-        -webkit-transition: all 0.5s ease-in-out;
-        -moz-transition: all 0.5s ease-in-out;
-        -o-transition: all 0.5s ease-in-out;
-        transition: all 0.5s ease-in-out;
-    }
-
-    .modal-body textarea {
-        min-height: 100px !important;
-    }
-</style>
 <main class="content">
     <div class="container-fluid p-0">
         <div class="row  justify-content-end">
-            <span class="show_hide text-secondary mb-2 user-select-none" style="cursor: pointer;"><i class="fa-solid fa-circle-chevron-up transition-05"></i><span id="show_hide"> Tampilkan</span> Informasi Kegiatan</span>
+            <span class="show_hide text-secondary mb-2 user-select-none" style="cursor: pointer;"><i class="fa-solid fa-circle-chevron-down transition-05"></i> Tampilkan Informasi Kegiatan</span>
             <div class="col-12 col-sm-5 col-lg-4" id="detail_kegiatan">
                 <div class="card mb-3">
                     <div class="card-header">
@@ -34,32 +10,32 @@
                         </h5>
                     </div>
                     <div class="card-body text-center">
-                        <div id="carouselExampleCaptions" class="carousel carousel-dark slide" data-bs-ride="carousel">
-                            <div class="carousel-inner">
-                                <div class="carousel-item active" data-bs-interval="7000">
-                                    <img src="img/dokumentasi/dokumentasi1.jpeg" alt="Dokumentasi" class="thumbnails img-fluid mb-2 w-100 img-carrousel rounded-4 px-1" data-large="img/dokumentasi/dokumentasi1.jpeg" />
+                        <?php if (!empty($foto_dokumentasi)) : ?>
+                            <div id="carousel_foto_dokumentasi" class="carousel carousel-dark slide carousel-fade" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <?php foreach ($foto_dokumentasi as $index => $img) : ?>
+                                        <?php $path = base_url('assets/img/photos/' . $img['path'] . ''); ?>
+                                        <div class="carousel-item <?php if ($index == 0) echo 'active'; ?>" data-bs-interval="5000">
+                                            <!-- <div class="magnific-img"> -->
+                                            <span class="image-popup" href="<?= $path; ?>">
+                                                <img src="<?= $path; ?>" alt="Dokumentasi" class="img-fluid mb-2 w-100 img-carrousel rounded-4 px-1" />
+                                            </span>
+                                            <!-- </div> -->
+                                        </div>
+                                    <?php endforeach; ?>
                                 </div>
-                                <div class="carousel-item" data-bs-interval="7000">
-                                    <img src="img/dokumentasi/dokumentasi2.jpeg" alt="Dokumentasi" class="thumbnails img-fluid mb-2 w-100 img-carrousel rounded-4 px-1" data-large="img/dokumentasi/dokumentasi2.jpeg" />
-                                </div>
-                                <div class="carousel-item" data-bs-interval="7000">
-                                    <img src="img/dokumentasi/dokumentasi3.jpeg" alt="Dokumentasi" class="thumbnails img-fluid mb-2 w-100 img-carrousel rounded-4 px-1" data-large="img/dokumentasi/dokumentasi3.jpeg" />
-                                </div>
-                                <div class="carousel-item" data-bs-interval="7000">
-                                    <img src="img/dokumentasi/dokumentasi4.jpeg" alt="Dokumentasi" class="thumbnails img-fluid mb-2 w-100 img-carrousel rounded-4 px-1" data-large="img/dokumentasi/dokumentasi4.jpeg" />
-                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel_foto_dokumentasi" data-bs-slide="prev">
+                                    <span class="" aria-hidden="true"><i class="fa-solid fa-circle-chevron-left fa-lg"></i></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel_foto_dokumentasi" data-bs-slide="next">
+                                    <span class="" aria-hidden="true"><i class="fa-solid fa-circle-chevron-right fa-lg"></i></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
                             </div>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-                                <span class="" aria-hidden="true"><i class="fa-solid fa-circle-chevron-left fa-lg"></i></span>
-                                <span class="visually-hidden">Previous</span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-                                <span class="" aria-hidden="true"><i class="fa-solid fa-circle-chevron-right fa-lg"></i></span>
-                                <span class="visually-hidden">Next</span>
-                            </button>
-                        </div>
-                        <h5 class="card-title mb-0">Cek Kesehatan</h5>
-                        <div class="text-muted mb-2">Kadin OPD Uji Coba 1</div>
+                        <?php endif; ?>
+                        <h5 class="card-title mb-0"><?= $info_notulen['agenda_rapat']; ?></h5>
+                        <div class="text-muted mb-2"><?= $info_notulen['pimpinan_rapat']; ?></div>
                     </div>
                     <hr class="my-0" />
                     <div class="card-body">
@@ -67,15 +43,15 @@
                         <table class="text-break">
                             <tr class="align-baseline">
                                 <td class="pe-2"><i class="fa-solid fa-calendar-check"></i></td>
-                                <td>Kamis, 20 Juli 2023</td>
+                                <td><?= $info_notulen['tgl_selesai']; ?></td>
                             </tr>
                             <tr class="align-baseline">
                                 <td><i class="fa-solid fa-envelope-open-text"></i></td>
-                                <td>005/535/000.000/2023</td>
+                                <td><?= $info_notulen['no_surat']; ?></td>
                             </tr>
                             <tr class="align-baseline">
                                 <td><i class="fa-solid fa-location-dot"></i></td>
-                                <td>Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia inventore soluta ipsa magni modi quos pariatur assumenda amet, cum accusantium? Minus voluptate asperiores odio a quibusdam perspiciatis assumenda eaque alias!</td>
+                                <td><?= $info_notulen['tempat_rapat']; ?></td>
                             </tr>
                         </table>
                     </div>
@@ -84,10 +60,13 @@
             </div>
             <div class="col-12 col-sm-7 col-lg-8 transition-02" id="pertanyaan">
                 <div class="card">
-                    <div class="card-header d-flex">
+                    <div class="card-header d-flex align-items-center align-items-sm-start">
                         <h5 class="card-title mb-0">Pertanyaan</h5>
                         <!-- Button trigger modal Tambah Pertanyaan -->
-                        <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#modalTambahPertanyaan"><i class="fa-solid fa-plus"></i> Tambah Pertanyaan</button>
+                        <div class="ms-auto">
+                            <button type="button" class="btn btn-primary ms-auto btn-sm d-block d-md-none" data-bs-toggle="modal" data-bs-target="#modalTambahPertanyaan"><i class="fa-solid fa-plus"></i> Pertanyaan</button>
+                            <button type="button" class="btn btn-primary ms-auto d-none d-md-block" data-bs-toggle="modal" data-bs-target="#modalTambahPertanyaan"><i class="fa-solid fa-plus"></i> Tambah Pertanyaan</button>
+                        </div>
                     </div>
                     <div class="card-body h-100">
                         <!-- Modal -->
@@ -141,7 +120,7 @@
                                 </div>
                                 <a href="#" class="btn btn-lg rounded mt-1 mb-3 px-2"><i class="fa-solid fa-thumbs-up"></i><span class="ps-2">1</span></a>
                                 <a class="btn btn-lg mt-1 mb-3 px-1" id="tampil_balas"><i class="fa-solid fa-reply"></i> Balas</a>
-                                <a class="btn btn-lg mt-1 mb-3 px-1" id="tampil_balasan"><i class="fa-solid fa-chevron-down" id="chevron_down" style="transition: all 0.5s;"></i> Tampilkan Balasan</a>
+                                <a class="btn btn-lg mt-1 mb-3 px-1" id="tampil_balasan"><i class="fa-solid fa-chevron-right" id="chevron_right" style="transition: all 0.5s;"></i> Tampilkan Balasan</a>
                                 <a href="#" class="btn btn-sm btn-outline-danger mt-1 mb-3 float-end rounded"><i class="fa-solid fa-trash-can"></i> Hapus</a>
 
                                 <!-- FORM REPLY -->
@@ -317,33 +296,29 @@
 <?= $this->session->flashdata('message'); ?>
 <script>
     $(document).ready(function() {
-        function tippyjs(id, content) {
-            tippy('#' + id, {
-                placement: 'bottom-end',
-                allowHTML: true,
-                delay: [700, 0],
-                content: content,
-            });
-        }
-        tippyjs('notulen-pdf', 'Preview Notulen');
-        tippyjs('notulen-peserta', 'Lihat Perserta');
-
-        var position = 0;
         $('#tampil_balasan').on('click', function() {
             if (!$('#balasan').is(':animated')) {
-                position += 180;
-                $('#chevron_down').css({
-                    '-webkit-transform': 'rotate(' + position + 'deg)',
-                    '-moz-transform': 'rotate(' + position + 'deg)',
-                    '-o-transform': 'rotate(' + position + 'deg)',
-                    '-ms-transform': 'rotate(' + position + 'deg)',
-                    'transform': 'rotate(' + position + 'deg)'
-                });
+                var position = 0;
                 if ($('#balasan').is(':visible')) {
+                    $('#chevron_right').css({
+                        '-webkit-transform': 'rotate(' + position + 'deg)',
+                        '-moz-transform': 'rotate(' + position + 'deg)',
+                        '-o-transform': 'rotate(' + position + 'deg)',
+                        '-ms-transform': 'rotate(' + position + 'deg)',
+                        'transform': 'rotate(' + position + 'deg)'
+                    });
                     $('#balas').slideUp(500);
                     $('#balasan').slideUp(500);
                     $('#input_komentar').blur();
                 } else {
+                    position += 90;
+                    $('#chevron_right').css({
+                        '-webkit-transform': 'rotate(' + position + 'deg)',
+                        '-moz-transform': 'rotate(' + position + 'deg)',
+                        '-o-transform': 'rotate(' + position + 'deg)',
+                        '-ms-transform': 'rotate(' + position + 'deg)',
+                        'transform': 'rotate(' + position + 'deg)'
+                    });
                     $('#balasan').removeClass('d-none').slideUp(0).slideDown(500);
                     $('#input_komentar').blur();
                 }
@@ -370,25 +345,32 @@
             }
         })
 
-        var position2 = 0;
         $('.show_hide').on('click', function() {
             if (!$('#detail_kegiatan').is(':animated')) {
+                var position2 = 0;
                 // var col = $('#pertanyaan').attr('class').split(' ');
-                position2 += 180;
-                $('.fa-circle-chevron-up').css({
-                    '-webkit-transform': 'rotate(' + position2 + 'deg)',
-                    '-moz-transform': 'rotate(' + position2 + 'deg)',
-                    '-o-transform': 'rotate(' + position2 + 'deg)',
-                    '-ms-transform': 'rotate(' + position2 + 'deg)',
-                    'transform': 'rotate(' + position2 + 'deg)'
-                });
                 if ($('#detail_kegiatan').is(':visible')) {
+                    position2 -= 90;
+                    $('.fa-circle-chevron-down').css({
+                        '-webkit-transform': 'rotate(' + position2 + 'deg)',
+                        '-moz-transform': 'rotate(' + position2 + 'deg)',
+                        '-o-transform': 'rotate(' + position2 + 'deg)',
+                        '-ms-transform': 'rotate(' + position2 + 'deg)',
+                        'transform': 'rotate(' + position2 + 'deg)'
+                    });
                     $('#detail_kegiatan').slideUp(300);
                     // $('#show_hide').html(' Tampilkan');
                     setTimeout(function() {
                         $('#pertanyaan').removeClass("col-sm-7 col-lg-8");
                     }, 300);
                 } else {
+                    $('.fa-circle-chevron-down').css({
+                        '-webkit-transform': 'rotate(' + position2 + 'deg)',
+                        '-moz-transform': 'rotate(' + position2 + 'deg)',
+                        '-o-transform': 'rotate(' + position2 + 'deg)',
+                        '-ms-transform': 'rotate(' + position2 + 'deg)',
+                        'transform': 'rotate(' + position2 + 'deg)'
+                    });
                     $('#pertanyaan').addClass("col-sm-7 col-lg-8");
                     // $('#show_hide').html(' Sembunyikan');
                     setTimeout(function() {
@@ -418,5 +400,20 @@
             $('#input_pertanyaan').focus();
         });
 
+        $('.image-popup').magnificPopup({
+            type: 'image',
+            mainClass: 'mfp-with-zoom',
+            gallery: {
+                enabled: true
+            },
+            zoom: {
+                enabled: true,
+                duration: 300,
+                easing: 'ease-in-out',
+                opener: function(openerElement) {
+                    return openerElement.is('img') ? openerElement : openerElement.find('img');
+                }
+            }
+        });
     });
 </script>
