@@ -24,6 +24,9 @@
     <!-- Template -->
     <link href="<?= base_url('assets'); ?>/css/light.css" rel="stylesheet">
 
+    <!-- Font Awsome -->
+    <link href="<?= base_url('assets/plugins/font-awesome-pro-5/css/all.min.css'); ?>" rel="stylesheet">
+
     <!-- SweetAlert2 -->
     <script src="<?= base_url('assets'); ?>/js/sweetalert2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -38,6 +41,10 @@
     <!-- CropperJs -->
     <link href="<?= base_url('assets'); ?>/css/cropper.css" rel="stylesheet" />
     <script src="<?= base_url('assets'); ?>/js/cropper.js"></script>
+
+    <!-- SlickJs -->
+    <link href="<?= base_url('assets/plugins/slick/slick.css'); ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/plugins/slick/slick-theme.css'); ?>" rel="stylesheet">
 
     <!-- Magnific Popup -->
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" integrity="sha512-+EoPw+Fiwh6eSeRK7zwIKG2MA8i3rV/DGa3tdttQGgWyatG/SkncT53KHQaS5Jh9MNOT3dmFL0FjTY08And/Cw==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->

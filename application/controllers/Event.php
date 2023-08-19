@@ -40,6 +40,7 @@ class Event extends CI_Controller
     {
         if (!$this->input->post('limit')) redirect('event');
         $output = '';
+        $next = 'false';
         $limit = $this->input->post('limit');
         $start = $this->input->post('start');
         $id_user = $this->data['user']['id'];
@@ -62,6 +63,9 @@ class Event extends CI_Controller
         } else {
             $output = 'null';
         }
-        echo json_encode(['data' => $output, 'num_rows' => $num_rows_2]);
+        // Buat cek apakah masih ada data selanjutnya
+        $data_next =  $this->iscroll->notulen_peserta($limit + 1, $start, $id_user, $keyword, $order);
+        if ($data_next['num_rows_3'] != $data['num_rows_3']) $next = 'true';
+        echo json_encode(['data' => $output, 'num_rows' => $num_rows_2, 'next' => $next]);
     }
 }

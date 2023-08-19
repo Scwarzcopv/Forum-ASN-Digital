@@ -75,31 +75,9 @@
 <!-- Tutup elemen dari topbar.php -->
 </div>
 <?= $this->session->flashdata('message'); ?>
-<script>
-    function detail_modal() {
-        $(document).delegate("#triggerModal", "click", function() {
-            // var data = $(this).attr('data-id');
-            var dataArray = $(this).closest(".closest").find("input[type=text]").serializeArray(),
-                data = {};
-            $(dataArray).each(function(i, field) {
-                data[field.name] = field.value;
-            });
-            $("#detailModal .modal-body #no_surat_modal").html(data['no_surat']);
-            $("#detailModal .modal-body #agenda_rapat_modal").html(data['agenda_rapat']);
-            $("#detailModal .modal-body #penyelenggara_modal").html(data['penyelenggara']);
-            $("#detailModal .modal-body #pimpinan_rapat_modal").html(data['pimpinan_rapat']);
-            $("#detailModal .modal-body #mulai_rapat_modal").html(data['mulai_rapat']);
-            $("#detailModal").modal('show');
-        });
-        $('#detailModal').on('hidden.bs.modal', function() {
-            $("#detailModal .modal-body #no_surat_modal").html('-');
-            $("#detailModal .modal-body #agenda_rapat_modal").html('-');
-            $("#detailModal .modal-body #penyelenggara_modal").html('-');
-            $("#detailModal .modal-body #pimpinan_rapat_modal").html('-');
-            $("#detailModal .modal-body #mulai_rapat_modal").html('-');
-        });
-    }
 
+<!-- Infinite Scroll -->
+<script>
     $(document).ready(function() {
         var data_elem = [];
         var limit = 7;
@@ -158,9 +136,14 @@
                     } else {
                         // data_elem.push(data);
                         // $('#load_data').html(data_elem);
-                        $('#load_data').append(resp.data); // append sesat syalan
-                        $('#load_data_message').html("");
-                        action = 'inactive';
+                        $('#load_data').append(resp.data);
+                        if (resp.next == 'true') {
+                            $('#load_data_message').html("");
+                            action = 'inactive';
+                        } else {
+                            $('#load_data_message').html('<div class="fw-bold text-center card-title fs-4 mt-3 mb-3 mb-lg-0">Tidak Ada Lagi Hasil yang Ditemukan</div>');
+                            action = 'active'
+                        }
                     }
                 }
             })
@@ -181,7 +164,37 @@
                 }, 1000); //Buat animasi doang
             }
         });
+    });
+</script>
 
+<!-- Olah Data -->
+<script>
+    function detail_modal() {
+        $(document).delegate("#triggerModal", "click", function() {
+            // var data = $(this).attr('data-id');
+            var dataArray = $(this).closest(".closest").find("input[type=text]").serializeArray(),
+                data = {};
+            $(dataArray).each(function(i, field) {
+                data[field.name] = field.value;
+            });
+            $("#detailModal .modal-body #no_surat_modal").html(data['no_surat']);
+            $("#detailModal .modal-body #agenda_rapat_modal").html(data['agenda_rapat']);
+            $("#detailModal .modal-body #penyelenggara_modal").html(data['penyelenggara']);
+            $("#detailModal .modal-body #pimpinan_rapat_modal").html(data['pimpinan_rapat']);
+            $("#detailModal .modal-body #mulai_rapat_modal").html(data['mulai_rapat']);
+            $("#detailModal").modal('show');
+        });
+        $('#detailModal').on('hidden.bs.modal', function() {
+            $("#detailModal .modal-body #no_surat_modal").html('-');
+            $("#detailModal .modal-body #agenda_rapat_modal").html('-');
+            $("#detailModal .modal-body #penyelenggara_modal").html('-');
+            $("#detailModal .modal-body #pimpinan_rapat_modal").html('-');
+            $("#detailModal .modal-body #mulai_rapat_modal").html('-');
+        });
+    }
+
+    $(document).ready(function() {
+        // Search
         var timeout = null;
         $('#keyword').on('input', function() {
             $('#load_data').empty();

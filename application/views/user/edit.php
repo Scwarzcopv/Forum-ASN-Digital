@@ -69,7 +69,7 @@
                                         </div>
                                     </div> -->
                                     <div class="mb-3">
-                                        <label class="form-label" for="name">Name</label>
+                                        <label class="form-label" for="name">Name (Maks. 20 karakter)</label>
                                         <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="<?= $user['name']; ?>">
                                         <?= form_error('name', '<small class="text-danger">', '</small>'); ?>
                                     </div>

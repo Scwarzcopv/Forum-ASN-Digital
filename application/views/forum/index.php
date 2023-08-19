@@ -32,6 +32,26 @@
 <script src="<?= base_url('assets'); ?>/js/customsweetalert.js"></script>
 <?= $this->session->flashdata('message'); ?>
 <script>
+    // Get *this data
+    function self_data_self(self) {
+        var dataArray = self.find('article input[type=text]').serializeArray(),
+            data = {};
+        $(dataArray).each(function(i, field) {
+            data[field.name] = field.value;
+        });
+        return data;
+    }
+
+    function self_data(self) {
+        var dataArray = self.parent().closest('.closest').find('article input[type=text]').serializeArray(),
+            data = {};
+        $(dataArray).each(function(i, field) {
+            data[field.name] = field.value;
+        });
+        return data;
+    }
+
+
     function saklar_forum() {
         $(document).delegate("input[type=checkbox][name=active_forum]", "change", function() {
             var self = $(this);
@@ -59,7 +79,7 @@
                         self_find.find('#spinner_saklar_1').addClass('d-none');
                         Custom.fire({
                             icon: 'success',
-                            title: 'Forum Telah Aktif'
+                            title: 'Forum Diaktifkan'
                         });
                     },
                     error: function() {
@@ -119,7 +139,7 @@
                         self_find.find('#spinner_saklar_2').addClass('d-none');
                         Custom.fire({
                             icon: 'success',
-                            title: 'Pertanyaan Telah Aktif'
+                            title: 'Pertanyaan Diaktifkan'
                         });
                     },
                     error: function() {
@@ -179,7 +199,7 @@
                         self_find.find('#spinner_saklar_3').addClass('d-none');
                         Custom.fire({
                             icon: 'success',
-                            title: 'Komentar Telah Aktif'
+                            title: 'Komentar Diaktifkan'
                         });
                     },
                     error: function() {
@@ -212,7 +232,25 @@
         });
     }
 
+    function article() {
+        $(document).delegate(".card-button", "mousedown", function(event) {
+            var self = $(this);
+            var data = self_data_self(self);
+            var id_forum = data['id_forum'];
+            var x = event.pageX;
+            var y = event.pageY;
+            console.log(x, y);
+            $(this).on("mouseup", function(event) {
+                if (event.pageX == x && event.pageY == y) {
+                    window.open("<?= base_url('forum/forum_diskusi/'); ?>" + id_forum);
+                }
+            })
+
+        });
+    }
+
     $(document).ready(function() {
+        article();
         var limit = 7;
         var start = 0;
         var action = 'inactive';

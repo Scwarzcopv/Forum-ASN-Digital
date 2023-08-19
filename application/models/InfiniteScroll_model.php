@@ -143,4 +143,71 @@ class InfiniteScroll_model extends CI_Model
             return $query;
         }
     }
+
+    function forum_diskusi($limit, $start, $id_forum)
+    {
+        // Total Seluruh Data
+        $this->db->select(
+            [
+                // Tabel Forum Pertanyaan
+                'a.id AS id_fp', 'a.id_forum', 'a.id_user_tanya', 'a.isi_pertanyaan', 'a.created_at AS created_at_fp', 'a.valid', 'a.id_admin', 'a.isi_jawaban', 'a.answered_at', 'a.updated_at AS updated_at_fp', 'a.total_like AS total_like_fp', 'a.total_like_jawaban',
+                // Tabel Forum
+                'b.*',
+                // Tabel Forum Komen
+                // 'c.*'
+            ]
+        );
+        $this->db->from('forum_pertanyaan a');
+        $this->db->join('forum b', 'a.id_forum = b.id', 'left');
+        // $this->db->join('forum_comment c', 'a.id_forum = c.id_forum', 'left');
+        $this->db->where('a.id_forum', $id_forum);
+        $this->db->where('a.valid', 1);
+        $query['1'] = $this->db->get();
+        $query['num_rows_1'] = $query['1']->num_rows();
+        // Total Data Limit
+        $this->db->select(
+            [
+                // Tabel Forum Pertanyaan
+                'a.id AS id_fp', 'a.id_forum', 'a.id_user_tanya', 'a.isi_pertanyaan', 'a.created_at AS created_at_fp', 'a.valid', 'a.id_admin', 'a.isi_jawaban', 'a.answered_at', 'a.updated_at AS updated_at_fp', 'a.total_like AS total_like_fp', 'a.total_like_jawaban',
+                // Tabel Forum
+                'b.*',
+                // Tabel Forum Komen
+                // 'c.*'
+            ]
+        );
+        $this->db->from('forum_pertanyaan a');
+        $this->db->join('forum b', 'a.id_forum = b.id', 'left');
+        // $this->db->join('forum_comment c', 'a.id_forum = c.id_forum', 'left');
+        $this->db->where('a.id_forum', $id_forum);
+        $this->db->where('a.valid', 1);
+        $this->db->order_by('a.total_like', 'DESC');
+        $this->db->limit($limit, $start);
+        $query['2'] = $this->db->get();
+        $query['num_rows_2'] = $query['2']->num_rows();
+        return $query;
+    }
+
+    function data_komentar($limit, $start, $id_forum, $id_forum_pertanyaan)
+    {
+        // Total Seluruh Data
+        $this->db->select('*');
+        $this->db->from('forum_comment');
+        $this->db->where('id_forum', $id_forum);
+        $this->db->where('id_forum_pertanyaan', $id_forum_pertanyaan);
+        $this->db->order_by('id', 'ASC');
+        $query['1'] = $this->db->get();
+        $query['num_rows_1'] = $query['1']->num_rows();
+
+        // Total Data Limit
+        $this->db->select('*');
+        $this->db->from('forum_comment');
+        $this->db->where('id_forum', $id_forum);
+        $this->db->where('id_forum_pertanyaan', $id_forum_pertanyaan);
+        $this->db->order_by('id', 'ASC');
+        $this->db->limit($limit, $start);
+        $query['2'] = $this->db->get();
+        $query['num_rows_2'] = $query['2']->num_rows();
+
+        return $query;
+    }
 }

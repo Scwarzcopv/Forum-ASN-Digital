@@ -7,7 +7,10 @@ class Login extends CI_Controller
     {
         parent::__construct();
         $this->load->model('SweetAlert2_model', 'sa2');
-        // $this->load->library('form_validation');
+        // $this->load->library('form_validation');        // Get data 'user'
+        $this->data = array(
+            "user" => $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array(),
+        );
     }
     public function index()
     {
@@ -69,7 +72,7 @@ class Login extends CI_Controller
     public function logout()
     {
         if ($this->session->userdata('username')) {
-            $name = $this->session->userdata('name');
+            $name = $this->data['user']['name'];
             $this->sa2->sweetAlert2Toast('Selamat tinggal<br>' . $name, 'success');
             $this->session->unset_userdata('name');
             $this->session->unset_userdata('username');

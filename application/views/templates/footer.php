@@ -26,12 +26,7 @@ Tutup elemen dari topbar.php
 </div>
 -->
 </div>
-<script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
-<script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
-<script src="<?= base_url('assets'); ?>/js/app.js"></script>
-<script src="<?= base_url('assets'); ?>/js/datatables.js"></script>
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="assets/plugins/jquery/jquery.min.js"></script>
+<!-- <script src="assets/plugins/jquery/jquery.min.js"></script>
 <script src="assets/plugins/jquery-ui/jquery-ui.min.js"></script>
 <script src="assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="assets/plugins/select2/js/select2.full.min.js"></script>
@@ -53,12 +48,18 @@ Tutup elemen dari topbar.php
 <script src="assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 <script src="assets/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script type='text/javascript' src='assets/plugins/ckeditor/ckeditor.js'></script> -->
+
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js" integrity="sha512-IsNh5E3eYy3tr/JiX2Yx4vsCujtkhwl7SLqgnwLNgf04Hrt9BT9SXlLlZlWx+OK4ndzAoALhsMNcCmkggjZB1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
 <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
 <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
-<script type='text/javascript' src='assets/plugins/ckeditor/ckeditor.js'></script>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js" integrity="sha512-IsNh5E3eYy3tr/JiX2Yx4vsCujtkhwl7SLqgnwLNgf04Hrt9BT9SXlLlZlWx+OK4ndzAoALhsMNcCmkggjZB1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+<script src="<?= base_url('assets'); ?>/js/app.js"></script>
+<script src="<?= base_url('assets'); ?>/js/datatables.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="<?= base_url('assets'); ?>/js/jquery.magnific-popup.js"></script>
 <script src="<?= base_url('assets'); ?>/js/jquery.magnific-popup.min.js"></script>
+<script src="<?= base_url('assets/plugins/slick/slick.min.js'); ?>"></script>
+<script src="<?= base_url('assets/plugins/font-awesome-pro-5/js/pro.min.js'); ?>"></script>
 </body>
 
 </html>
