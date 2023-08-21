@@ -60,6 +60,8 @@ Tutup elemen dari topbar.php
 <script src="<?= base_url('assets'); ?>/js/jquery.magnific-popup.min.js"></script>
 <script src="<?= base_url('assets/plugins/slick/slick.min.js'); ?>"></script>
 <script src="<?= base_url('assets/plugins/font-awesome-pro-5/js/pro.min.js'); ?>"></script>
+<script src="<?= base_url('assets/plugins/jquery.easing/jquery.easing.js'); ?>"></script>
+<script src="<?= base_url('assets/plugins/jquery.easing/jquery.easing.compatibility.js'); ?>"></script>
 </body>
 
 </html>

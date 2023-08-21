@@ -158,6 +158,7 @@ $tanya_active = 'disabled';
             prevArrow: '<span class="slick-prev text-white position-absolute top-50 translate-middle-y w-auto h-100 d-flex align-items-center"><i class="fa-solid fa-circle-chevron-left"></i></span>',
             nextArrow: '<span class="slick-next text-white position-absolute top-50 translate-middle-y w-auto h-100 d-flex align-items-center"><i class="fa-solid fa-circle-chevron-right"></i></span>',
         });
+        parent_slick.removeClass('d-none').hide(0).slideDown(1000, 'easeInOutBack');
         slick.on('wheel', (function(e) {
             e.preventDefault();
             if (e.originalEvent.deltaY < 0) {
@@ -166,31 +167,29 @@ $tanya_active = 'disabled';
                 $(this).slick('slickPrev');
             }
         }));
-        parent_slick.removeClass('d-none').slideUp(0).slideDown(650);
     }
 
     function func_slick_sidebar_toggle(parent_slick) {
         var parent_slick = $(parent_slick);
         $('.sidebar-toggle').on('click', function() {
             if ($('#detail_kegiatan').is(':visible')) {
-                parent_slick.fadeOut(350);
-                setTimeout(function() {
+                $('.slick').slick('refresh');
+                parent_slick.slideUp(350, 'easeInOutExpo', function() {
                     $('.slick').slick('refresh');
-                    parent_slick.slideDown(250);
-                }, 350);
+                    parent_slick.slideDown(1000, 'easeInOutBack');
+                });
             }
         });
     }
 
     function func_slick_show_hide(parent_slick) {
-        var parent_slick = $(parent_slick);
         $('.show_hide').on('click', function() {
             if (!$('#detail_kegiatan').is(':visible')) {
-                parent_slick.hide(0);
+                $(parent_slick).hide(0);
                 setTimeout(function() {
                     $('.slick').slick('refresh');
-                    parent_slick.fadeIn(350);
-                }, 350);
+                    $(parent_slick).fadeIn(350);
+                }, 300);
             }
         });
     }
@@ -316,11 +315,10 @@ $tanya_active = 'disabled';
                         $('#load_data_message').html('<div class="fw-bold text-center card-title fs-4 mt-3 mb-3 mb-lg-0">Tidak Ada Lagi Hasil yang Ditemukan</div>');
                         action = 'active';
                     } else {
-                        $(resp.data).appendTo('#load_data').slideUp(0).slideDown(500);
-                        setTimeout(function() {
+                        $(resp.data).appendTo('#load_data').slideUp(0).slideDown(1000, 'easeOutBounce', function() {
                             func_baca_lengkap();
                             func_baca_lengkap_hide();
-                        }, 300)
+                        });
                         if (resp.next == 'true') {
                             show_more_pertanyaan();
                             action = 'inactive';
@@ -381,7 +379,7 @@ $tanya_active = 'disabled';
                         '-ms-transform': 'rotate(' + position2 + 'deg)',
                         'transform': 'rotate(' + position2 + 'deg)'
                     });
-                    $('#detail_kegiatan').slideUp(300, function() {
+                    $('#detail_kegiatan').slideUp(500, 'easeOutExpo', function() {
                         $('#pertanyaan').removeClass("col-sm-7 col-lg-8");
                         setTimeout(function() {
                             func_baca_lengkap();
@@ -399,7 +397,7 @@ $tanya_active = 'disabled';
                     $('#pertanyaan').addClass("col-sm-7 col-lg-8");
                     // $('#show_hide').html(' Sembunyikan');
                     setTimeout(function() {
-                        $('#detail_kegiatan').slideDown(300, function() {
+                        $('#detail_kegiatan').slideDown(300, 'easeInExpo', function() {
                             func_baca_lengkap_hide();
                         });
                     }, 300);
@@ -479,7 +477,9 @@ $tanya_active = 'disabled';
         return output;
     }
     // Material Infinite Scroll Komentar - Load data
-    function load_data_komentar(data, isi_balasan, total_komentar, loader_komentar, position = '', chevron_right_komentar = '', slide = 500, overwrite = false) {
+    function load_data_komentar(data, isi_balasan, total_komentar, loader_komentar, position = '', chevron_right_komentar = '', slide = 1000, overwrite = false) {
+        var timeout = 0;
+        (slide === 0) ? (timeout = 0) : (timeout = 800);
         $.ajax({
             url: "<?php echo base_url(); ?>forum/fetch_forum_diskusi_komentar",
             method: "POST",
@@ -502,11 +502,11 @@ $tanya_active = 'disabled';
                 } else {
                     if (overwrite == false) {
                         if (resp.next == 'true') {
-                            $(resp.data).appendTo($(isi_balasan)).slideUp(0).slideDown(slide);
-                            $(show_more_komentar()).appendTo($(isi_balasan)).slideUp(0).slideDown(slide);
+                            $(resp.data).appendTo($(isi_balasan)).slideUp(0).slideDown(slide, 'easeInOutExpo');
+                            $(show_more_komentar()).appendTo($(isi_balasan)).slideUp(0).slideDown(slide, 'easeInOutExpo');
                         } else {
                             // Tidak Ada Lagi Hasil yang Ditemukan
-                            $(resp.data).appendTo($(isi_balasan)).slideUp(0).slideDown(slide);
+                            $(resp.data).appendTo($(isi_balasan)).slideUp(0).slideDown(slide, 'easeInOutExpo');
                         }
                     } else {
                         if (resp.next == 'true') {
@@ -519,7 +519,7 @@ $tanya_active = 'disabled';
                     setTimeout(function() {
                         func_baca_lengkap();
                         func_baca_lengkap_hide();
-                    }, 200)
+                    }, timeout)
                     $(loader_komentar).empty();
                 }
                 $(total_komentar).html(resp.num_rows);
