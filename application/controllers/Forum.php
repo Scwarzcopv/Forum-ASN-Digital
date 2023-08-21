@@ -352,7 +352,7 @@ class Forum extends CI_Controller
         // Balas Jawaban Pertanyaan
         else if (empty($this->input->post('id_fc')) && !empty($this->input->post('id_user_admin'))) {
             if ($id_parent != null || $id_parent != '') {
-                if (int($id_parent) != $id_user) {
+                if ((int)$id_parent != $id_user) {
                     $data_insert['id_parent'] = $id_parent;
                 }
             }
@@ -361,7 +361,7 @@ class Forum extends CI_Controller
         // Balas Komentar
         else {
             if ($id_parent != null || $id_parent != '') {
-                if (int($id_parent) != $id_user) {
+                if ((int)$id_parent != $id_user) {
                     $data_insert['id_parent'] = $id_parent;
                 }
             }

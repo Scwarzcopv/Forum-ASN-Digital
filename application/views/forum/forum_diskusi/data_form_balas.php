@@ -48,7 +48,7 @@ if ($nama_user_tanya !== null) {
     <div class="flex-grow-1 form-komentar">
         <strong class="text-danger">Anda <?= $fa_check; ?></strong> <span id="parent"> <?= $parent; ?> </span>
         <div class="form-check form-switch form-control-lg user-select-none px-0 pt-0 mt-0 mb-1 <?= $d_none; ?>">
-            <input class="form-check-input ms-0 me-1 switch_balasan" type="checkbox" role="switch" id="switch_balasan_<?= $id_fp; ?>_<?= $id_fc; ?>" value="<?= $fp['id_user_tanya']; ?>" checked name="switch_balasan">
+            <input class="form-check-input ms-0 me-1 switch_balasan" type="checkbox" role="switch" id="switch_balasan_<?= $id_fp; ?>_<?= $id_fc; ?>" value="<?= $id_user_parent['id']; ?>" checked name="switch_balasan">
             <label class="form-check-label mx-0" for="switch_balasan_<?= $id_fp; ?>_<?= $id_fc; ?>"> Show parent</label>
         </div>
         <!-- <small class="text-muted"></small> -->
