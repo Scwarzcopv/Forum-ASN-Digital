@@ -324,6 +324,77 @@ class Forum extends CI_Controller
         }
         echo json_encode(['data' => $output, 'total_komentar' => $data->num_rows()]);
     }
+    function tambah_komentar_forum_diskusi()
+    {
+        if (!$this->input->post('id_fp')) redirect('forum');
+
+        $output = '';
+        $data_insert = array();
+        $id_forum = $this->input->post('id_forum');
+        $id_forum_pertanyaan = $this->input->post('id_fp');
+        $id_user = $this->data['user']['id'];
+        $id_parent = $this->input->post('parent');
+        $isi_comment = $this->input->post('komentar');
+        $data_insert = array(
+            'id_forum' => $id_forum,
+            'id_forum_pertanyaan' => $id_forum_pertanyaan,
+            'id_user' => $id_user,
+            'isi_comment' => $isi_comment,
+        );
+
+        // Balas Pertanyaan
+        if (empty($this->input->post('id_fc')) && empty($this->input->post('id_user_admin'))) {
+            if ($id_parent != null || $id_parent != '') {
+                $data_insert['parent_anonim'] = 1;
+            }
+            $output = $this->forum->tambah_forum_comment_pertanyaan($data_insert);
+        }
+        // Balas Jawaban Pertanyaan
+        else if (empty($this->input->post('id_fc')) && !empty($this->input->post('id_user_admin'))) {
+            if ($id_parent != null || $id_parent != '') {
+                if (int($id_parent) != $id_user) {
+                    $data_insert['id_parent'] = $id_parent;
+                }
+            }
+            $output = $this->forum->tambah_forum_comment_pertanyaan($data_insert);
+        }
+        // Balas Komentar
+        else {
+            if ($id_parent != null || $id_parent != '') {
+                if (int($id_parent) != $id_user) {
+                    $data_insert['id_parent'] = $id_parent;
+                }
+            }
+            $output = $this->forum->tambah_forum_comment_pertanyaan($data_insert);
+        }
+
+        echo json_encode(['result' => $output]);
+    }
+    function update_forum_diskusi()
+    {
+        if (!$this->input->post('id_fp')) redirect('forum');
+
+        $output = '';
+        $data['id_fp'] = $this->input->post('id_fp');
+        $data['id_fc'] = $this->input->post('id_fc');
+        $data['value_input_edit_komentar'] = $this->input->post('value_input_edit_komentar');
+
+        // Edit Jawaban Pertanyaan
+        if (empty($this->input->post('id_fc'))) {
+            $output = $this->forum->update_forum_pertanyaan($data['id_fp'], $data['value_input_edit_komentar']);
+            $time_update = $this->db->select('updated_at')->from('forum_pertanyaan')->where('id', $data['id_fp'])->get()->row_array();
+            $time_update = strtotime($time_update['updated_at']);
+            $time_update = $this->time->getTimeAgo($time_update);
+        }
+        // Edit Komentar
+        else {
+            $output = $this->forum->update_forum_comment($data['id_fc'], $data['value_input_edit_komentar']);
+            $time_update = $this->db->select('updated_at')->from('forum_comment')->where('id', $data['id_fc'])->get()->row_array();
+            $time_update = strtotime($time_update['updated_at']);
+            $time_update = $this->time->getTimeAgo($time_update);
+        }
+        echo json_encode(['result' => $output, 'time_update' => $time_update]);
+    }
 
 
 

@@ -129,10 +129,15 @@ $tanya_active = 'disabled';
 
 <!-- Global Variable -->
 <script>
+    // Editable
+    var min_heght_baca_selengkapnya = 100; //Harus sinkron
+    var grow_baca_selengkapnya = 100;
+    var limit_pertanyaan = 4;
+    var limit_komentar = 10;
+    // Jangan Ganti
     var let_total_pertanyaan = 0;
     var less_total_pertanyaan = 0;
-    var limit_pertanyaan = 4;
-    var limit_komentar = 1;
+    var toggle_sidebar = false;
 </script>
 
 <!-- Slick -->
@@ -279,7 +284,7 @@ $tanya_active = 'disabled';
     function show_more_pertanyaan() {
         var output = '';
         output += '<div class="row mt-2">';
-        output += '<div class="mx-auto d-flex justify-content-center align-items-center pb-2 pb-sm-0 p-0"><button class="btn btn-outline-info border-0 rounded-5 " id="more_pertanyaan"><i class="fad fa-chevron-down"></i> Tampilkan Lebih</button></div>';
+        output += '<div class="mx-auto d-flex justify-content-center align-items-center pb-2 pb-sm-0 p-0"><button class="btn btn-outline-info border-0 rounded-5 " id="more_pertanyaan"><i class="fas fa-caret-circle-down"></i> Tampilkan Lebih</button></div>';
         output += '</div>';
         $('#load_data_message').html(output);
     }
@@ -311,7 +316,11 @@ $tanya_active = 'disabled';
                         $('#load_data_message').html('<div class="fw-bold text-center card-title fs-4 mt-3 mb-3 mb-lg-0">Tidak Ada Lagi Hasil yang Ditemukan</div>');
                         action = 'active';
                     } else {
-                        $('#load_data').append(resp.data);
+                        $(resp.data).appendTo('#load_data').slideUp(0).slideDown(500);
+                        setTimeout(function() {
+                            func_baca_lengkap();
+                            func_baca_lengkap_hide();
+                        }, 300)
                         if (resp.next == 'true') {
                             show_more_pertanyaan();
                             action = 'inactive';
@@ -328,9 +337,13 @@ $tanya_active = 'disabled';
             action = 'active';
             load_data(limit, start, id_forum);
         }
-
+        // $(document).ajaxStop(function() {
+        //     func_baca_lengkap();
+        //     func_baca_lengkap_hide();
+        // });
         $(document).delegate('#more_pertanyaan', 'click', function() {
-            loader(limit);
+            // $('#load_data_message');
+            $('#load_data_message').html(func_loader_spinner()).fadeOut(0).fadeIn();;
             action = 'active';
             start = start + limit;
             setTimeout(function() {
@@ -368,11 +381,13 @@ $tanya_active = 'disabled';
                         '-ms-transform': 'rotate(' + position2 + 'deg)',
                         'transform': 'rotate(' + position2 + 'deg)'
                     });
-                    $('#detail_kegiatan').slideUp(300);
-                    // $('#show_hide').html(' Tampilkan');
-                    setTimeout(function() {
+                    $('#detail_kegiatan').slideUp(300, function() {
                         $('#pertanyaan').removeClass("col-sm-7 col-lg-8");
-                    }, 300);
+                        setTimeout(function() {
+                            func_baca_lengkap();
+                        }, 300);
+                    });
+                    // $('#show_hide').html(' Tampilkan');
                 } else {
                     $('.fa-circle-chevron-down').css({
                         '-webkit-transform': 'rotate(' + position2 + 'deg)',
@@ -384,7 +399,9 @@ $tanya_active = 'disabled';
                     $('#pertanyaan').addClass("col-sm-7 col-lg-8");
                     // $('#show_hide').html(' Sembunyikan');
                     setTimeout(function() {
-                        $('#detail_kegiatan').slideDown(300);
+                        $('#detail_kegiatan').slideDown(300, function() {
+                            func_baca_lengkap_hide();
+                        });
                     }, 300);
                 }
             }
@@ -430,6 +447,97 @@ $tanya_active = 'disabled';
     }
 
     // ================================= Material Trigger ================================
+    function func_loader_spinner() {
+        var output = '';
+        output += '<div class="row">';
+        output += '<div class="d-flex justify-content-center">';
+        output += '<div class="spinner-border text-primary fw-bold fs-2 my-2" role="status">';
+        output += '<span class="visually-hidden">Loading...</span>';
+        output += '</div>';
+        output += '</div>';
+        output += '</div>';
+        return output;
+    }
+
+    function func_loader_spinner_2() {
+        var output = '';
+        output += '<div class="mx-auto my-auto">';
+        output += '<div class="d-flex justify-content-center text-center">';
+        output += '<div class="spinner-border text-primary fw-bold fs-2 mb-2" role="status">';
+        output += '<span class="visually-hidden">Loading...</span>';
+        output += '</div>';
+        output += '</div>';
+        output += '</div>';
+        return output;
+    }
+    // Material Infinite Scroll Komentar - Show btn more
+    function show_more_komentar() {
+        var output = '';
+        output += '<div class="row">';
+        output += '<div class="mx-auto d-flex justify-content-center align-items-center pb-2 pb-sm-0 p-0"><button class="btn btn-outline-info border-0 rounded-5 " id="more_komentar"><i class="fad fa-caret-down fa-lg"></i> Tampilkan Komentar Lebih</button></div>';
+        output += '</div>';
+        return output;
+    }
+    // Material Infinite Scroll Komentar - Load data
+    function load_data_komentar(data, isi_balasan, total_komentar, loader_komentar, position = '', chevron_right_komentar = '', slide = 500, overwrite = false) {
+        $.ajax({
+            url: "<?php echo base_url(); ?>forum/fetch_forum_diskusi_komentar",
+            method: "POST",
+            data: data,
+            dataType: "JSON",
+            cache: false,
+            success: function(resp) {
+                $(chevron_right_komentar).css({
+                    '-webkit-transform': 'rotate(' + position + 'deg)',
+                    '-moz-transform': 'rotate(' + position + 'deg)',
+                    '-o-transform': 'rotate(' + position + 'deg)',
+                    '-ms-transform': 'rotate(' + position + 'deg)',
+                    'transform': 'rotate(' + position + 'deg)'
+                });
+
+                if (resp.data == 'null') {
+                    // Data masih kosong
+                } else if (resp.data == 'null2') {
+                    // Tidak Ada Lagi Hasil yang Ditemukan
+                } else {
+                    if (overwrite == false) {
+                        if (resp.next == 'true') {
+                            $(resp.data).appendTo($(isi_balasan)).slideUp(0).slideDown(slide);
+                            $(show_more_komentar()).appendTo($(isi_balasan)).slideUp(0).slideDown(slide);
+                        } else {
+                            // Tidak Ada Lagi Hasil yang Ditemukan
+                            $(resp.data).appendTo($(isi_balasan)).slideUp(0).slideDown(slide);
+                        }
+                    } else {
+                        if (resp.next == 'true') {
+                            $(isi_balasan).html('').append('<div class="m-2"></div>').append($(resp.data)).append(show_more_komentar());
+                        } else {
+                            // Tidak Ada Lagi Hasil yang Ditemukan
+                            $(isi_balasan).html('').append('<div class="m-2"></div>').append($(resp.data));
+                        }
+                    }
+                    setTimeout(function() {
+                        func_baca_lengkap();
+                        func_baca_lengkap_hide();
+                    }, 200)
+                    $(loader_komentar).empty();
+                }
+                $(total_komentar).html(resp.num_rows);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                $(loader_komentar).empty();
+                console.log(errorThrown);
+                // console.error(this.props.url, status, err.toString());
+                Swal.fire({
+                    icon: 'error',
+                    title: textStatus,
+                    text: errorThrown,
+                });
+            }
+        });
+    }
+
+
     // Self find
     function func_self_find(self, closest) {
         return self.parent().closest(closest);
@@ -442,6 +550,53 @@ $tanya_active = 'disabled';
             data[field.name] = field.value;
         });
         return data;
+    }
+    // Baca selengkapanya 1
+    function func_baca_lengkap() {
+        $('div[id^="isi_komentar"]').each(function() {
+            var self = $(this);
+            var self_find = func_self_find(self, '.closest_isi_komentar');
+            var isi_text_komentar = self_find.find('#isi_text_komentar');
+            var baca_lengkap = self_find.find('#baca_lengkap');
+            var height_cover = parseInt($(isi_text_komentar).css('height').split('px')[0]);
+            var height_isi = parseInt(self.css('height').split('px')[0]);
+            if (height_cover > height_isi) {
+                $(baca_lengkap).html('<a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Lebih sedikit..</a>');
+            } else if (height_cover < height_isi) {
+                $(baca_lengkap).html('<a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Baca selengkapnya..</a>');
+            } else if (height_cover == height_isi) {
+                if (height_cover <= min_heght_baca_selengkapnya) {
+                    $(baca_lengkap).slideUp('fast');
+                } else {
+                    $(baca_lengkap).html('<a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Lebih sedikit..</a>');
+                }
+            }
+        });
+    }
+    //  Baca selengkapanya 2
+    function func_baca_lengkap_hide() {
+        $('div[id^="isi_komentar"]').each(function() {
+            var self = $(this);
+            var self_find = func_self_find(self, '.closest_isi_komentar');
+            var isi_text_komentar = self_find.find('#isi_text_komentar');
+            var baca_lengkap = self_find.find('#baca_lengkap');
+            var height_cover = parseInt($(isi_text_komentar).css('height').split('px')[0]);
+            var height_isi = parseInt(self.css('height').split('px')[0]);
+            if (height_cover > height_isi) {
+                $(baca_lengkap).removeClass('d-none').html('<a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Lebih sedikit..</a>');
+            } else if (height_cover < height_isi) {
+                $(baca_lengkap).html('<a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Baca selengkapnya..</a>').slideDown('fast');
+            } else if (height_cover == height_isi) {
+                if (height_cover <= min_heght_baca_selengkapnya) {
+                    $(baca_lengkap).html('');
+                } else {
+                    $(baca_lengkap).html('<a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Lebih sedikit..</a>').slideDown('fast');
+                }
+            }
+            if ($(baca_lengkap).hasClass('d-none')) {
+                $(baca_lengkap).removeClass('d-none').slideUp(0).slideDown('fast');
+            }
+        });
     }
     // Decode SpecialChars
     function decode_chars(str) {
@@ -508,7 +663,7 @@ $tanya_active = 'disabled';
             })
         })
     }
-    // Balas Pertanyaaan / Komentar
+    // Show Form (Balas) Pertanyaaan / Komentar
     function tampil_balas() {
         function show_form(self, id_elem, sub_closest = '') {
             var self_find = null;
@@ -559,6 +714,19 @@ $tanya_active = 'disabled';
             var self = $(this);
             show_form(self, '#sub_balas', '.sub-closest');
         });
+
+        $(document).delegate("#input_komentar", "keyup", function() {
+            self = $(this);
+            var self_find = func_self_find(self, ".form-komentar");
+            var panjang_text_isi_komentar = self.val().replace(/ /g, '').replace(/\n/g, '').length;
+            var btn_send = self_find.find('#btn_send');
+
+            if (panjang_text_isi_komentar < 1) {
+                $(btn_send).addClass('disabled');
+            } else {
+                $(btn_send).removeClass('disabled');
+            }
+        });
     }
     // Saklar Show Parent
     function saklar_show_parent() {
@@ -575,6 +743,19 @@ $tanya_active = 'disabled';
     }
     // Tampilkan Balasan Pertanyaan
     function tampil_balasan() {
+        $('.sidebar-toggle').on('click', function() {
+            if (toggle_sidebar == false) {
+                toggle_sidebar = true;
+                setTimeout(function() {
+                    func_baca_lengkap();
+                }, 300);
+            } else {
+                toggle_sidebar = false;
+                setTimeout(function() {
+                    func_baca_lengkap_hide();
+                }, 300);
+            }
+        });
         $(document).delegate("#tampil_balasan", "click", function() {
             var self = $(this);
             var self_find = func_self_find(self, '.closest');
@@ -586,9 +767,13 @@ $tanya_active = 'disabled';
             var chevron_right_komentar = self_find.find('#chevron_right_komentar');
             var balas = self_find.find('#balas');
             var input_komentar = self_find.find('#input_komentar');
-            var isi_balasan = self_find.find('#isi_balasan');
             var sub_balas = self_find.find('#sub_balas');
             var total_komentar = self_find.find('#total_komentar');
+            var isi_balasan = self_find.find('#balasan #isi_balasan');
+            var tampil_balasan_komentar = self_find.find('#balasan #tampil_balasan_komentar');
+            var isi_komentar = self_find.find('#balasan #isi_komentar');
+            var isi_text_komentar = self_find.find('#balasan #isi_text_komentar');
+            var baca_lengkap = self_find.find('#balasan #baca_lengkap');
 
             if (!$(balasan).is(':animated')) {
                 var position = 0;
@@ -613,9 +798,12 @@ $tanya_active = 'disabled';
                     $(balasan).slideUp(500, function() {
                         $(isi_balasan).empty();
                         $(sub_balas).empty();
+                        // $(baca_lengkap).addClass('d-none');
+                        $(tampil_balasan_komentar).addClass('d-none');
                     });
                 } else {
                     position += 90;
+                    $(baca_lengkap).addClass('d-none');
 
                     $.ajax({
                         url: "<?php echo base_url(); ?>forum/fetch_tampilkan_balasan",
@@ -630,80 +818,25 @@ $tanya_active = 'disabled';
                                 '-ms-transform': 'rotate(' + position + 'deg)',
                                 'transform': 'rotate(' + position + 'deg)'
                             });
-                            $(balasan).removeClass('d-none').slideUp(0).slideDown(500);
+                            $(balasan).removeClass('d-none');
                             total_komentar.html(resp.total_komentar);
+                            $(balasan).slideUp(0).slideDown(500, function() {
+                                if (resp.total_komentar > 0) {
+                                    $(tampil_balasan_komentar).removeClass('d-none').slideUp(0).slideDown(200);
+                                    var height_isi = parseInt($(isi_komentar).css('height').split('px')[0]);
+                                    if (height_isi > min_heght_baca_selengkapnya) {
+                                        $(baca_lengkap).html('<a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Baca selengkapnya..</a>').removeClass('d-none').slideUp(0).slideDown(200);
+                                    }
+                                }
+                            });
                         },
                     });
                 }
             }
         });
     }
-    // Tampilkan Balasan Komentar
+    // Tampilkan Balasan Komentar (Infinite Scroll Komentar)
     function tampil_komentar() {
-        function func_loader_komentar() {
-            var output = '';
-            output += '<div class="row">';
-            output += '<div class="d-flex justify-content-center">';
-            output += '<div class="spinner-border text-primary fw-bold fs-2 my-2" role="status">';
-            output += '<span class="visually-hidden">Loading...</span>';
-            output += '</div>';
-            output += '</div>';
-            output += '</div>';
-            return output;
-        }
-
-        function show_more_komentar() {
-            var output = '';
-            output += '<div class="row">';
-            output += '<div class="mx-auto d-flex justify-content-center align-items-center pb-2 pb-sm-0 p-0"><button class="btn btn-outline-info border-0 rounded-5 " id="more_komentar"><i class="fad fa-chevron-down"></i> Tampilkan Komentar Lebih</button></div>';
-            output += '</div>';
-            return output;
-        }
-
-        function load_data_komentar(data, isi_balasan, total_komentar, loader_komentar, position = '', chevron_right_komentar = '') {
-            $.ajax({
-                url: "<?php echo base_url(); ?>forum/fetch_forum_diskusi_komentar",
-                method: "POST",
-                data: data,
-                dataType: "JSON",
-                cache: false,
-                success: function(resp) {
-                    $(chevron_right_komentar).css({
-                        '-webkit-transform': 'rotate(' + position + 'deg)',
-                        '-moz-transform': 'rotate(' + position + 'deg)',
-                        '-o-transform': 'rotate(' + position + 'deg)',
-                        '-ms-transform': 'rotate(' + position + 'deg)',
-                        'transform': 'rotate(' + position + 'deg)'
-                    });
-
-                    if (resp.data == 'null') {
-                        // Data masih kosong
-                    } else if (resp.data == 'null2') {
-                        // Tidak Ada Lagi Hasil yang Ditemukan
-                    } else {
-                        if (resp.next == 'true') {
-                            $(resp.data).appendTo($(isi_balasan)).slideUp(0).slideDown();
-                            $(show_more_komentar()).appendTo($(isi_balasan)).slideUp(0).slideDown();
-                        } else {
-                            // Tidak Ada Lagi Hasil yang Ditemukan
-                            $(resp.data).appendTo($(isi_balasan)).slideUp(0).slideDown();
-                        }
-                        loader_komentar.empty();
-                    }
-                    total_komentar.html(resp.num_rows);
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                    // console.error(this.props.url, status, err.toString());
-                    Swal.fire({
-                        icon: 'error',
-                        title: textStatus,
-                        text: errorThrown,
-                    });
-                }
-            });
-        }
-
         $(document).delegate('#tampil_balasan_komentar', 'click', function() {
             var self = $(this);
             var self_find = func_self_find(self, '.closest');
@@ -748,8 +881,8 @@ $tanya_active = 'disabled';
                     } else {
                         position += 90;
                         if (total_komentar.html() != '0') {
-                            $(isi_balasan).append('<div class="m-2"></div>');
-                            loader_komentar.html(func_loader_komentar()).fadeOut(0).fadeIn();
+                            $(isi_balasan).empty().append('<div class="m-2"></div>');
+                            loader_komentar.html(func_loader_spinner()).fadeOut(0).fadeIn();
                             setTimeout(function() {
                                 load_data_komentar(data, isi_balasan, total_komentar, loader_komentar, position, chevron_right_komentar);
                             }, 1000); //Buat animasi doang
@@ -786,23 +919,136 @@ $tanya_active = 'disabled';
             var total_komentar = self_find.find('#total_komentar');
             var loader_komentar = self_find.find('#loader_komentar');
 
-            loader_komentar.html(func_loader_komentar(limit_komentar)).fadeOut(0).fadeIn();
+            loader_komentar.html(func_loader_spinner(limit_komentar)).fadeOut(0).fadeIn();
             self.remove();
             setTimeout(function() {
                 load_data_komentar(data, isi_balasan, total_komentar, loader_komentar, chevron_right_komentar);
             }, 1000); //Buat animasi doang
         });
     }
+    // Baca selengkapnya
+    function baca_lengkap() {
+        $(document).delegate('#baca_lengkap', 'click', function() {
+            var self = $(this);
+            var self_find = func_self_find(self, '.closest_isi_komentar');
+            var isi_komentar = self_find.find('#isi_komentar');
+            var isi_text_komentar = self_find.find('#isi_text_komentar');
+            var baca_lengkap = self_find.find('#baca_lengkap');
+            var height_cover = parseInt($(isi_text_komentar).css('height').split('px')[0]);
+            var height_isi = parseInt($(isi_komentar).css('height').split('px')[0]);
+            if (height_cover >= height_isi) {
+                $(isi_text_komentar).css('max-height', min_heght_baca_selengkapnya + 'px');
+                if (height_cover <= height_isi) {
+                    self.html('<a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Baca selengkapnya..</a>');
+                }
+            } else {
+                $(isi_text_komentar).css('max-height', (height_cover + grow_baca_selengkapnya) + 'px');
+                if (height_cover >= height_isi - grow_baca_selengkapnya) {
+                    self.html('<a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Lebih sedikit..</a>');
+                }
+            }
+        });
+    }
+    // Tambah Komentar
+    function tambah_komentar() {
+        $(document).delegate('#btn_send', 'click', function(e) {
+            e.preventDefault();
+            var self = $(this);
+            var balas = func_self_find(self, '#balas');
+            var sub_balas = func_self_find(self, '#sub_balas');
+            var self_find = func_self_find(self, '.closest');
+            var self_find_sub = func_self_find(self, '.sub-closest');
+            var self_find_form = func_self_find(self, '.closest-form');
+            var data1 = func_self_data(self, '.closest', '.data-closest');
+            var data2 = func_self_data(self, '.sub-closest', '.data-sub-closest');
+            var data3 = {
+                parent: self_find_form.find('input[name="switch_balasan"]:checked').val(),
+                komentar: self_find_form.find('textarea[name="input_komentar"]').val(),
+            };
+            var data = {
+                ...data1,
+                ...data2,
+                ...data3
+            };
+
+            // Id Element
+            // var balasan = self_find.find('#balasan');
+            // var balas = self_find.find('#isi_balasan #balas');
+            // var input_komentar = self_find.find('#isi_balasan #input_komentar');
+            // var sub_balas = self_find.find('#isi_balasan #sub_balas');
+
+            var isi_balasan = self_find.find('#isi_balasan');
+            var total_komentar = self_find.find('#total_komentar');
+            var loader_komentar = self_find.find('#loader_komentar');
+            var start = self_find.find('#start'); //
+            var range = {
+                start: 0, //start
+                limit: parseInt($(start).val()) + limit_komentar, //start + limit
+            }
+            var data = {
+                ...data,
+                ...range
+            };
+
+            if (!$(isi_balasan).is(':animated')) {
+                if ($(loader_komentar).html() == '') {
+                    $(self_find_form).html(func_loader_spinner_2()).fadeOut(0).fadeIn(0);
+
+                    $.ajax({
+                        url: "<?php echo base_url(); ?>forum/tambah_komentar_forum_diskusi",
+                        method: "POST",
+                        data: data,
+                        dataType: "JSON",
+                        success: function(resp) {
+                            console.log(data);
+                            setTimeout(function() {
+                                $(balas).empty().slideUp(0);
+                                $(sub_balas).empty().slideUp(0);
+                                load_data_komentar(data, isi_balasan, total_komentar, loader_komentar, '', '', 0, true);
+                            }, 500);
+                            if (resp.result === false) {
+                                Custom.fire({
+                                    icon: 'error',
+                                    title: 'Maaf, mohon muat ulang halaman',
+                                });
+                            } else {
+                                Custom.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                });
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            $(balas).empty().slideUp(0);
+                            $(sub_balas).empty().slideUp(0);
+                            console.log(errorThrown);
+                            // console.error(this.props.url, status, err.toString());
+                            Swal.fire({
+                                icon: 'error',
+                                title: textStatus,
+                                text: errorThrown,
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    }
     // Ubah Komentar
     function ubah_komentar() {
         $(document).delegate("#btn_ubah_komentar", "click", function() {
             var self = $(this);
+            var data1 = func_self_data(self, '.closest', '.data-closest');
+            var data2 = func_self_data(self, '.sub-closest', '.data-sub-closest');
+            var baca_lengkap = func_self_find(self, '.sub-closest').find('#baca_lengkap');
+            var update_at = func_self_find(self, '.sub-closest').find('#update_at');
             var isi_komentar = func_self_find(self, '.sub-closest').find('#isi_komentar');
-            var text_isi_komentar = isi_komentar.html();
+            var text_isi_komentar = isi_komentar.html().trim();
             var input_edit_komentar = func_self_find(self, '.sub-closest').find('textarea', '#input_edit_komentar');
             var btn_batal_edit_komentar = func_self_find(self, '.sub-closest').find('#btn_batal_edit_komentar');
 
             if (isi_komentar.is(':visible') || input_edit_komentar.is(':hidden')) { // Jika field tidak tampil
+                baca_lengkap.hide();
                 isi_komentar.hide();
                 input_edit_komentar.val(decode_chars(text_isi_komentar)).removeClass('d-none').focus();
                 btn_batal_edit_komentar.removeClass('d-none');
@@ -815,17 +1061,56 @@ $tanya_active = 'disabled';
                 })
             } else {
                 var value_input_edit_komentar = $.trim(input_edit_komentar.val());
-
+                var data3 = {
+                    value_input_edit_komentar: value_input_edit_komentar
+                };
+                var data = {
+                    ...data1,
+                    ...data2,
+                    ...data3
+                };
+                console.log(data);
                 // TARGET-AJAX 
-                isi_komentar.html(nl2br(encode_chars(value_input_edit_komentar, isi_komentar))).show();
-                input_edit_komentar.val('').addClass('d-none');
-                btn_batal_edit_komentar.addClass('d-none');
-                self.html('<i class="fa-solid fa-pen-clip"></i> Ubah</a>');
-                Custom.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
+                $.ajax({
+                    url: "<?php echo base_url(); ?>forum/update_forum_diskusi",
+                    method: "POST",
+                    data: data,
+                    dataType: "JSON",
+                    beforeSend: function() {
+                        btn_batal_edit_komentar.addClass('disabled');
+                        self.addClass('disabled');
+                    },
+                    success: function(resp) {
+                        if (resp.result === true) {
+                            isi_komentar.html(nl2br(encode_chars(value_input_edit_komentar, isi_komentar)));
+                            update_at.html('<br class="d-md-none"><span class="text-navy">( <i class="fad fa-edit"></i> Diedit ' + resp.time_update + ' )</span>');
+                            func_baca_lengkap();
+                            func_baca_lengkap_hide();
+                            Custom.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                            });
+                        } else {
+                            Custom.fire({
+                                icon: 'error',
+                                title: 'Update gagal',
+                            });
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                        // console.error(this.props.url, status, err.toString());
+                        Swal.fire({
+                            icon: 'error',
+                            title: textStatus,
+                            text: errorThrown,
+                        });
+                    }
                 });
-                console.log(value_input_edit_komentar);
+                isi_komentar.show();
+                input_edit_komentar.val('').addClass('d-none');
+                btn_batal_edit_komentar.addClass('d-none').removeClass('disabled');
+                self.html('<i class="fa-solid fa-pen-clip"></i> Ubah</a>').removeClass('disabled');
             }
         });
 
@@ -851,6 +1136,8 @@ $tanya_active = 'disabled';
             input_edit_komentar.val('').addClass('d-none');
             self.addClass('d-none');
             btn_ubah_komentar.html('<i class="fa-solid fa-pen-clip"></i> Ubah</a>').removeClass('disabled');
+            func_baca_lengkap();
+            func_baca_lengkap_hide();
         });
     }
     // Hapus Element
@@ -920,16 +1207,6 @@ $tanya_active = 'disabled';
             })
         });
     }
-    // Kirim Komentar
-    function kirim_komentar() {
-        $(document).delegate('#btn_send', 'click', function(e) {
-            e.preventDefault();
-            self = $(this);
-            self_find = func_self_find(self, '.closest-form');
-            data_parent = self_find.find('input[name="switch_balasan"]:checked').val();
-            Swal.fire(data_parent);
-        });
-    }
 
     // ======================================= Document Ready =======================================
     $(document).ready(function() {
@@ -942,9 +1219,15 @@ $tanya_active = 'disabled';
         saklar_show_parent();
         tampil_balasan();
         tampil_komentar();
+        baca_lengkap();
 
         ubah_komentar();
         hapus_element();
-        kirim_komentar();
+        tambah_komentar();
+
+        // $(document).ajaxStop(function() {
+        //     func_baca_lengkap();
+        //     func_baca_lengkap_hide();
+        // });
     });
 </script>

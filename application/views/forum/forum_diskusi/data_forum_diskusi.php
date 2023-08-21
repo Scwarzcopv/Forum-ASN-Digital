@@ -4,8 +4,8 @@
 // Penanya
 $anonim = null; // 
 $color_anonim = null; // 
-($user['id'] != $row['id_user_tanya']) ? ($anonim = 'Anonim-' . $row['index'] . ' <i class="fa-solid fa-circle-question text-primary"></i>') : ($anonim = 'Anonim-Anda  <i class="fa-solid fa-circle-question text-primary"></i>');
-($user['id'] != $row['id_user_tanya']) ? ($color_anonim = null) : ($color_anonim = 'text-warning');
+($user['id'] != $row['id_user_tanya']) ? ($anonim = 'Anonim-' . $row['index'] . ' <i class="fa-solid fa-circle-question text-primary"></i>') : ($anonim = 'Anonim-' . $row['index'] . ' <span class="text-danger">(Anda)</span>  <i class="fa-solid fa-circle-question text-primary"></i>');
+($user['id'] != $row['id_user_tanya']) ? ($color_anonim = null) : ($color_anonim = '');
 
 // Penjawab
 $admin = null; // 
@@ -14,7 +14,7 @@ $color_admin = null; //
 ($user['id'] !== $row['id_admin']) ? ($color_admin = 'text-info') : ($color_admin = 'text-danger');
 
 $answer_updated_at = null; // 
-($row['answered_at'] !== $row['updated_at_fp_carbon']) ? ($answer_updated_at = '<br class="d-md-none"><span class="text-navy">( <i class="fad fa-edit"></i> Diedit ' . $row["updated_at_fp_carbon"] . ' )</span>') : ($answer_updated_at = null);
+($row['answered_at'] !== $row['updated_at_fp']) ? ($answer_updated_at = '<br class="d-md-none"><span class="text-navy">( <i class="fad fa-edit"></i> Diedit ' . $row["updated_at_fp_carbon"] . ' )</span>') : ($answer_updated_at = null);
 
 $hapus_pertanyaan = null; // 
 $btn_ubah_jawaban = null; // 
@@ -26,7 +26,7 @@ if ($user['role_id'] <= 2) {
 }
 ?>
 
-<section class="d-flex align-items-start closest">
+<section class="d-flex align-items-start closest mb-3">
     <!-- LIST DAYA -->
     <article class="d-none data-closest">
         <input name="id_fp" value="<?= $row['id_fp']; ?>" type="text" readonly></input>
@@ -49,10 +49,22 @@ if ($user['role_id'] <= 2) {
         <main id="isi_pertanyaan">
             <article> <strong class="<?= $color_anonim; ?>"><?= $anonim; ?></strong> </article>
             <article> <small class="text-muted"><?= $row['created_at_fp_carbon']; ?></small> </article>
-            <article class="textbox border p-2 mt-1"> <?= nl2br(htmlspecialchars($row['isi_pertanyaan'])); ?> </article>
+            <span class="closest_isi_komentar">
+                <div class="textbox border p-2 mt-1 text-break">
+                    <div id="isi_text_komentar" style="max-height: 100px; overflow-y: hidden; transition: all 0.3s ease-out;">
+                        <div id="isi_komentar">
+                            <?= nl2br(htmlspecialchars($row['isi_pertanyaan'])); ?>
+                        </div>
+                    </div>
+                    <div class="edit-comment input-group">
+                        <textarea type="text" class="form-control d-none" placeholder="Edit komentar.." id="input_edit_komentar" data-textarea="1"></textarea>
+                    </div>
+                </div>
+                <div class="d-none" id="baca_lengkap"><a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Baca selengkapnya..</a></div>
+            </span>
 
             <!-- Button -->
-            <a class="btn btn-lg rounded mb-md-3 ps-0 pe-2 border-0" style="cursor: default;">
+            <a class="btn btn-lg rounded ps-0 pe-2 border-0" style="cursor: default;">
                 <input class="checkbox" type="checkbox" id="checkbox_<?= $row['id_forum']; ?>_<?= $row['id_fp']; ?>" />
                 <label class="m-0 p-0 d-flex justify-content-center align-content-stretch cursor-pointer" for="checkbox_<?= $row['id_forum']; ?>_<?= $row['id_fp']; ?>">
                     <svg class="m-0 p-0" id="heart-svg" viewBox="467 392 58 57">
@@ -99,16 +111,16 @@ if ($user['role_id'] <= 2) {
                     <div class="my-auto pt-1"><?= $row['total_like_fp']; ?></div>
                 </label>
             </a>
-            <a class="btn btn-lg mt-1 mb-md-3 px-1 border-0 <?= $komentar_active; ?>" id="tampil_balas"><i class="fad fa-reply"></i> Balas</a>
+            <a class="btn btn-lg mt-1 px-1 border-0 <?= $komentar_active; ?>" id="tampil_balas"><i class="fad fa-reply"></i> Balas</a>
             <?= $hapus_pertanyaan; ?>
-            <a class="btn btn-lg mt-md-1 mb-3 px-1 border-0" id="tampil_balasan"><i class="fad fa-chevron-right" id="chevron_right" style="transition: all 0.5s;"></i> Tampilkan Balasan</a>
+            <a class="btn btn-lg mt-md-1 px-1 border-0" id="tampil_balasan"><i class="fad fa-chevron-right" id="chevron_right" style="transition: all 0.5s;"></i> Tampilkan Balasan</a>
             <!-- Form reply pertanyaan -->
             <div class="d-none" id="balas"></div>
         </main>
         <!-- JAWABAN -->
         <main id="balasan" class="d-none">
             <!-- ANSWER QUESION -->
-            <article class="d-flex align-items-start mt-1 sub-closest" id="isi_jawaban">
+            <article class="mt-2 d-flex align-items-start sub-closest" id="isi_jawaban">
                 <!-- LIST SUB DAYA -->
                 <article class="d-none data-sub-closest">
                     <input name="id_user_admin" value="<?= $row['id_admin']; ?>" type="text" readonly></input>
@@ -120,13 +132,20 @@ if ($user['role_id'] <= 2) {
                 <div class="flex-grow-1">
                     <strong class="<?= $color_admin; ?>"> <?= $admin; ?> <i class="fas fa-badge-check text-success"></i></strong> membalas <strong class="<?= $color_anonim; ?>"> <?= $anonim; ?> </strong>
                     <br />
-                    <small class="text-muted"><?= $row['answered_at_carbon']; ?> <?= $answer_updated_at; ?></small>
-                    <div class="textbox border p-2 mt-1">
-                        <span id="isi_komentar"><?= nl2br(htmlspecialchars($row['isi_jawaban'])); ?></span>
-                        <div class="edit-comment input-group">
-                            <textarea type="text" class="form-control d-none" placeholder="Edit komentar.." id="input_edit_komentar" data-textarea="1"></textarea>
+                    <small class="text-muted"><?= $row['answered_at_carbon']; ?> <span id="update_at"><?= $answer_updated_at; ?></span></small>
+                    <span class="closest_isi_komentar">
+                        <div class="textbox border p-2 mt-1 text-break">
+                            <div id="isi_text_komentar" style="max-height: 100px; overflow-y: hidden; transition: all 0.3s ease-out;">
+                                <div id="isi_komentar">
+                                    <?= nl2br(htmlspecialchars($row['isi_jawaban'])); ?>
+                                </div>
+                            </div>
+                            <div class="edit-comment input-group">
+                                <textarea type="text" class="form-control d-none" placeholder="Edit komentar.." id="input_edit_komentar" data-textarea="1"></textarea>
+                            </div>
                         </div>
-                    </div>
+                        <div class="d-none" id="baca_lengkap"><a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Baca selengkapnya..</a></div>
+                    </span>
 
                     <!-- Button -->
                     <a class="btn btn-lg rounded ps-0 pe-2 border-0" style="cursor: default;" id="suka_komentar">
@@ -176,7 +195,7 @@ if ($user['role_id'] <= 2) {
                             <div class="my-auto pt-1"><?= $row['total_like_jawaban']; ?></div>
                         </label>
                     </a>
-                    <a class="btn btn-lg px-1 border-0 <?= $komentar_active; ?>" id="balas_komentar"><i class="fa-solid fa-reply"></i> Balas</a>
+                    <a class="btn btn-lg px-1 border-0 <?= $komentar_active; ?>" id="balas_komentar"><i class="fad fa-reply"></i> Balas</a>
                     <?= $btn_ubah_jawaban; ?>
                     <a class="btn btn-sm btn-danger float-end rounded mt-1 me-2 d-none" id="btn_batal_edit_komentar"></i>Batal</a>
                     <!-- FORM SUB REPLY -->
@@ -184,7 +203,7 @@ if ($user['role_id'] <= 2) {
                     </main>
                 </div>
             </article>
-            <div class="mx-auto d-flex justify-content-center align-items-center" id="tampil_balasan_komentar">
+            <div class="mx-auto d-flex justify-content-center align-items-center d-none" id="tampil_balasan_komentar">
                 <a class="btn btn-lg mb-3 mb-md-1 mt-3 mt-lg-0 px-1 py-0 border-0"><i class="fad fa-chevron-right" style="transition: all 0.5s;" id="chevron_right_komentar"></i> Tampilkan Komentar (<span id="total_komentar">0</span>)</a>
             </div>
 

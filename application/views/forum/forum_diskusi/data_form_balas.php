@@ -5,7 +5,7 @@ $id_parent = $id_user_parent['id'];
 //================================================
 // Cek apakah anda admin || buat fa-check admin
 $fa_check = null;
-if ($user_id['role_id'] <= 3) {
+if ($user_id['role_id'] < 3) {
     $fa_check = '<i class="fas fa-badge-check text-success"></i>';
 }
 
@@ -19,7 +19,7 @@ $mt = null;
 if ($nama_user_tanya !== null) {
     $nama_parent = $nama_user_tanya;
     if ($id_user === $id_parent) {
-        $parent = 'membalas <strong class="text-warning">Anonim-Anda</strong>';
+        $parent = 'membalas <strong class="">' . $nama_parent . ' <span class="text-danger">(Anda)</span> <i class="fa-solid fa-circle-question text-primary"></i></strong>';
     } else {
         $parent = 'membalas <strong>' . $nama_parent . ' <i class="fa-solid fa-circle-question text-primary"></i></strong>';
     }
@@ -30,7 +30,7 @@ if ($nama_user_tanya !== null) {
         $parent = 'membalas <strong>' . $nama_parent . '</strong>';
         //================================================
         // Cek apakah parent user admin atau bukan
-        if ($id_user_parent['role_id'] <= 2) {
+        if ($id_user_parent['role_id'] < 3) {
             $parent = 'membalas <strong class="text-info">' . $nama_parent . ' ' . $fa_check . '</strong>';
         }
     } else {
@@ -41,7 +41,7 @@ if ($nama_user_tanya !== null) {
 
 ?>
 
-<div class="d-flex align-items-start mt-1 mb-2 closest-form">
+<div class="d-flex align-items-start closest-form">
     <span class="pe-2">
         <img src="<?= base_url('assets/img/avatars/' . $user_id['image'] . ''); ?>" width="36" height="36" class="rounded-circle me-2" alt="User">
     </span>
@@ -52,12 +52,12 @@ if ($nama_user_tanya !== null) {
             <label class="form-check-label mx-0" for="switch_balasan_<?= $id_fp; ?>_<?= $id_fc; ?>"> Show parent</label>
         </div>
         <!-- <small class="text-muted"></small> -->
-        <div class="text-sm text-muted mb-3 <?= $mt; ?>">
+        <div class="text-sm text-muted <?= $mt; ?>">
             <div class="input-group comment">
                 <textarea type="text" class="form-control mb-2" placeholder="Tambahkan komentar.." id="input_komentar" name="input_komentar" data-textarea="1"></textarea>
             </div>
             <div class="d-flex align-items-center">
-                <button class="btn btn-sm btn-success ms-auto" id="btn_send"><i class="fa-solid fa-paper-plane"></i> Send</button>
+                <button class="btn btn-sm btn-success ms-auto disabled" id="btn_send"><i class="fa-solid fa-paper-plane"></i> Send</button>
             </div>
         </div>
     </div>

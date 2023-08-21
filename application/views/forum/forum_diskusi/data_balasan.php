@@ -51,7 +51,7 @@ if ($row['id_parent'] != null) {
 }
 if ($row['parent_anonim'] == 1) {
     if ($user['id'] == $id_user_tanya) {
-        $result_user_komen_parent = ' membalas <strong class="text-warning">Anonim-Anda</strong>';
+        $result_user_komen_parent = ' membalas <strong class="">' . $nama_user_tanya . ' <span class="text-danger">(Anda)</span> <i class="fa-solid fa-circle-question text-primary"></i></strong>';
     } else {
         $result_user_komen_parent = ' membalas <strong>' . $nama_user_tanya . ' <i class="fa-solid fa-circle-question text-primary"></i></strong>';
     }
@@ -77,9 +77,9 @@ if ($user['id'] === $data_user_komen['id']) {
 ?>
 
 
-<article class="d-flex align-items-start mt-1 sub-closest">
+<article class="d-flex align-items-start sub-closest">
     <!-- LIST SUB DAYA -->
-    <article class="d-none data-sub-closest">
+    <article class="mt-1 d-none data-sub-closest">
         <input name="id_fc" value="<?= $row['id']; ?>" type="text" readonly></input>
         <input name="id_user_fc" value="<?= $row['id_user']; ?>" type="text" readonly></input>
         <input name="parent_anonim" value="<?= $row['parent_anonim']; ?>" type="text" readonly></input>
@@ -91,13 +91,20 @@ if ($user['id'] === $data_user_komen['id']) {
     <div class="flex-grow-1">
         <?= $result_user_komen . $result_user_komen_parent; ?>
         <br />
-        <small class="text-muted"><?= $row['created_at_carbon']; ?> <?= $_result_updated_at; ?></small>
-        <div class="textbox border p-2 mt-1">
-            <span id="isi_komentar"><?= nl2br(htmlspecialchars($row['isi_comment'])); ?></span>
-            <div class="edit-comment input-group">
-                <textarea type="text" class="form-control d-none" placeholder="Edit komentar.." id="input_edit_komentar" data-textarea="1"></textarea>
+        <small class="text-muted"><?= $row['created_at_carbon']; ?> <span id="update_at"><?= $_result_updated_at; ?></span></small>
+        <span class="closest_isi_komentar">
+            <div class="textbox border p-2 mt-1 text-break">
+                <div id="isi_text_komentar" style="max-height: 100px; overflow-y: hidden; transition: all 0.3s ease-out;">
+                    <div id="isi_komentar">
+                        <?= nl2br(htmlspecialchars($row['isi_comment'])); ?>
+                    </div>
+                </div>
+                <div class="edit-comment input-group">
+                    <textarea type="text" class="form-control d-none" placeholder="Edit komentar.." id="input_edit_komentar" data-textarea="1"></textarea>
+                </div>
             </div>
-        </div>
+            <div class="d-none" id="baca_lengkap"><a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Baca selengkapnya..</a></div>
+        </span>
 
         <!-- Button -->
         <a class="btn btn-lg rounded mb-1 ps-0 pe-2 border-0" style="cursor: default;" id="suka_komentar">
@@ -147,7 +154,7 @@ if ($user['id'] === $data_user_komen['id']) {
                 <div class="my-auto pt-1"><?= $row['total_like']; ?></div>
             </label>
         </a>
-        <a class="btn btn-lg mt-1 mb-1 px-1 border-0 <?= $komentar_active; ?>" id="balas_komentar"><i class="fa-solid fa-reply"></i> Balas</a>
+        <a class="btn btn-lg mt-1 mb-1 px-1 border-0 <?= $komentar_active; ?>" id="balas_komentar"><i class="fad fa-reply"></i> Balas</a>
         <?= $result_hapus_komentar; ?>
         <?= $result_btn_ubah_komentar; ?>
         <a class="btn btn-sm btn-danger mt-1 float-end rounded me-2 d-none" id="btn_batal_edit_komentar"></i>Batal</a>

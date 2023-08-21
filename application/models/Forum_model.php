@@ -152,4 +152,70 @@ class Forum_model extends CI_Model
         $result = $this->db->get();
         return $result;
     }
+    function update_forum_pertanyaan($id_fp, $isi_jawaban)
+    {
+        $data = array(
+            'isi_jawaban' => $isi_jawaban,
+            // 'updated_at' => 'NOW()',
+        );
+        $this->db->trans_start();
+        $this->db->set('updated_at', 'NOW()', FALSE);
+        $this->db
+            ->where('id', $id_fp)
+            ->update('forum_pertanyaan', $data);
+        $this->db->trans_complete();
+        if ($this->db->affected_rows() == '1') {
+            return true;
+        } else {
+            if ($this->db->trans_status() === false) {
+                return false;
+            }
+            return true;
+        }
+    }
+    function update_forum_comment($id_fc, $isi_comment)
+    {
+        $data = array(
+            'isi_comment' => $isi_comment,
+            // 'updated_at' => time(),
+        );
+        $this->db->trans_start();
+        $this->db->set('updated_at', 'NOW()', FALSE);
+        $this->db
+            ->where('id', $id_fc)
+            ->update('forum_comment', $data);
+        $this->db->trans_complete();
+        if ($this->db->affected_rows() == '1') {
+            return true;
+        } else {
+            if ($this->db->trans_status() === false) {
+                return false;
+            }
+            return true;
+        }
+    }
+    function tambah_forum_comment_pertanyaan($data_insert)
+    {
+        $id_forum_pertanyaan = $data_insert['id_forum_pertanyaan'];
+        $forum_pertanyaan = $this->db
+            ->select('*')
+            ->from('forum_pertanyaan')
+            ->where('id', $id_forum_pertanyaan)
+            ->get()
+            ->num_rows();
+        if ($forum_pertanyaan > 0) {
+            $now = date('Y-m-d H:i:s', time());
+            $data_insert['created_at'] = $now;
+            $data_insert['updated_at'] = $now;
+            $this->db->trans_start();
+            $this->db->insert('forum_comment', $data_insert);
+            $this->db->trans_complete();
+            if ($this->db->trans_status() === false) {
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
