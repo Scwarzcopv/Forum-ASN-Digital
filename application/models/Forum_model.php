@@ -142,12 +142,22 @@ class Forum_model extends CI_Model
         $result = $this->db->get()->row_array();
         return $result;
     }
-    function data_komentar($id_forum, $id_forum_pertanyaan)
+    function data_komentar($id_forum, $id_forum_pertanyaan, $id_user, $role_id, $hidden_com, $del_com)
     {
         $this->db->select('*');
         $this->db->from('forum_comment');
         $this->db->where('id_forum', $id_forum);
         $this->db->where('id_forum_pertanyaan', $id_forum_pertanyaan);
+        if ($role_id < 3) {
+            if ($hidden_com === 'false') $this->db->where('forum_comment_hidden', null);
+            if ($del_com === 'false') $this->db->where('forum_comment_del_by_user', null);
+        }
+        if ($role_id > 2) {
+            $this->db
+                ->where('forum_comment_hidden', null)
+                ->where('forum_comment_del_by_user', null)
+                ->or_where("(id_user = '" . $id_user . "' AND forum_comment_hidden = 1 AND id_forum = '" . $id_forum . "' AND id_forum_pertanyaan = '" . $id_forum_pertanyaan . "')", null, false);
+        }
         $this->db->order_by('id', 'ASC');
         $result = $this->db->get();
         return $result;
@@ -172,6 +182,24 @@ class Forum_model extends CI_Model
             }
             return true;
         }
+    }
+    function preUpdataForumComment($id_fc, $role_id)
+    {
+        $result = null;
+        if ($role_id > 2) {
+            $result = $this->db
+                ->select('forum_comment_hidden')
+                ->from('forum_comment')
+                ->where('id', $id_fc)
+                ->get();
+            if ($result->num_rows() > 0) {
+                $result = $result->row_array();
+                $result = $result['forum_comment_hidden'];
+            } else {
+                $result = 'deleted';
+            }
+        }
+        return $result;
     }
     function update_forum_comment($id_fc, $isi_comment)
     {
@@ -214,6 +242,53 @@ class Forum_model extends CI_Model
                 return false;
             }
             return true;
+        } else {
+            return false;
+        }
+    }
+    function show_hide_forum_diskusi($id_fc, $instruction)
+    {
+        if ($instruction == 'hide') {
+            $this->db->set('forum_comment_hidden', 1);
+        } else if ($instruction == 'show') {
+            $this->db->set('forum_comment_hidden', null);
+        } else if ($instruction == 'delete') {
+            $this->db->set('forum_comment_del_by_user', 1);
+        }
+        $this->db
+            ->where('id', $id_fc)
+            ->update('forum_comment');
+        if ($this->db->affected_rows()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function hapus_forum_diskusi_comment($id_fc)
+    {
+        $this->db
+            ->where('id', $id_fc)
+            ->delete('forum_comment');
+        if ($this->db->affected_rows() || !$this->db->_error_message()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function hapus_forum_diskusi_pertanyaan($id_forum, $id_fp)
+    {
+        $this->db
+            ->where('id_forum', $id_forum)
+            ->where('id_forum_pertanyaan', $id_fp)
+            ->delete('forum_comment');
+        $this->db
+            ->where('id', $id_fp)
+            ->delete('forum_pertanyaan');
+        if ($this->db->affected_rows() || !$this->db->_error_message()) {
+            return true;
+            // if ($this->db->trans_status() === false) {
+            //     return false;
+            // }
         } else {
             return false;
         }

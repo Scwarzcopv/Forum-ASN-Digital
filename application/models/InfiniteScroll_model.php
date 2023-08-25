@@ -187,22 +187,47 @@ class InfiniteScroll_model extends CI_Model
         return $query;
     }
 
-    function data_komentar($limit, $start, $id_forum, $id_forum_pertanyaan)
+    function data_komentar($limit, $start, $id_forum, $id_forum_pertanyaan, $id_user, $role_id, $hidden_com, $del_com)
     {
+        // Select id_user['role_id']
+        $role_id = (int)$role_id;
+
         // Total Seluruh Data
-        $this->db->select('*');
-        $this->db->from('forum_comment');
-        $this->db->where('id_forum', $id_forum);
-        $this->db->where('id_forum_pertanyaan', $id_forum_pertanyaan);
+        $this->db
+            ->select('*')
+            ->from('forum_comment')
+            ->where('id_forum', $id_forum)
+            ->where('id_forum_pertanyaan', $id_forum_pertanyaan);
+        if ($role_id < 3) {
+            if ($hidden_com === 'false') $this->db->where('forum_comment_hidden', null);
+            if ($del_com === 'false') $this->db->where('forum_comment_del_by_user', null);
+        }
+        if ($role_id > 2) {
+            $this->db
+                ->where('forum_comment_hidden', null)
+                ->where('forum_comment_del_by_user', null)
+                ->or_where("(id_user ='" . $id_user . "' AND forum_comment_hidden = 1 AND id_forum = '" . $id_forum . "' AND id_forum_pertanyaan = '" . $id_forum_pertanyaan . "')", null, false);
+        }
         $this->db->order_by('id', 'ASC');
         $query['1'] = $this->db->get();
         $query['num_rows_1'] = $query['1']->num_rows();
 
         // Total Data Limit
-        $this->db->select('*');
-        $this->db->from('forum_comment');
-        $this->db->where('id_forum', $id_forum);
-        $this->db->where('id_forum_pertanyaan', $id_forum_pertanyaan);
+        $this->db
+            ->select('*')
+            ->from('forum_comment')
+            ->where('id_forum', $id_forum)
+            ->where('id_forum_pertanyaan', $id_forum_pertanyaan);
+        if ($role_id < 3) {
+            if ($hidden_com === 'false') $this->db->where('forum_comment_hidden', null);
+            if ($del_com === 'false') $this->db->where('forum_comment_del_by_user', null);
+        }
+        if ($role_id > 2) {
+            $this->db
+                ->where('forum_comment_hidden', null)
+                ->where('forum_comment_del_by_user', null)
+                ->or_where("(id_user = '" . $id_user . "' AND forum_comment_hidden = 1 AND id_forum = '" . $id_forum . "' AND id_forum_pertanyaan = '" . $id_forum_pertanyaan . "')", null, false);
+        }
         $this->db->order_by('id', 'ASC');
         $this->db->limit($limit, $start);
         $query['2'] = $this->db->get();

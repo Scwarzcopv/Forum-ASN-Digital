@@ -18,4 +18,4 @@ var Custom2 = Swal.mixin({
     showCloseButton: false,
     timer: 3000,
     timerProgressBar: true,
-})
+});

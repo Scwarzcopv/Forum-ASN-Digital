@@ -56,23 +56,62 @@ if ($row['parent_anonim'] == 1) {
         $result_user_komen_parent = ' membalas <strong>' . $nama_user_tanya . ' <i class="fa-solid fa-circle-question text-primary"></i></strong>';
     }
 }
+//================================================================
+// Tampilan komentar pada admin
+$style_text_commentar = null;
+$bg_text_commentar = null;
+$btn_disabled = null;
+if ($row['forum_comment_hidden'] !== null || $row['forum_comment_del_by_user'] !== null) {
+    $style_text_commentar = 'style = "opacity: 0.5;"';
+    $btn_disabled = 'disabled';
+}
+if ($row['forum_comment_hidden'] !== null) {
+    $bg_text_commentar = 'text-light bg-secondary';
+}
+if ($row['forum_comment_del_by_user'] !== null) {
+    $bg_text_commentar = 'text-light bg-danger';
+}
 
 //================================================================
 $_result_updated_at = null;
-if ($row['updated_at'] != $row['created_at']) {
+if ($row['updated_at'] !== $row['created_at']) {
     $_result_updated_at =  '<br class="d-md-none"><span class="text-navy">( <i class="fad fa-edit"></i> Diedit ' . $row['updated_at_carbon'] . ' )</span>';
 }
 
 //================================================================
-$result_hapus_komentar = null;
-if ($user['id'] === $data_user_komen['id'] || $user['role_id'] <= 2) {
-    $result_hapus_komentar =  '<a class="btn btn-sm btn-outline-danger mt-1 mb-2 float-end rounded ms-2" id="btn_hapus_komentar"><i class="fa-solid fa-trash-can"></i> Hapus</a>';
+$user['role_id'] = (int)$user['role_id'];
+
+$btn_hapus_komentar = null;
+if ($user['role_id'] <= 2) {
+    $btn_hapus_komentar =  '<a class="btn btn-sm btn-outline-danger mt-1 mb-2 float-end rounded ms-2" id="btn_hapus_komentar"><i class="fa-solid fa-trash-can"></i> Hapus</a>';
 }
 
 //================================================================
-$result_btn_ubah_komentar = null;
+$btn_hide_komentar = null;
+if ($user['id'] === $data_user_komen['id'] || $user['role_id'] <= 2) {
+    $btn_hide_komentar =  '<a class="btn btn-sm btn-danger mt-1 mb-2 float-end rounded ms-2" id="btn_hide_komentar"><i class="fas fa-eye"></i> Hide</a>'; // Tampilan (admin) jika komentar tidak dihapus user / hidden
+    if ($row['forum_comment_hidden'] !== null) {
+        $btn_hide_komentar = '<a class="btn btn-sm btn-danger mt-1 mb-2 float-end rounded ms-2" id="btn_hide_komentar"><i class="fas fa-eye-slash fa-flip-horizontal"></i> Show</a>'; // Tampilan (admin) jika komentar hidden
+    }
+    if ($user['role_id'] > 2 && $row['forum_comment_hidden'] === null) {
+        $btn_hide_komentar =  '<a class="btn btn-sm btn-outline-danger mt-1 mb-2 float-end rounded ms-2" id="btn_hide_komentar"><i class="fa-solid fa-trash-can"></i> Hapus</a>'; // Tampilan khusus untuk selain admin (HAPUS)
+    } else if ($user['role_id'] > 2 && $row['forum_comment_hidden'] !== null) {
+        $btn_hide_komentar = null;
+    }
+}
+if ($user['id'] !== $data_user_komen['id']) {
+    if ($row['forum_comment_del_by_user'] !== null) { // Tampilan (admin) jika komentar user dihapus oleh user
+        $btn_hide_komentar = null;
+    }
+}
+
+//================================================================
+$btn_ubah_komentar = null;
 if ($user['id'] === $data_user_komen['id']) {
-    $result_btn_ubah_komentar =  '<a class="btn btn-sm btn-info mt-1 mb-2 float-end rounded" id="btn_ubah_komentar"><i class="fa-solid fa-pen-clip"></i> Ubah</a>';
+    $btn_ubah_komentar =  '<a class="btn btn-sm btn-info mt-1 mb-2 float-end rounded" id="btn_ubah_komentar"><i class="fa-solid fa-pen-clip"></i> Ubah</a>';
+}
+if ($user['role_id'] > 2 && $row['forum_comment_hidden'] !== null) {
+    $btn_ubah_komentar =  null;
 }
 ?>
 
@@ -85,29 +124,31 @@ if ($user['id'] === $data_user_komen['id']) {
         <input name="parent_anonim" value="<?= $row['parent_anonim']; ?>" type="text" readonly></input>
     </article>
 
-    <span class="pe-2">
+    <span class="pe-2" id="avatar" <?= $style_text_commentar; ?>>
         <img src="<?= base_url('assets/img/avatars/' . $data_user_komen['image']); ?>" width="36" height="36" class="rounded-circle me-2" alt="User">
     </span>
     <div class="flex-grow-1">
-        <?= $result_user_komen . $result_user_komen_parent; ?>
-        <br />
-        <small class="text-muted"><?= $row['created_at_carbon']; ?> <span id="update_at"><?= $_result_updated_at; ?></span></small>
-        <span class="closest_isi_komentar">
-            <div class="textbox border p-2 mt-1 text-break">
-                <div id="isi_text_komentar" style="max-height: 100px; overflow-y: hidden; transition: all 0.3s ease-out;">
-                    <div id="isi_komentar">
-                        <?= nl2br(htmlspecialchars($row['isi_comment'])); ?>
+        <div id="content-sub-closest" <?= $style_text_commentar; ?>>
+            <?= $result_user_komen . $result_user_komen_parent; ?>
+            <br />
+            <small class="text-muted"><?= $row['created_at_carbon']; ?> <span id="update_at"><?= $_result_updated_at; ?></span></small>
+            <span class="closest_isi_komentar">
+                <div class="textbox border p-2 mt-1 text-break rounded <?= $bg_text_commentar; ?>">
+                    <div id="isi_text_komentar" style="max-height: 100px; overflow-y: hidden; transition: all 0.3s ease-out;">
+                        <div id="isi_komentar">
+                            <?= nl2br(htmlspecialchars($row['isi_comment'])); ?>
+                        </div>
+                    </div>
+                    <div class="edit-comment input-group">
+                        <textarea type="text" class="form-control d-none" placeholder="Edit komentar.." id="input_edit_komentar" data-textarea="1"></textarea>
                     </div>
                 </div>
-                <div class="edit-comment input-group">
-                    <textarea type="text" class="form-control d-none" placeholder="Edit komentar.." id="input_edit_komentar" data-textarea="1"></textarea>
-                </div>
-            </div>
-            <div class="d-none" id="baca_lengkap"><a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Baca selengkapnya..</a></div>
-        </span>
+                <div class="d-none" id="baca_lengkap"><a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Baca selengkapnya..</a></div>
+            </span>
+        </div>
 
         <!-- Button -->
-        <a class="btn btn-lg rounded mb-1 ps-0 pe-2 border-0" style="cursor: default;" id="suka_komentar">
+        <a class="btn btn-lg rounded mb-1 ps-0 pe-2 border-0 <?= $btn_disabled; ?>" style="cursor: default;" id="suka_komentar" <?= $style_text_commentar; ?>>
             <input class="checkbox" type="checkbox" id="checkbox_komentar_<?= $row['id']; ?>_<?= $row['id_forum']; ?>_<?= $row['id_forum_pertanyaan'] ?>" />
             <label class="m-0 p-0 d-flex justify-content-center align-content-stretch cursor-pointer" for="checkbox_komentar_<?= $row['id']; ?>_<?= $row['id_forum']; ?>_<?= $row['id_forum_pertanyaan'] ?>">
                 <svg class="m-0 p-0" id="heart-svg" viewBox="467 392 58 57">
@@ -154,9 +195,11 @@ if ($user['id'] === $data_user_komen['id']) {
                 <div class="my-auto pt-1"><?= $row['total_like']; ?></div>
             </label>
         </a>
-        <a class="btn btn-lg mt-1 mb-1 px-1 border-0 <?= $komentar_active; ?>" id="balas_komentar"><i class="fad fa-reply"></i> Balas</a>
-        <?= $result_hapus_komentar; ?>
-        <?= $result_btn_ubah_komentar; ?>
+        <a class="btn btn-lg mt-1 mb-1 px-1 border-0 <?= $komentar_active; ?> <?= $btn_disabled; ?>" id="balas_komentar" <?= $style_text_commentar; ?>><i class="fad fa-reply"></i> Balas</a>
+        <?= $btn_hapus_komentar; ?>
+        <!-- <a class="btn btn-sm btn-outline-danger mt-1 mb-2 float-end rounded ms-2" id="btn_hapus_komentar"><i class="fa-solid fa-trash-can"></i> Hapus</a> -->
+        <?= $btn_hide_komentar; ?>
+        <?= $btn_ubah_komentar; ?>
         <a class="btn btn-sm btn-danger mt-1 float-end rounded me-2 d-none" id="btn_batal_edit_komentar"></i>Batal</a>
         <!-- FORM SUB REPLY -->
         <main class="d-none" id="sub_balas">

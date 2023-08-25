@@ -168,8 +168,11 @@ class Forum extends CI_Controller
                     $answered_at = strtotime($result['row']['answered_at']);
                     $result['row']['answered_at_carbon'] = $this->time->getTimeAgo($answered_at);
                     // updated_at_fp
-                    $updated_at_fp = strtotime($result['row']['updated_at_fp']);
-                    $result['row']['updated_at_fp_carbon'] = $this->time->getTimeAgo($updated_at_fp);
+                    $result['row']['updated_at_fp_carbon'] = null;
+                    if ($result['row']['updated_at_fp'] != null || $result['row']['updated_at_fp'] != '') {
+                        $updated_at_fp = strtotime($result['row']['updated_at_fp']);
+                        $result['row']['updated_at_fp_carbon'] = $this->time->getTimeAgo($updated_at_fp);
+                    }
                     $output .= $this->load->view('forum/forum_diskusi/data_forum_diskusi', $result, true);
                 }
             } else {
@@ -190,7 +193,9 @@ class Forum extends CI_Controller
         $result['id_forum'] = $this->input->post('id_forum');
         $result['id_fp'] = $this->input->post('id_fp');
         $result['id_user_tanya'] = $this->input->post('id_user_tanya');
-        $result['user'] = $this->forum->info_user($this->input->post('user_id'));
+        $result['user'] = $this->data['user'];
+        $hc = $this->input->post('hidden_comment');
+        $dc = $this->input->post('deleted_comment');
 
         $output = '';
         $next = 'false';
@@ -199,7 +204,7 @@ class Forum extends CI_Controller
         $id_forum = $result['id_forum'];
         $id_forum_pertanyaan = $result['id_fp'];
 
-        $data = $this->iscroll->data_komentar($limit, $start, $id_forum, $id_forum_pertanyaan);
+        $data = $this->iscroll->data_komentar($limit, $start, $id_forum, $id_forum_pertanyaan, $result['user']['id'], $result['user']['role_id'], $hc, $dc);
         $result_data = $data['2']->result_array();
         $num_rows_1 = $data['num_rows_1'];
         $num_rows_2 = $data['num_rows_2'];
@@ -220,8 +225,11 @@ class Forum extends CI_Controller
                     $created_at = strtotime($result['row']['created_at']);
                     $result['row']['created_at_carbon'] = $this->time->getTimeAgo($created_at);
                     // updated_at_fp
-                    $updated_at = strtotime($result['row']['updated_at']);
-                    $result['row']['updated_at_carbon'] = $this->time->getTimeAgo($updated_at);
+                    $result['row']['updated_at_carbon'] = null;
+                    if ($result['row']['updated_at'] != null || $result['row']['updated_at'] != '') {
+                        $updated_at = strtotime($result['row']['updated_at']);
+                        $result['row']['updated_at_carbon'] = $this->time->getTimeAgo($updated_at);
+                    }
 
                     $output .= $this->load->view('forum/forum_diskusi/data_balasan', $result, true);
                 }
@@ -232,7 +240,7 @@ class Forum extends CI_Controller
             $output = 'null';
         }
         // Buat cek apakah masih ada data selanjutnya
-        $data_next =  $this->iscroll->data_komentar($limit + 1, $start, $id_forum, $id_forum_pertanyaan);
+        $data_next =  $this->iscroll->data_komentar($limit + 1, $start, $id_forum, $id_forum_pertanyaan, $result['user']['id'], $result['user']['role_id'], $hc, $dc);
         if ($data_next['num_rows_2'] != $data['num_rows_2']) $next = 'true';
         echo json_encode(['data' => $output, 'num_rows' => $num_rows_1, 'next' => $next]);
     }
@@ -295,8 +303,10 @@ class Forum extends CI_Controller
         $result['id_forum'] = $this->input->post('id_forum');
         $result['id_fp'] = $this->input->post('id_fp');
         $result['id_user_tanya'] = $this->input->post('id_user_tanya');
-        $result['user'] = $this->forum->info_user($this->input->post('user_id'));
-        $data = $this->forum->data_komentar($result['id_forum'], $result['id_fp']);
+        $result['user'] = $this->data['user'];
+        $hc = $this->input->post('hidden_comment');
+        $dc = $this->input->post('deleted_comment');
+        $data = $this->forum->data_komentar($result['id_forum'], $result['id_fp'], $result['user']['id'], $result['user']['role_id'], $hc, $dc);
         $result_data = $data->result_array();
         $data_forum = $this->forum->info_forum($result['id_forum'])->row_array();
         $result['komentar_active'] = $data_forum['komentar_active'];
@@ -370,30 +380,90 @@ class Forum extends CI_Controller
 
         echo json_encode(['result' => $output]);
     }
+    function pre_update_forum_diskusi()
+    {
+        if (!$this->input->post('id_fp')) redirect('forum');
+
+        $user = $this->data['user'];
+        $id_fc = $this->input->post('id_fc');
+        $result = null;
+        if ($id_fc !== null) {
+            $result = $this->forum->preUpdataForumComment($id_fc, (int)$user['role_id']);
+        }
+        echo json_encode(['result' => $result]);
+    }
     function update_forum_diskusi()
     {
         if (!$this->input->post('id_fp')) redirect('forum');
 
-        $output = '';
-        $data['id_fp'] = $this->input->post('id_fp');
-        $data['id_fc'] = $this->input->post('id_fc');
-        $data['value_input_edit_komentar'] = $this->input->post('value_input_edit_komentar');
+        $output = null;
+        $user = $this->data['user'];
+        $id_fp = $this->input->post('id_fp');
+        $id_fc = $this->input->post('id_fc');
+        $value_input_edit_komentar = $this->input->post('value_input_edit_komentar');
+
+        if ($id_fc !== null) {
+            $output = $this->forum->preUpdataForumComment($id_fc, (int)$user['role_id']);
+            if ($output !== null) {
+                echo json_encode(['result' => $output]);
+                die();
+            }
+        }
 
         // Edit Jawaban Pertanyaan
         if (empty($this->input->post('id_fc'))) {
-            $output = $this->forum->update_forum_pertanyaan($data['id_fp'], $data['value_input_edit_komentar']);
-            $time_update = $this->db->select('updated_at')->from('forum_pertanyaan')->where('id', $data['id_fp'])->get()->row_array();
+            $output = $this->forum->update_forum_pertanyaan($id_fp, $value_input_edit_komentar);
+            $time_update = $this->db->select('updated_at')->from('forum_pertanyaan')->where('id', $id_fp)->get()->row_array();
             $time_update = strtotime($time_update['updated_at']);
             $time_update = $this->time->getTimeAgo($time_update);
         }
         // Edit Komentar
         else {
-            $output = $this->forum->update_forum_comment($data['id_fc'], $data['value_input_edit_komentar']);
-            $time_update = $this->db->select('updated_at')->from('forum_comment')->where('id', $data['id_fc'])->get()->row_array();
+            $output = $this->forum->update_forum_comment($id_fc, $value_input_edit_komentar);
+            $time_update = $this->db->select('updated_at')->from('forum_comment')->where('id', $id_fc)->get()->row_array();
             $time_update = strtotime($time_update['updated_at']);
             $time_update = $this->time->getTimeAgo($time_update);
         }
         echo json_encode(['result' => $output, 'time_update' => $time_update]);
+    }
+    function show_hide_forum_diskusi()
+    {
+        if (!$this->input->post('id_fp')) redirect('forum');
+
+        $output = '';
+        $id_fp = $this->input->post('id_fp');
+        $id_fc = $this->input->post('id_fc');
+        $instruction = $this->input->post('instruction');
+
+        // Show_hide Jawaban Pertanyaan
+        if (empty($this->input->post('id_fc'))) {
+            $output = true;
+        }
+        // Show_hide Komentar
+        else {
+            $output = $this->forum->show_hide_forum_diskusi($id_fc, $instruction);
+        }
+        echo json_encode(['result' => $output]);
+    }
+    function hapus_forum_diskusi()
+    {
+        if (!$this->input->post('id_fp')) redirect('forum');
+
+        $output = '';
+        $id_forum = $this->input->post('id_forum');
+        $id_fp = $this->input->post('id_fp');
+        $id_fc = $this->input->post('id_fc');
+
+        // Hapus Pertanyaan
+        if (empty($this->input->post('id_fc'))) {
+            // $output = true;
+            $output = $this->forum->hapus_forum_diskusi_pertanyaan($id_forum, $id_fp);
+        }
+        // Hapus Komentar
+        else {
+            $output = $this->forum->hapus_forum_diskusi_comment($id_fc);
+        }
+        echo json_encode(['result' => $output]);
     }
 
 

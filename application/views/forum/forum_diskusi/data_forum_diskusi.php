@@ -14,7 +14,7 @@ $color_admin = null; //
 ($user['id'] !== $row['id_admin']) ? ($color_admin = 'text-info') : ($color_admin = 'text-danger');
 
 $answer_updated_at = null; // 
-($row['answered_at'] !== $row['updated_at_fp']) ? ($answer_updated_at = '<br class="d-md-none"><span class="text-navy">( <i class="fad fa-edit"></i> Diedit ' . $row["updated_at_fp_carbon"] . ' )</span>') : ($answer_updated_at = null);
+($row['answered_at'] !== $row['updated_at_fp'] || $row['updated_at_fp'] !== null || $row['updated_at_fp'] !== '') ? ($answer_updated_at = '<br class="d-md-none"><span class="text-navy">( <i class="fad fa-edit"></i> Diedit ' . $row["updated_at_fp_carbon"] . ' )</span>') : ($answer_updated_at = null);
 
 $hapus_pertanyaan = null; // 
 $btn_ubah_jawaban = null; // 
@@ -50,7 +50,7 @@ if ($user['role_id'] <= 2) {
             <article> <strong class="<?= $color_anonim; ?>"><?= $anonim; ?></strong> </article>
             <article> <small class="text-muted"><?= $row['created_at_fp_carbon']; ?></small> </article>
             <span class="closest_isi_komentar">
-                <div class="textbox border p-2 mt-1 text-break">
+                <div class="textbox border p-2 mt-1 text-break rounded">
                     <div id="isi_text_komentar" style="max-height: 100px; overflow-y: hidden; transition: all 0.3s ease-out;">
                         <div id="isi_komentar">
                             <?= nl2br(htmlspecialchars($row['isi_pertanyaan'])); ?>
@@ -134,7 +134,7 @@ if ($user['role_id'] <= 2) {
                     <br />
                     <small class="text-muted"><?= $row['answered_at_carbon']; ?> <span id="update_at"><?= $answer_updated_at; ?></span></small>
                     <span class="closest_isi_komentar">
-                        <div class="textbox border p-2 mt-1 text-break">
+                        <div class="textbox border p-2 mt-1 text-break rounded">
                             <div id="isi_text_komentar" style="max-height: 100px; overflow-y: hidden; transition: all 0.3s ease-out;">
                                 <div id="isi_komentar">
                                     <?= nl2br(htmlspecialchars($row['isi_jawaban'])); ?>
