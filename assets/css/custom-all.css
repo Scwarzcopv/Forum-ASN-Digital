@@ -163,14 +163,14 @@ textarea {
     animation-iteration-count: infinite;
     -webkit-animation-name: placeHolderShimmer;
     animation-name: placeHolderShimmer;
-    -webkit-animation-timing-function: linear;
-    animation-timing-function: linear;
+    -webkit-animation-timing-function: ease-in-out;
+    animation-timing-function: ease-in-out;
     background: #f6f7f8;
     background: -webkit-gradient(linear, left top, right top, color-stop(8%, #eeeeee), color-stop(18%, #dddddd), color-stop(33%, #eeeeee));
     background: -webkit-linear-gradient(left, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
     background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
-    -webkit-background-size: 800px 104px;
-    background-size: 800px 104px;
+    -webkit-background-size: 1600px 104px;
+    background-size: 1600px 104px;
     height: inherit;
     position: relative;
     border-radius: 5px;

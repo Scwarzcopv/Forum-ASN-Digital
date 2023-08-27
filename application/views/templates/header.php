@@ -31,6 +31,10 @@
     <script src="<?= base_url('assets'); ?>/js/sweetalert2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- Toastr -->
+    <link href="<?= base_url('assets/plugins/toastr/toastr.css'); ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/plugins/toastr/toastr.min.css'); ?>" rel="stylesheet">
+
     <!-- JqueryValidation -->
     <script src="<?= base_url('assets'); ?>/js/validate.min.js"></script>
     <script src="<?= base_url('assets'); ?>/js/validate.js"></script>
