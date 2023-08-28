@@ -157,6 +157,7 @@ class Forum extends CI_Controller
                 foreach ($result_data as $result['row']) {
                     // var_dump($result['row']) $result['row']['id_notulen']
                     $index++;
+                    $result['QNA'] = $this->forum->check_heartQNA($result['user']['id'], $result['row']['id_fp']);
                     $result['row']['index'] = $index;
                     $result['row']['id_penanya'] = $this->forum->info_user($result['row']['id_user_tanya']);
                     $result['row']['id_penjawab'] = $this->forum->info_user($result['row']['id_admin']);
@@ -217,6 +218,7 @@ class Forum extends CI_Controller
             if ($num_rows_2 > 0) {
                 $index = $start;
                 foreach ($result_data as $result['row']) {
+                    $result['Comment'] = $this->forum->check_heartC($result['user']['id'], $result['row']['id']);
                     $index++;
                     // var_dump($result['row']) $result['row']['id_notulen']
                     $result['data_user_komen'] = $this->forum->info_user($result['row']['id_user']);
@@ -350,6 +352,7 @@ class Forum extends CI_Controller
             'id_forum_pertanyaan' => $id_forum_pertanyaan,
             'id_user' => $id_user,
             'isi_comment' => $isi_comment,
+            'total_like' => 0,
         );
 
         // Balas Pertanyaan
@@ -462,6 +465,25 @@ class Forum extends CI_Controller
         // Hapus Komentar
         else {
             $output = $this->forum->hapus_forum_diskusi_comment($id_fc);
+        }
+        echo json_encode(['result' => $output]);
+    }
+    function heart_forum_diskusi()
+    {
+        if (!$this->input->post('id_fp')) redirect('forum');
+
+        $output = '';
+        $id_user = $this->data['user']['id'];
+        // $id_forum = $this->input->post('id_forum');
+        $id_fp = $this->input->post('id_fp');
+        $id_fc = $this->input->post('id_fc');
+        $give_to = $this->input->post('give_to');
+        if ($give_to == 'Q') {
+            $output = $this->forum->addHeartQ($id_user, $id_fp);
+        } else if ($give_to == 'A') {
+            $output = $this->forum->addHeartA($id_user, $id_fp);
+        } else if ($give_to == 'C') {
+            $output = $this->forum->addHeartC($id_user, $id_fc);
         }
         echo json_encode(['result' => $output]);
     }

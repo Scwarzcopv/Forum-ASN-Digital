@@ -24,6 +24,12 @@ if ($user['role_id'] <= 2) {
         $btn_ubah_jawaban = '<a class="btn btn-sm btn-info mt-1 float-end rounded" id="btn_ubah_komentar"><i class="fa-solid fa-pen-clip"></i> Ubah</a>';
     }
 }
+
+// QNA heart btn
+$Q = null;
+$A = null;
+(@$QNA['Q'] == true) ? ($Q = 'checked') : ($Q = null);
+(@$QNA['A'] == true) ? ($A = 'checked') : ($A = null);
 ?>
 
 <section class="d-flex align-items-start closest mb-3">
@@ -64,8 +70,8 @@ if ($user['role_id'] <= 2) {
             </span>
 
             <!-- Button -->
-            <a class="btn btn-lg rounded ps-0 pe-2 border-0" style="cursor: default;">
-                <input class="checkbox" type="checkbox" id="checkbox_<?= $row['id_forum']; ?>_<?= $row['id_fp']; ?>" />
+            <a class="btn btn-lg rounded ps-0 pe-2 border-0" style="cursor: default;" id="suka_pertanyaan">
+                <input class="checkbox suka_pertanyaan" type="checkbox" id="checkbox_<?= $row['id_forum']; ?>_<?= $row['id_fp']; ?>" <?= $Q; ?> />
                 <label class="m-0 p-0 d-flex justify-content-center align-content-stretch cursor-pointer" for="checkbox_<?= $row['id_forum']; ?>_<?= $row['id_fp']; ?>">
                     <svg class="m-0 p-0" id="heart-svg" viewBox="467 392 58 57">
                         <g id="Group" fill="none" fill-rule="evenodd" transform="translate(467 392)">
@@ -108,7 +114,7 @@ if ($user['role_id'] <= 2) {
                             </g>
                         </g>
                     </svg>
-                    <div class="my-auto pt-1"><?= $row['total_like_fp']; ?></div>
+                    <div class="my-auto pt-1 total_suka_pertanyaan"><?= $row['total_like_fp']; ?></div>
                 </label>
             </a>
             <a class="btn btn-lg mt-1 px-1 border-0 <?= $komentar_active; ?>" id="tampil_balas"><i class="fad fa-reply"></i> Balas</a>
@@ -148,8 +154,8 @@ if ($user['role_id'] <= 2) {
                     </span>
 
                     <!-- Button -->
-                    <a class="btn btn-lg rounded ps-0 pe-2 border-0" style="cursor: default;" id="suka_komentar">
-                        <input class="checkbox" type="checkbox" id="checkbox_answered_<?= $row['id_fp']; ?>" />
+                    <a class="btn btn-lg rounded ps-0 pe-2 border-0" style="cursor: default;" id="suka_jawaban">
+                        <input class="checkbox suka_jawaban" type="checkbox" id="checkbox_answered_<?= $row['id_fp']; ?>" <?= $A; ?> />
                         <label class="m-0 p-0 d-flex justify-content-center align-content-stretch cursor-pointer" for="checkbox_answered_<?= $row['id_fp']; ?>">
                             <svg class="m-0 p-0" id="heart-svg" viewBox="467 392 58 57">
                                 <g id="Group" fill="none" fill-rule="evenodd" transform="translate(467 392)">
@@ -192,12 +198,12 @@ if ($user['role_id'] <= 2) {
                                     </g>
                                 </g>
                             </svg>
-                            <div class="my-auto pt-1"><?= $row['total_like_jawaban']; ?></div>
+                            <div class="my-auto pt-1 total_suka_jawaban"><?= $row['total_like_jawaban']; ?></div>
                         </label>
                     </a>
-                    <a class="btn btn-lg px-1 border-0 <?= $komentar_active; ?>" id="balas_komentar"><i class="fad fa-reply"></i> Balas</a>
+                    <a class="btn btn-lg mt-1 px-1 border-0 <?= $komentar_active; ?>" id="balas_komentar"><i class="fad fa-reply"></i> Balas</a>
                     <?= $btn_ubah_jawaban; ?>
-                    <a class="btn btn-sm btn-danger float-end rounded mt-1 me-2 d-none" id="btn_batal_edit_komentar"></i>Batal</a>
+                    <a class="btn btn-sm mt-md-1 btn-danger float-end rounded mt-1 me-2 d-none" id="btn_batal_edit_komentar"></i>Batal</a>
                     <!-- FORM SUB REPLY -->
                     <main class="d-none" id="sub_balas">
                     </main>

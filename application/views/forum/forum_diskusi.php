@@ -230,7 +230,7 @@ $tanya_active = 'disabled';
     const limit_pertanyaan = 4;
     const limit_komentar = 4;
     // Effect
-    const placeholder_timer = 2500;
+    const placeholder_timer = 2000;
     const spinner_timer = 500;
     const is_pertanyaan_sDown = 'easeInOutExpo';
     // Jangan Ganti
@@ -1757,6 +1757,65 @@ $tanya_active = 'disabled';
             });
         });
     }
+    // Memberi laik
+    function heart() {
+        $(document).delegate('.suka_pertanyaan', 'change', function() {
+            var self = $(this);
+            var self_find = func_self_find(self, '.closest');
+            var data = func_self_data(self, '.closest', '.data-closest');
+            data['give_to'] = 'Q';
+
+            $.ajax({
+                url: "<?php echo base_url(); ?>forum/heart_forum_diskusi",
+                method: "POST",
+                data: data,
+                dataType: 'json',
+                success: function(resp) {
+                    self_find.find('.total_suka_pertanyaan').html(resp.result);
+                }
+            });
+        });
+
+        $(document).delegate('.suka_jawaban', 'change', function() {
+            var self = $(this);
+            var self_find = func_self_find(self, '.closest');
+            var data = func_self_data(self, '.closest', '.data-closest');
+            data['give_to'] = 'A';
+
+            $.ajax({
+                url: "<?php echo base_url(); ?>forum/heart_forum_diskusi",
+                method: "POST",
+                data: data,
+                dataType: 'json',
+                success: function(resp) {
+                    self_find.find('.total_suka_jawaban').html(resp.result);
+                }
+            });
+        });
+
+        $(document).delegate('.suka_komentar', 'change', function() {
+            var self = $(this);
+            var self_find_sub = func_self_find(self, '.sub-closest');
+
+            var data1 = func_self_data(self, '.closest', '.data-closest');
+            var data2 = func_self_data(self, '.sub-closest', '.data-sub-closest');
+            var data = {
+                ...data1,
+                ...data2
+            };
+            data['give_to'] = 'C';
+
+            $.ajax({
+                url: "<?php echo base_url(); ?>forum/heart_forum_diskusi",
+                method: "POST",
+                data: data,
+                dataType: 'json',
+                success: function(resp) {
+                    self_find_sub.find('.total_suka_komentar').html(resp.result);
+                }
+            });
+        });
+    }
 
     // ======================================= Document Ready =======================================
     $(document).ready(function() {
@@ -1789,6 +1848,7 @@ $tanya_active = 'disabled';
         hide_show_element(role_id);
         tambah_komentar();
         input_pertanyaan();
+        heart();
 
         // $(document).ajaxStop(function() {
         //     func_baca_lengkap();

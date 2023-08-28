@@ -293,4 +293,187 @@ class Forum_model extends CI_Model
             return false;
         }
     }
+    function check_heartQNA($id_user, $id_fp)
+    {
+        $checked = null;
+        // Q
+        $Q = $this->db->select('*')
+            ->from('heart_q')
+            ->where('id_user', $id_user)
+            ->where('id_forum_pertanyaan', $id_fp)
+            ->get()
+            ->num_rows();
+        $Q = (int)$Q;
+        if ($Q > 0) $checked['Q'] = true;
+        // A
+        $A = $this->db->select('*')
+            ->from('heart_a')
+            ->where('id_user', $id_user)
+            ->where('id_forum_pertanyaan', $id_fp)
+            ->get()
+            ->num_rows();
+        $A = (int)$A;
+        if ($A > 0) $checked['A'] = true;
+
+        return $checked;
+    }
+    function check_heartC($id_user, $id_fc)
+    {
+        $checked = null;
+        // C
+        $C = $this->db->select('*')
+            ->from('heart_comment')
+            ->where('id_user', $id_user)
+            ->where('id_comment', $id_fc)
+            ->get()
+            ->num_rows();
+        $C = (int)$C;
+        if ($C > 0) $checked = true;
+
+        return $checked;
+    }
+    function addHeartQ($id_user, $id_fp)
+    {
+        // Cek available data tabel heart_q
+        $insertNew = false;
+        $a = $this->db->select('*')
+            ->from('heart_q')
+            ->where('id_user', $id_user)
+            ->where('id_forum_pertanyaan', $id_fp)
+            ->get()
+            ->num_rows();
+        if ($a <= 0) $insertNew = true;
+
+        if ($insertNew == true) { // Jika tidak ada
+            $dataInsert['id_user'] = $id_user;
+            $dataInsert['id_forum_pertanyaan'] = $id_fp;
+            $this->db->trans_start();
+            $this->db->insert('heart_q', $dataInsert);
+            $this->db->trans_complete();
+        } else { // jika tidak ada
+            $this->db
+                ->where('id_user', $id_user)
+                ->where('id_forum_pertanyaan', $id_fp)
+                ->delete('heart_q');
+        }
+
+        // Total data inserted
+        $heartTotalQ = $this->db->select('*')
+            ->from('heart_q')
+            ->where('id_forum_pertanyaan', $id_fp)
+            ->get()
+            ->num_rows();
+        $heartTotalQ = (int)$heartTotalQ;
+
+        // Cek available tabel forum_pertanyaan
+        $availableFP = $this->db->select('*')
+            ->from('forum_pertanyaan')
+            ->where('id', $id_fp)
+            ->get()
+            ->num_rows();
+        if ($availableFP > 0) { // Jika ada
+            $this->db->trans_start();
+            $this->db->set('total_like', $heartTotalQ, FALSE)
+                ->where('id', $id_fp)
+                ->update('forum_pertanyaan');
+            $this->db->trans_complete();
+            return $heartTotalQ;
+        }
+    }
+    function addHeartA($id_user, $id_fp)
+    {
+        // Cek available data tabel heart_a
+        $insertNew = false;
+        $a = $this->db->select('*')
+            ->from('heart_a')
+            ->where('id_user', $id_user)
+            ->where('id_forum_pertanyaan', $id_fp)
+            ->get()
+            ->num_rows();
+        if ($a <= 0) $insertNew = true;
+
+        if ($insertNew == true) { // Jika tidak ada
+            $dataInsert['id_user'] = $id_user;
+            $dataInsert['id_forum_pertanyaan'] = $id_fp;
+            $this->db->trans_start();
+            $this->db->insert('heart_a', $dataInsert);
+            $this->db->trans_complete();
+        } else { // jika tidak ada
+            $this->db
+                ->where('id_user', $id_user)
+                ->where('id_forum_pertanyaan', $id_fp)
+                ->delete('heart_a');
+        }
+
+        // Total data inserted
+        $heartTotalA = $this->db->select('*')
+            ->from('heart_a')
+            ->where('id_forum_pertanyaan', $id_fp)
+            ->get()
+            ->num_rows();
+        $heartTotalA = (int)$heartTotalA;
+
+        // Cek available tabel forum_pertanyaan
+        $availableFP = $this->db->select('*')
+            ->from('forum_pertanyaan')
+            ->where('id', $id_fp)
+            ->get()
+            ->num_rows();
+        if ($availableFP > 0) { // Jika ada
+            $this->db->trans_start();
+            $this->db->set('total_like_jawaban', $heartTotalA, FALSE)
+                ->where('id', $id_fp)
+                ->update('forum_pertanyaan');
+            $this->db->trans_complete();
+            return $heartTotalA;
+        }
+    }
+    function addHeartC($id_user, $id_fc)
+    {
+        // Cek available data tabel heart_comment
+        $insertNew = false;
+        $c = $this->db->select('*')
+            ->from('heart_comment')
+            ->where('id_user', $id_user)
+            ->where('id_comment', $id_fc)
+            ->get()
+            ->num_rows();
+        if ($c <= 0) $insertNew = true;
+
+        if ($insertNew == true) { // Jika tidak ada
+            $dataInsert['id_user'] = (int)$id_user;
+            $dataInsert['id_comment'] = (int)$id_fc;
+            $this->db->trans_start();
+            $this->db->insert('heart_comment', $dataInsert);
+            $this->db->trans_complete();
+        } else { // jika tidak ada
+            $this->db
+                ->where('id_user', $id_user)
+                ->where('id_comment', $id_fc)
+                ->delete('heart_comment');
+        }
+
+        // Total data inserted
+        $heartTotalC = $this->db->select('*')
+            ->from('heart_comment')
+            ->where('id_comment', $id_fc)
+            ->get()
+            ->num_rows();
+        $heartTotalC = (int)$heartTotalC;
+
+        // Cek available tabel forum_comment
+        $availableFC = $this->db->select('*')
+            ->from('forum_comment')
+            ->where('id', $id_fc)
+            ->get()
+            ->num_rows();
+        if ($availableFC > 0) { // Jika ada
+            $this->db->trans_start();
+            $this->db->set('total_like', $heartTotalC, FALSE)
+                ->where('id', $id_fc)
+                ->update('forum_comment');
+            $this->db->trans_complete();
+            return $heartTotalC;
+        }
+    }
 }

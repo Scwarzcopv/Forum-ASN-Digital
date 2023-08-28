@@ -113,6 +113,10 @@ if ($user['id'] === $data_user_komen['id']) {
 if ($user['role_id'] > 2 && $row['forum_comment_hidden'] !== null) {
     $btn_ubah_komentar =  null;
 }
+
+// Komen heart
+$C = null;
+(@$Comment == true) ? ($C = 'checked') : ($C = null);
 ?>
 
 
@@ -149,7 +153,7 @@ if ($user['role_id'] > 2 && $row['forum_comment_hidden'] !== null) {
 
         <!-- Button -->
         <a class="btn btn-lg rounded mb-1 ps-0 pe-2 border-0 <?= $btn_disabled; ?>" style="cursor: default;" id="suka_komentar" <?= $style_text_commentar; ?>>
-            <input class="checkbox" type="checkbox" id="checkbox_komentar_<?= $row['id']; ?>_<?= $row['id_forum']; ?>_<?= $row['id_forum_pertanyaan'] ?>" />
+            <input class="checkbox suka_komentar" type="checkbox" id="checkbox_komentar_<?= $row['id']; ?>_<?= $row['id_forum']; ?>_<?= $row['id_forum_pertanyaan'] ?>" <?= $C; ?> />
             <label class="m-0 p-0 d-flex justify-content-center align-content-stretch cursor-pointer" for="checkbox_komentar_<?= $row['id']; ?>_<?= $row['id_forum']; ?>_<?= $row['id_forum_pertanyaan'] ?>">
                 <svg class="m-0 p-0" id="heart-svg" viewBox="467 392 58 57">
                     <g id="Group" fill="none" fill-rule="evenodd" transform="translate(467 392)">
@@ -192,7 +196,7 @@ if ($user['role_id'] > 2 && $row['forum_comment_hidden'] !== null) {
                         </g>
                     </g>
                 </svg>
-                <div class="my-auto pt-1"><?= $row['total_like']; ?></div>
+                <div class="my-auto pt-1 total_suka_komentar"><?= $row['total_like']; ?></div>
             </label>
         </a>
         <a class="btn btn-lg mt-1 mb-1 px-1 border-0 <?= $komentar_active; ?> <?= $btn_disabled; ?>" id="balas_komentar" <?= $style_text_commentar; ?>><i class="fad fa-reply"></i> Balas</a>
