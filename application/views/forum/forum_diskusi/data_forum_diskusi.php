@@ -1,5 +1,5 @@
 <?php
-($komentar_active == 1 || $user['role_id'] < 3) ? ($komentar_active = null) : ($komentar_active = 'disabled');
+($komentar_active == 1 || $user['role_id'] < 3) ? ($komentar_active = null) : ($komentar_active = 'd-none');
 
 // Penanya
 $anonim = null; // 
@@ -19,9 +19,9 @@ $answer_updated_at = null; //
 $hapus_pertanyaan = null; // 
 $btn_ubah_jawaban = null; // 
 if ($user['role_id'] <= 2) {
-    $hapus_pertanyaan = '<a class="btn btn-sm btn-outline-danger mt-1 float-end rounded" id="btn_hapus_pertanyaan"><i class="fa-solid fa-trash-can"></i> Hapus</a>';
+    $hapus_pertanyaan = '<a class="btn btn-sm btn-outline-danger mt-1 ms-auto rounded" id="btn_hapus_pertanyaan"><i class="fa-solid fa-trash-can"></i></a>';
     if ($user['id'] === $row['id_admin']) {
-        $btn_ubah_jawaban = '<a class="btn btn-sm btn-info mt-1 float-end rounded" id="btn_ubah_komentar"><i class="fa-solid fa-pen-clip"></i> Ubah</a>';
+        $btn_ubah_jawaban = '<a class="btn btn-sm btn-info mt-1 mb-2 rounded" id="btn_ubah_komentar"><i class="fa-solid fa-pen-clip"></i> Ubah</a>';
     }
 }
 
@@ -46,7 +46,7 @@ $A = null;
     </article>
 
     <div>
-        <span class="pe-2">
+        <span class="pe-md-2">
             <img src="<?= base_url('assets/img/avatars/default.png'); ?>" width="36" height="36" class="rounded-circle me-2" alt="Anonim">
         </span>
     </div>
@@ -68,58 +68,59 @@ $A = null;
                 </div>
                 <div class="d-none" id="baca_lengkap"><a class="my-0 py-0 ps-0 btn btn-outline-info border-0 bg-transparent text-info">Baca selengkapnya..</a></div>
             </span>
-
             <!-- Button -->
-            <a class="btn btn-lg rounded ps-0 pe-2 border-0" style="cursor: default;" id="suka_pertanyaan">
-                <input class="checkbox suka_pertanyaan" type="checkbox" id="checkbox_<?= $row['id_forum']; ?>_<?= $row['id_fp']; ?>" <?= $Q; ?> />
-                <label class="m-0 p-0 d-flex justify-content-center align-content-stretch cursor-pointer" for="checkbox_<?= $row['id_forum']; ?>_<?= $row['id_fp']; ?>">
-                    <svg class="m-0 p-0" id="heart-svg" viewBox="467 392 58 57">
-                        <g id="Group" fill="none" fill-rule="evenodd" transform="translate(467 392)">
-                            <path d="M29.144 20.773c-.063-.13-4.227-8.67-11.44-2.59C7.63 28.795 28.94 43.256 29.143 43.394c.204-.138 21.513-14.6 11.44-25.213-7.214-6.08-11.377 2.46-11.44 2.59z" id="heart" fill="#AAB8C2" />
-                            <circle id="main-circ" fill="#E2264D" opacity="0" cx="29.5" cy="29.5" r="1.5" />
+            <div class="pt-0 d-flex align-items-center">
+                <a class="btn btn-lg rounded ps-0 pe-1 pe-lg-2 border-0" style="cursor: default;" id="suka_pertanyaan">
+                    <input class="checkbox suka_pertanyaan" type="checkbox" id="checkbox_<?= $row['id_forum']; ?>_<?= $row['id_fp']; ?>" <?= $Q; ?> />
+                    <label class="m-0 p-0 d-flex justify-content-center align-content-stretch cursor-pointer" for="checkbox_<?= $row['id_forum']; ?>_<?= $row['id_fp']; ?>">
+                        <svg class="m-0 p-0" id="heart-svg" viewBox="467 392 58 57">
+                            <g id="Group" fill="none" fill-rule="evenodd" transform="translate(467 392)">
+                                <path d="M29.144 20.773c-.063-.13-4.227-8.67-11.44-2.59C7.63 28.795 28.94 43.256 29.143 43.394c.204-.138 21.513-14.6 11.44-25.213-7.214-6.08-11.377 2.46-11.44 2.59z" id="heart" fill="#AAB8C2" />
+                                <circle id="main-circ" fill="#E2264D" opacity="0" cx="29.5" cy="29.5" r="1.5" />
 
-                            <g id="grp7" opacity="0" transform="translate(7 6)">
-                                <circle id="oval1" fill="#9CD8C3" cx="2" cy="6" r="2" />
-                                <circle id="oval2" fill="#8CE8C3" cx="5" cy="2" r="2" />
-                            </g>
+                                <g id="grp7" opacity="0" transform="translate(7 6)">
+                                    <circle id="oval1" fill="#9CD8C3" cx="2" cy="6" r="2" />
+                                    <circle id="oval2" fill="#8CE8C3" cx="5" cy="2" r="2" />
+                                </g>
 
-                            <g id="grp6" opacity="0" transform="translate(0 28)">
-                                <circle id="oval1" fill="#CC8EF5" cx="2" cy="7" r="2" />
-                                <circle id="oval2" fill="#91D2FA" cx="3" cy="2" r="2" />
-                            </g>
+                                <g id="grp6" opacity="0" transform="translate(0 28)">
+                                    <circle id="oval1" fill="#CC8EF5" cx="2" cy="7" r="2" />
+                                    <circle id="oval2" fill="#91D2FA" cx="3" cy="2" r="2" />
+                                </g>
 
-                            <g id="grp3" opacity="0" transform="translate(52 28)">
-                                <circle id="oval2" fill="#9CD8C3" cx="2" cy="7" r="2" />
-                                <circle id="oval1" fill="#8CE8C3" cx="4" cy="2" r="2" />
-                            </g>
+                                <g id="grp3" opacity="0" transform="translate(52 28)">
+                                    <circle id="oval2" fill="#9CD8C3" cx="2" cy="7" r="2" />
+                                    <circle id="oval1" fill="#8CE8C3" cx="4" cy="2" r="2" />
+                                </g>
 
-                            <g id="grp2" opacity="0" transform="translate(44 6)">
-                                <circle id="oval2" fill="#CC8EF5" cx="5" cy="6" r="2" />
-                                <circle id="oval1" fill="#CC8EF5" cx="2" cy="2" r="2" />
-                            </g>
+                                <g id="grp2" opacity="0" transform="translate(44 6)">
+                                    <circle id="oval2" fill="#CC8EF5" cx="5" cy="6" r="2" />
+                                    <circle id="oval1" fill="#CC8EF5" cx="2" cy="2" r="2" />
+                                </g>
 
-                            <g id="grp5" opacity="0" transform="translate(14 50)">
-                                <circle id="oval1" fill="#91D2FA" cx="6" cy="5" r="2" />
-                                <circle id="oval2" fill="#91D2FA" cx="2" cy="2" r="2" />
-                            </g>
+                                <g id="grp5" opacity="0" transform="translate(14 50)">
+                                    <circle id="oval1" fill="#91D2FA" cx="6" cy="5" r="2" />
+                                    <circle id="oval2" fill="#91D2FA" cx="2" cy="2" r="2" />
+                                </g>
 
-                            <g id="grp4" opacity="0" transform="translate(35 50)">
-                                <circle id="oval1" fill="#F48EA7" cx="6" cy="5" r="2" />
-                                <circle id="oval2" fill="#F48EA7" cx="2" cy="2" r="2" />
-                            </g>
+                                <g id="grp4" opacity="0" transform="translate(35 50)">
+                                    <circle id="oval1" fill="#F48EA7" cx="6" cy="5" r="2" />
+                                    <circle id="oval2" fill="#F48EA7" cx="2" cy="2" r="2" />
+                                </g>
 
-                            <g id="grp1" opacity="0" transform="translate(24)">
-                                <circle id="oval1" fill="#9FC7FA" cx="2.5" cy="3" r="2" />
-                                <circle id="oval2" fill="#9FC7FA" cx="7.5" cy="2" r="2" />
+                                <g id="grp1" opacity="0" transform="translate(24)">
+                                    <circle id="oval1" fill="#9FC7FA" cx="2.5" cy="3" r="2" />
+                                    <circle id="oval2" fill="#9FC7FA" cx="7.5" cy="2" r="2" />
+                                </g>
                             </g>
-                        </g>
-                    </svg>
-                    <div class="my-auto pt-1 total_suka_pertanyaan"><?= $row['total_like_fp']; ?></div>
-                </label>
-            </a>
-            <a class="btn btn-lg mt-1 px-1 border-0 <?= $komentar_active; ?>" id="tampil_balas"><i class="fad fa-reply"></i> Balas</a>
-            <?= $hapus_pertanyaan; ?>
-            <a class="btn btn-lg mt-md-1 px-1 border-0" id="tampil_balasan"><i class="fad fa-chevron-right" id="chevron_right" style="transition: all 0.5s;"></i> Tampilkan Balasan</a>
+                        </svg>
+                        <div class="my-auto pt-1 total_suka_pertanyaan"><?= $row['total_like_fp']; ?></div>
+                    </label>
+                </a>
+                <a class="btn btn-lg mt-1 px-1 border-0 <?= $komentar_active; ?>" id="tampil_balas"><i class="fad fa-reply"></i> Balas</a>
+                <a class="btn btn-lg mt-1 px-1 border-0 d-flex align-items-center" id="tampil_balasan"><i class="fad fa-chevron-right me-1" id="chevron_right" style="transition: all 0.5s;"></i><span class="d-none d-md-block me-1">Tampilkan</span> Balasan</a>
+                <?= $hapus_pertanyaan; ?>
+            </div>
             <!-- Form reply pertanyaan -->
             <div class="d-none" id="balas"></div>
         </main>
@@ -132,7 +133,7 @@ $A = null;
                     <input name="id_user_admin" value="<?= $row['id_admin']; ?>" type="text" readonly></input>
                 </article>
 
-                <span class="pe-2">
+                <span class="pe-md-2">
                     <img src="<?= base_url('assets/img/avatars/' . $row['id_penjawab']['image']); ?>" width="36" height="36" class="rounded-circle me-2" alt="Admin">
                 </span>
                 <div class="flex-grow-1">
@@ -154,56 +155,62 @@ $A = null;
                     </span>
 
                     <!-- Button -->
-                    <a class="btn btn-lg rounded ps-0 pe-2 border-0" style="cursor: default;" id="suka_jawaban">
-                        <input class="checkbox suka_jawaban" type="checkbox" id="checkbox_answered_<?= $row['id_fp']; ?>" <?= $A; ?> />
-                        <label class="m-0 p-0 d-flex justify-content-center align-content-stretch cursor-pointer" for="checkbox_answered_<?= $row['id_fp']; ?>">
-                            <svg class="m-0 p-0" id="heart-svg" viewBox="467 392 58 57">
-                                <g id="Group" fill="none" fill-rule="evenodd" transform="translate(467 392)">
-                                    <path d="M29.144 20.773c-.063-.13-4.227-8.67-11.44-2.59C7.63 28.795 28.94 43.256 29.143 43.394c.204-.138 21.513-14.6 11.44-25.213-7.214-6.08-11.377 2.46-11.44 2.59z" id="heart" fill="#AAB8C2" />
-                                    <circle id="main-circ" fill="#E2264D" opacity="0" cx="29.5" cy="29.5" r="1.5" />
+                    <div class="row">
+                        <div class="col-12 d-flex align-items-center">
+                            <a class="btn btn-lg rounded ps-0 pe-2 border-0" style="cursor: default;" id="suka_jawaban">
+                                <input class="checkbox suka_jawaban" type="checkbox" id="checkbox_answered_<?= $row['id_fp']; ?>" <?= $A; ?> />
+                                <label class="m-0 p-0 d-flex justify-content-center align-content-stretch cursor-pointer" for="checkbox_answered_<?= $row['id_fp']; ?>">
+                                    <svg class="m-0 p-0" id="heart-svg" viewBox="467 392 58 57">
+                                        <g id="Group" fill="none" fill-rule="evenodd" transform="translate(467 392)">
+                                            <path d="M29.144 20.773c-.063-.13-4.227-8.67-11.44-2.59C7.63 28.795 28.94 43.256 29.143 43.394c.204-.138 21.513-14.6 11.44-25.213-7.214-6.08-11.377 2.46-11.44 2.59z" id="heart" fill="#AAB8C2" />
+                                            <circle id="main-circ" fill="#E2264D" opacity="0" cx="29.5" cy="29.5" r="1.5" />
 
-                                    <g id="grp7" opacity="0" transform="translate(7 6)">
-                                        <circle id="oval1" fill="#9CD8C3" cx="2" cy="6" r="2" />
-                                        <circle id="oval2" fill="#8CE8C3" cx="5" cy="2" r="2" />
-                                    </g>
+                                            <g id="grp7" opacity="0" transform="translate(7 6)">
+                                                <circle id="oval1" fill="#9CD8C3" cx="2" cy="6" r="2" />
+                                                <circle id="oval2" fill="#8CE8C3" cx="5" cy="2" r="2" />
+                                            </g>
 
-                                    <g id="grp6" opacity="0" transform="translate(0 28)">
-                                        <circle id="oval1" fill="#CC8EF5" cx="2" cy="7" r="2" />
-                                        <circle id="oval2" fill="#91D2FA" cx="3" cy="2" r="2" />
-                                    </g>
+                                            <g id="grp6" opacity="0" transform="translate(0 28)">
+                                                <circle id="oval1" fill="#CC8EF5" cx="2" cy="7" r="2" />
+                                                <circle id="oval2" fill="#91D2FA" cx="3" cy="2" r="2" />
+                                            </g>
 
-                                    <g id="grp3" opacity="0" transform="translate(52 28)">
-                                        <circle id="oval2" fill="#9CD8C3" cx="2" cy="7" r="2" />
-                                        <circle id="oval1" fill="#8CE8C3" cx="4" cy="2" r="2" />
-                                    </g>
+                                            <g id="grp3" opacity="0" transform="translate(52 28)">
+                                                <circle id="oval2" fill="#9CD8C3" cx="2" cy="7" r="2" />
+                                                <circle id="oval1" fill="#8CE8C3" cx="4" cy="2" r="2" />
+                                            </g>
 
-                                    <g id="grp2" opacity="0" transform="translate(44 6)">
-                                        <circle id="oval2" fill="#CC8EF5" cx="5" cy="6" r="2" />
-                                        <circle id="oval1" fill="#CC8EF5" cx="2" cy="2" r="2" />
-                                    </g>
+                                            <g id="grp2" opacity="0" transform="translate(44 6)">
+                                                <circle id="oval2" fill="#CC8EF5" cx="5" cy="6" r="2" />
+                                                <circle id="oval1" fill="#CC8EF5" cx="2" cy="2" r="2" />
+                                            </g>
 
-                                    <g id="grp5" opacity="0" transform="translate(14 50)">
-                                        <circle id="oval1" fill="#91D2FA" cx="6" cy="5" r="2" />
-                                        <circle id="oval2" fill="#91D2FA" cx="2" cy="2" r="2" />
-                                    </g>
+                                            <g id="grp5" opacity="0" transform="translate(14 50)">
+                                                <circle id="oval1" fill="#91D2FA" cx="6" cy="5" r="2" />
+                                                <circle id="oval2" fill="#91D2FA" cx="2" cy="2" r="2" />
+                                            </g>
 
-                                    <g id="grp4" opacity="0" transform="translate(35 50)">
-                                        <circle id="oval1" fill="#F48EA7" cx="6" cy="5" r="2" />
-                                        <circle id="oval2" fill="#F48EA7" cx="2" cy="2" r="2" />
-                                    </g>
+                                            <g id="grp4" opacity="0" transform="translate(35 50)">
+                                                <circle id="oval1" fill="#F48EA7" cx="6" cy="5" r="2" />
+                                                <circle id="oval2" fill="#F48EA7" cx="2" cy="2" r="2" />
+                                            </g>
 
-                                    <g id="grp1" opacity="0" transform="translate(24)">
-                                        <circle id="oval1" fill="#9FC7FA" cx="2.5" cy="3" r="2" />
-                                        <circle id="oval2" fill="#9FC7FA" cx="7.5" cy="2" r="2" />
-                                    </g>
-                                </g>
-                            </svg>
-                            <div class="my-auto pt-1 total_suka_jawaban"><?= $row['total_like_jawaban']; ?></div>
-                        </label>
-                    </a>
-                    <a class="btn btn-lg mt-1 px-1 border-0 <?= $komentar_active; ?>" id="balas_komentar"><i class="fad fa-reply"></i> Balas</a>
-                    <?= $btn_ubah_jawaban; ?>
-                    <a class="btn btn-sm mt-md-1 btn-danger float-end rounded mt-1 me-2 d-none" id="btn_batal_edit_komentar"></i>Batal</a>
+                                            <g id="grp1" opacity="0" transform="translate(24)">
+                                                <circle id="oval1" fill="#9FC7FA" cx="2.5" cy="3" r="2" />
+                                                <circle id="oval2" fill="#9FC7FA" cx="7.5" cy="2" r="2" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                    <div class="my-auto pt-1 total_suka_jawaban"><?= $row['total_like_jawaban']; ?></div>
+                                </label>
+                            </a>
+                            <a class="btn btn-lg mt-1 px-1 border-0 <?= $komentar_active; ?>" id="balas_komentar"><i class="fad fa-reply"></i> Balas</a>
+                            <div class="ms-auto d-flex ">
+                                <a class="btn btn-sm btn-danger mt-1 mb-2 rounded me-1 d-none" id="btn_batal_edit_komentar"></i>Batal</a>
+                                <?= $btn_ubah_jawaban; ?>
+                            </div>
+                        </div>
+                    </div>
                     <!-- FORM SUB REPLY -->
                     <main class="d-none" id="sub_balas">
                     </main>

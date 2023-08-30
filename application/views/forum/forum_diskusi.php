@@ -1,7 +1,7 @@
 <?php
 $tanya_active = 'disabled';
 // $komentar_active = 'disabled';
-($info_notulen['tanya_active'] == 1 || $user['role_id'] < 3) ? ($tanya_active = null) : ($tanya_active = 'disabled');
+($info_notulen['tanya_active'] == 1 || $user['role_id'] < 3) ? ($tanya_active = null) : ($tanya_active = 'd-none');
 // ($info_notulen['komentar_active'] == 1) ? ($komentar_active = null) : ($komentar_active = 'disabled');
 ?>
 <!-- <style>
@@ -9,7 +9,7 @@ $tanya_active = 'disabled';
         opacity: 1 !important;
     }
 </style> -->
-<main class="content px-3 px-md-5">
+<main class="content ps-1 pe-3 px-sm-3 px-md-5">
     <div class="container-fluid p-0">
         <div class="row  justify-content-end">
             <span class="show_hide text-secondary mb-2 user-select-none" style="cursor: pointer;"><i class="fa-solid fa-circle-chevron-down transition-05"></i> Tampilkan Informasi Kegiatan</span>
@@ -73,7 +73,7 @@ $tanya_active = 'disabled';
                                                 <h5 class="card-title mb-0">Pertanyaan (<span id="total_pertanyaan">0</span>)</h5>
                                                 <a class="btn btn-outline-secondary rounded rounded-4 py-0 px-2 ms-2 fw-bolder d-none d-lg-block" id="refresh_pertanyaan"><i class="fas fa-redo-alt"></i> Reload</a>
                                             </div>
-                                            <div>
+                                            <div class="<?= $tanya_active; ?>">
                                                 <!-- Button trigger modal Tambah Pertanyaan -->
                                                 <button type="button" class="btn btn-primary ms-auto btn_open_modal d-none d-lg-block" <?= $tanya_active; ?>>Input Pertanyaan <i class="fas fa-comment-plus ms-1"></i></button>
                                                 <button type="button" class="btn btn-primary ms-auto btn_open_modal d-block d-lg-none" <?= $tanya_active; ?>>Pertanyaan <i class="fas fa-comment-plus ms-1"></i></button>
@@ -99,7 +99,7 @@ $tanya_active = 'disabled';
                                                         <span class="visually-hidden">Loading...</span>
                                                     </div>
                                                     <div class="form-check form-switch saklar_comment_hidden">
-                                                        <input class="form-check-input my-auto" type="checkbox" name="active_forum" id="saklar_comment_hidden" style="width: 40px; height: 20px;" checked>
+                                                        <input class="form-check-input my-auto" type="checkbox" name="active_forum" id="saklar_comment_hidden" style="width: 40px; height: 20px;">
                                                     </div>
                                                 </td>
                                             </tr>
@@ -199,6 +199,28 @@ $tanya_active = 'disabled';
 </div>
 <script src="<?= base_url('assets'); ?>/js/customsweetalert.js"></script>
 <script src="<?= base_url('assets/plugins/toastr/toastr.min.js'); ?>"></script>
+<?= $this->session->flashdata('message'); ?>
+
+<!-- Global Variable -->
+<script>
+    // Editable
+    var show_hidden_comment = true;
+    var show_deleted_comment = false;
+    const min_heght_baca_selengkapnya = 100; //Harus sinkron
+    const grow_baca_selengkapnya = 100;
+    const limit_pertanyaan = 4;
+    const limit_komentar = 4;
+    // Effect
+    const placeholder_timer = 2000;
+    const spinner_timer = 500;
+    const is_pertanyaan_sDown = 'easeInOutExpo';
+    // Jangan Ganti
+    const id_forum = <?= $id_forum; ?>;
+    const role_id = <?= $user['role_id']; ?>;
+    var start = 0; // Start invinite scroll pertanyaan
+    var action = 'inactive'; // Action invinite scroll pertanyaan
+    var toggle_sidebar = false;
+</script>
 <script>
     toastr.options = {
         "closeButton": false,
@@ -217,28 +239,13 @@ $tanya_active = 'disabled';
         "showMethod": "fadeIn",
         "hideMethod": "fadeOut"
     }
-</script>
-<?= $this->session->flashdata('message'); ?>
 
-<!-- Global Variable -->
-<script>
-    // Editable
-    var show_hidden_comment = true; //Harus sinkron
-    var show_deleted_comment = false; //Harus sinkron
-    const min_heght_baca_selengkapnya = 100; //Harus sinkron
-    const grow_baca_selengkapnya = 100;
-    const limit_pertanyaan = 4;
-    const limit_komentar = 4;
-    // Effect
-    const placeholder_timer = 2000;
-    const spinner_timer = 500;
-    const is_pertanyaan_sDown = 'easeInOutExpo';
-    // Jangan Ganti
-    const id_forum = <?= $id_forum; ?>;
-    const role_id = <?= $user['role_id']; ?>;
-    var start = 0; // Start invinite scroll pertanyaan
-    var action = 'inactive'; // Action invinite scroll pertanyaan
-    var toggle_sidebar = false;
+    if (show_hidden_comment == true) {
+        $('#saklar_comment_hidden').attr('checked', 'true');
+    }
+    if (show_deleted_comment == true) {
+        $('#saklar_comment_del_by_user').attr('checked', 'true');
+    }
 </script>
 
 <!-- Slick -->
@@ -1394,7 +1401,7 @@ $tanya_active = 'disabled';
 
             Swal.fire({
                 title: "Hapus pertanyaan?",
-                text: "Semua data terkait pertanyaan ini akan dihapus",
+                html: "Semua data terkait pertanyaan ini akan dihapus <br><span class='fw-bold'>secara permanen</span>.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -1465,6 +1472,7 @@ $tanya_active = 'disabled';
 
             Swal.fire({
                 title: "Hapus komentar?",
+                html: "Komentar akan dihapus <span class='fw-bold'>secara permanen</span>.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -1578,7 +1586,7 @@ $tanya_active = 'disabled';
                                         content_sub_closest.css('opacity', 0.5);
                                         suka_komentar.css('opacity', 0.5).addClass('disabled');
                                         balas_komentar.css('opacity', 0.5).addClass('disabled');
-                                        self.html('<i class="fas fa-eye-slash fa-flip-horizontal"></i> Show');
+                                        self.html('<i class="fas fa-eye-slash fa-flip-horizontal"></i> <span class="d-none d-lg-inline-flex">Show</span>');
                                         (textbox).addClass('text-light bg-secondary');
                                         setTimeout(function() {
                                             load_data_komentar(data, isi_balasan, total_komentar, loader_komentar, '', '', 0, true, function() {
@@ -1628,7 +1636,7 @@ $tanya_active = 'disabled';
                                         content_sub_closest.css('opacity', 1);
                                         suka_komentar.css('opacity', 1).removeClass('disabled');
                                         balas_komentar.css('opacity', 1).removeClass('disabled');
-                                        self.html('<i class="fas fa-eye"></i> Hide');
+                                        self.html('<i class="fas fa-eye"></i> <span class="d-none d-lg-inline-flex">Hide</span>');
                                         textbox.removeClass('text-light bg-secondary');
                                         setTimeout(function() {
                                             load_data_komentar(data, isi_balasan, total_komentar, loader_komentar, '', '', 0, true, function() {

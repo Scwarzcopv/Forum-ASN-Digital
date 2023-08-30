@@ -44,6 +44,7 @@ class Forum extends CI_Controller
     {
         if (!$this->input->post('limit')) redirect('forum');
         $output = '';
+        $next = false;
         $limit = $this->input->post('limit');
         $start = $this->input->post('start');
         $id_user = $this->data['user']['id'];
@@ -67,7 +68,9 @@ class Forum extends CI_Controller
         } else {
             $output = 'null';
         }
-        echo json_encode(['data' => $output, 'num_rows' => $num_rows_2]);
+        $data_next = $this->iscroll->forum((int)$limit + 1, $start, $id_user, $keyword, $order);
+        if ($data_next['num_rows_3'] != $data['num_rows_3']) $next = true;
+        echo json_encode(['data' => $output, 'num_rows' => $num_rows_2, 'next' => $next]);
     }
 
     function saklar_forum()
@@ -538,5 +541,65 @@ class Forum extends CI_Controller
         $this->load->view('templates/topbar', $data);
         $this->load->view('forum/pertanyaan', $data);
         $this->load->view('templates/footer');
+    }
+    public function data_pertanyaan($id_forum)
+    {
+        // Session
+        $data['user'] = $this->data['user'];
+        // Cek Akses
+        $this->forum->cek_forum_access($id_forum, $data['user']['id']);
+        // Title
+        $data['title'] = 'Data Pertanyaan';
+        // Active Sidebar
+        $data['sidebar'] = 'Pertanyaan';
+        // Judul Sidebar
+        $data['role'] = $this->sidebar->sidebar($this->role);
+        // Get Id forum
+        $data['id_forum'] = $id_forum;
+        // Get Foto Dokumentasi
+        $data['foto_dokumentasi'] = $this->forum->foto_dokumentasi($id_forum)->result_array();
+        // Get Info Notulen
+        $data['info_notulen'] = $this->forum->info_notulen($id_forum)->row_array();
+        $data['info_notulen']['tgl_selesai'] = strtotime($data['info_notulen']['tgl_selesai']);
+        $data['info_notulen']['tgl_selesai'] = $this->time->getTimeSince($data['info_notulen']['tgl_selesai']) . ' (' . $this->time->getTimeAgo($data['info_notulen']['tgl_selesai']) . ')';
+
+        // Load View
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('templates/topbar', $data);
+        $this->load->view('forum/data_pertanyaan', $data);
+        $this->load->view('templates/footer');
+    }
+    function fetch_pertanyaan()
+    {
+        if (!$this->input->post('limit')) redirect('forum');
+        $output = '';
+        $next = false;
+        $limit = $this->input->post('limit');
+        $start = $this->input->post('start');
+        $id_user = $this->data['user']['id'];
+        $keyword = $this->input->post('keyword');
+        $order = $this->input->post('order');
+        $data = $this->iscroll->forum($limit, $start, $id_user, $keyword, $order);
+        $result_data = $data['3']->result_array();
+        $num_rows_1 = $data['num_rows_1'];
+        $num_rows_2 = $data['num_rows_2'];
+        $num_rows_3 = $data['num_rows_3'];
+        $result['user'] = $this->data['user'];
+        if ($num_rows_1 > 0) {
+            if ($num_rows_3 > 0) {
+                foreach ($result_data as $result['row']) {
+                    // var_dump($result['row']) $result['row']['id_notulen']
+                    $output .= $this->load->view('forum/pertanyaan/data_pertanyaan', $result, true);
+                }
+            } else {
+                $output = 'null2';
+            }
+        } else {
+            $output = 'null';
+        }
+        $data_next = $this->iscroll->forum((int)$limit + 1, $start, $id_user, $keyword, $order);
+        if ($data_next['num_rows_3'] != $data['num_rows_3']) $next = true;
+        echo json_encode(['data' => $output, 'num_rows' => $num_rows_2, 'next' => $next]);
     }
 }

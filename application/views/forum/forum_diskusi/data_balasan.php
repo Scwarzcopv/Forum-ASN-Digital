@@ -1,5 +1,5 @@
 <?php
-($komentar_active == 1 || $user['role_id'] < 3) ? ($komentar_active = null) : ($komentar_active = 'disabled');
+($komentar_active == 1 || $user['role_id'] < 3) ? ($komentar_active = null) : ($komentar_active = 'd-none');
 // =================================================================
 // Color User Komen
 $user_komen = null;
@@ -83,18 +83,18 @@ $user['role_id'] = (int)$user['role_id'];
 
 $btn_hapus_komentar = null;
 if ($user['role_id'] <= 2) {
-    $btn_hapus_komentar =  '<a class="btn btn-sm btn-outline-danger mt-1 mb-2 float-end rounded ms-2" id="btn_hapus_komentar"><i class="fa-solid fa-trash-can"></i> Hapus</a>';
+    $btn_hapus_komentar =  '<a class="btn btn-sm btn-outline-danger mt-1 mb-2 rounded ms-1" id="btn_hapus_komentar"><i class="fa-solid fa-trash-can"></i></a>';
 }
 
 //================================================================
 $btn_hide_komentar = null;
 if ($user['id'] === $data_user_komen['id'] || $user['role_id'] <= 2) {
-    $btn_hide_komentar =  '<a class="btn btn-sm btn-danger mt-1 mb-2 float-end rounded ms-2" id="btn_hide_komentar"><i class="fas fa-eye"></i> Hide</a>'; // Tampilan (admin) jika komentar tidak dihapus user / hidden
+    $btn_hide_komentar =  '<a class="btn btn-sm btn-danger mt-1 mb-2 rounded ms-1" id="btn_hide_komentar"><i class="fas fa-eye"></i> <span class="d-none d-lg-inline-flex">Hide</span></a>'; // Tampilan (admin) jika komentar tidak dihapus user / hidden
     if ($row['forum_comment_hidden'] !== null) {
-        $btn_hide_komentar = '<a class="btn btn-sm btn-danger mt-1 mb-2 float-end rounded ms-2" id="btn_hide_komentar"><i class="fas fa-eye-slash fa-flip-horizontal"></i> Show</a>'; // Tampilan (admin) jika komentar hidden
+        $btn_hide_komentar = '<a class="btn btn-sm btn-danger mt-1 mb-2 rounded ms-1" id="btn_hide_komentar"><i class="fas fa-eye-slash fa-flip-horizontal"></i> <span class="d-none d-lg-inline-flex">Show</span></a>'; // Tampilan (admin) jika komentar hidden
     }
     if ($user['role_id'] > 2 && $row['forum_comment_hidden'] === null) {
-        $btn_hide_komentar =  '<a class="btn btn-sm btn-outline-danger mt-1 mb-2 float-end rounded ms-2" id="btn_hide_komentar"><i class="fa-solid fa-trash-can"></i> Hapus</a>'; // Tampilan khusus untuk selain admin (HAPUS)
+        $btn_hide_komentar =  '<a class="btn btn-sm btn-outline-danger mt-1 mb-2 rounded ms-1" id="btn_hide_komentar"><i class="fa-solid fa-trash-can"></i></a>'; // Tampilan khusus untuk selain admin (HAPUS)
     } else if ($user['role_id'] > 2 && $row['forum_comment_hidden'] !== null) {
         $btn_hide_komentar = null;
     }
@@ -108,7 +108,7 @@ if ($user['id'] !== $data_user_komen['id']) {
 //================================================================
 $btn_ubah_komentar = null;
 if ($user['id'] === $data_user_komen['id']) {
-    $btn_ubah_komentar =  '<a class="btn btn-sm btn-info mt-1 mb-2 float-end rounded" id="btn_ubah_komentar"><i class="fa-solid fa-pen-clip"></i> Ubah</a>';
+    $btn_ubah_komentar =  '<a class="btn btn-sm btn-info mt-1 mb-2 rounded" id="btn_ubah_komentar"><i class="fa-solid fa-pen-clip"></i> <span class="d-none d-lg-inline-flex">Ubah</span></a>';
 }
 if ($user['role_id'] > 2 && $row['forum_comment_hidden'] !== null) {
     $btn_ubah_komentar =  null;
@@ -128,7 +128,7 @@ $C = null;
         <input name="parent_anonim" value="<?= $row['parent_anonim']; ?>" type="text" readonly></input>
     </article>
 
-    <span class="pe-2" id="avatar" <?= $style_text_commentar; ?>>
+    <span class="pe-md-2" id="avatar" <?= $style_text_commentar; ?>>
         <img src="<?= base_url('assets/img/avatars/' . $data_user_komen['image']); ?>" width="36" height="36" class="rounded-circle me-2" alt="User">
     </span>
     <div class="flex-grow-1">
@@ -152,59 +152,66 @@ $C = null;
         </div>
 
         <!-- Button -->
-        <a class="btn btn-lg rounded mb-1 ps-0 pe-2 border-0 <?= $btn_disabled; ?>" style="cursor: default;" id="suka_komentar" <?= $style_text_commentar; ?>>
-            <input class="checkbox suka_komentar" type="checkbox" id="checkbox_komentar_<?= $row['id']; ?>_<?= $row['id_forum']; ?>_<?= $row['id_forum_pertanyaan'] ?>" <?= $C; ?> />
-            <label class="m-0 p-0 d-flex justify-content-center align-content-stretch cursor-pointer" for="checkbox_komentar_<?= $row['id']; ?>_<?= $row['id_forum']; ?>_<?= $row['id_forum_pertanyaan'] ?>">
-                <svg class="m-0 p-0" id="heart-svg" viewBox="467 392 58 57">
-                    <g id="Group" fill="none" fill-rule="evenodd" transform="translate(467 392)">
-                        <path d="M29.144 20.773c-.063-.13-4.227-8.67-11.44-2.59C7.63 28.795 28.94 43.256 29.143 43.394c.204-.138 21.513-14.6 11.44-25.213-7.214-6.08-11.377 2.46-11.44 2.59z" id="heart" fill="#AAB8C2" />
-                        <circle id="main-circ" fill="#E2264D" opacity="0" cx="29.5" cy="29.5" r="1.5" />
+        <div class="row">
+            <div class="col-12 pt-0 d-flex align-items-center ">
+                <a class="btn btn-lg rounded mb-1 ps-0 pe-2 border-0 <?= $btn_disabled; ?>" style="cursor: default;" id="suka_komentar" <?= $style_text_commentar; ?>>
+                    <input class="checkbox suka_komentar" type="checkbox" id="checkbox_komentar_<?= $row['id']; ?>_<?= $row['id_forum']; ?>_<?= $row['id_forum_pertanyaan'] ?>" <?= $C; ?> />
+                    <label class="m-0 p-0 d-flex justify-content-center align-content-stretch cursor-pointer" for="checkbox_komentar_<?= $row['id']; ?>_<?= $row['id_forum']; ?>_<?= $row['id_forum_pertanyaan'] ?>">
+                        <svg class="m-0 p-0" id="heart-svg" viewBox="467 392 58 57">
+                            <g id="Group" fill="none" fill-rule="evenodd" transform="translate(467 392)">
+                                <path d="M29.144 20.773c-.063-.13-4.227-8.67-11.44-2.59C7.63 28.795 28.94 43.256 29.143 43.394c.204-.138 21.513-14.6 11.44-25.213-7.214-6.08-11.377 2.46-11.44 2.59z" id="heart" fill="#AAB8C2" />
+                                <circle id="main-circ" fill="#E2264D" opacity="0" cx="29.5" cy="29.5" r="1.5" />
 
-                        <g id="grp7" opacity="0" transform="translate(7 6)">
-                            <circle id="oval1" fill="#9CD8C3" cx="2" cy="6" r="2" />
-                            <circle id="oval2" fill="#8CE8C3" cx="5" cy="2" r="2" />
-                        </g>
+                                <g id="grp7" opacity="0" transform="translate(7 6)">
+                                    <circle id="oval1" fill="#9CD8C3" cx="2" cy="6" r="2" />
+                                    <circle id="oval2" fill="#8CE8C3" cx="5" cy="2" r="2" />
+                                </g>
 
-                        <g id="grp6" opacity="0" transform="translate(0 28)">
-                            <circle id="oval1" fill="#CC8EF5" cx="2" cy="7" r="2" />
-                            <circle id="oval2" fill="#91D2FA" cx="3" cy="2" r="2" />
-                        </g>
+                                <g id="grp6" opacity="0" transform="translate(0 28)">
+                                    <circle id="oval1" fill="#CC8EF5" cx="2" cy="7" r="2" />
+                                    <circle id="oval2" fill="#91D2FA" cx="3" cy="2" r="2" />
+                                </g>
 
-                        <g id="grp3" opacity="0" transform="translate(52 28)">
-                            <circle id="oval2" fill="#9CD8C3" cx="2" cy="7" r="2" />
-                            <circle id="oval1" fill="#8CE8C3" cx="4" cy="2" r="2" />
-                        </g>
+                                <g id="grp3" opacity="0" transform="translate(52 28)">
+                                    <circle id="oval2" fill="#9CD8C3" cx="2" cy="7" r="2" />
+                                    <circle id="oval1" fill="#8CE8C3" cx="4" cy="2" r="2" />
+                                </g>
 
-                        <g id="grp2" opacity="0" transform="translate(44 6)">
-                            <circle id="oval2" fill="#CC8EF5" cx="5" cy="6" r="2" />
-                            <circle id="oval1" fill="#CC8EF5" cx="2" cy="2" r="2" />
-                        </g>
+                                <g id="grp2" opacity="0" transform="translate(44 6)">
+                                    <circle id="oval2" fill="#CC8EF5" cx="5" cy="6" r="2" />
+                                    <circle id="oval1" fill="#CC8EF5" cx="2" cy="2" r="2" />
+                                </g>
 
-                        <g id="grp5" opacity="0" transform="translate(14 50)">
-                            <circle id="oval1" fill="#91D2FA" cx="6" cy="5" r="2" />
-                            <circle id="oval2" fill="#91D2FA" cx="2" cy="2" r="2" />
-                        </g>
+                                <g id="grp5" opacity="0" transform="translate(14 50)">
+                                    <circle id="oval1" fill="#91D2FA" cx="6" cy="5" r="2" />
+                                    <circle id="oval2" fill="#91D2FA" cx="2" cy="2" r="2" />
+                                </g>
 
-                        <g id="grp4" opacity="0" transform="translate(35 50)">
-                            <circle id="oval1" fill="#F48EA7" cx="6" cy="5" r="2" />
-                            <circle id="oval2" fill="#F48EA7" cx="2" cy="2" r="2" />
-                        </g>
+                                <g id="grp4" opacity="0" transform="translate(35 50)">
+                                    <circle id="oval1" fill="#F48EA7" cx="6" cy="5" r="2" />
+                                    <circle id="oval2" fill="#F48EA7" cx="2" cy="2" r="2" />
+                                </g>
 
-                        <g id="grp1" opacity="0" transform="translate(24)">
-                            <circle id="oval1" fill="#9FC7FA" cx="2.5" cy="3" r="2" />
-                            <circle id="oval2" fill="#9FC7FA" cx="7.5" cy="2" r="2" />
-                        </g>
-                    </g>
-                </svg>
-                <div class="my-auto pt-1 total_suka_komentar"><?= $row['total_like']; ?></div>
-            </label>
-        </a>
-        <a class="btn btn-lg mt-1 mb-1 px-1 border-0 <?= $komentar_active; ?> <?= $btn_disabled; ?>" id="balas_komentar" <?= $style_text_commentar; ?>><i class="fad fa-reply"></i> Balas</a>
-        <?= $btn_hapus_komentar; ?>
-        <!-- <a class="btn btn-sm btn-outline-danger mt-1 mb-2 float-end rounded ms-2" id="btn_hapus_komentar"><i class="fa-solid fa-trash-can"></i> Hapus</a> -->
-        <?= $btn_hide_komentar; ?>
-        <?= $btn_ubah_komentar; ?>
-        <a class="btn btn-sm btn-danger mt-1 float-end rounded me-2 d-none" id="btn_batal_edit_komentar"></i>Batal</a>
+                                <g id="grp1" opacity="0" transform="translate(24)">
+                                    <circle id="oval1" fill="#9FC7FA" cx="2.5" cy="3" r="2" />
+                                    <circle id="oval2" fill="#9FC7FA" cx="7.5" cy="2" r="2" />
+                                </g>
+                            </g>
+                        </svg>
+                        <div class="my-auto pt-1 total_suka_komentar"><?= $row['total_like']; ?></div>
+                    </label>
+                </a>
+                <a class="btn btn-lg mt-1 mb-1 px-1 border-0 <?= $komentar_active; ?> <?= $btn_disabled; ?>" id="balas_komentar" <?= $style_text_commentar; ?>><i class="fad fa-reply"></i> Balas</a>
+                <div class="ms-auto d-flex ">
+                    <a class="btn btn-sm btn-danger mt-1 mb-2 rounded me-1 d-none" id="btn_batal_edit_komentar"></i>Batal</a>
+                    <?= $btn_ubah_komentar; ?>
+                    <?= $btn_hide_komentar; ?>
+                    <?= $btn_hapus_komentar; ?>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8 pt-0">
+            </div>
+        </div>
         <!-- FORM SUB REPLY -->
         <main class="d-none" id="sub_balas">
         </main>
