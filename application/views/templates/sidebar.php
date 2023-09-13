@@ -70,6 +70,9 @@
                     <li class="sidebar-item <?php if ($sidebar == $sm['title']) echo "active"; ?>">
                         <a class="sidebar-link" href="<?= base_url($sm['url']); ?>">
                             <i class="align-middle <?= $sm['icon']; ?>"></i> <span class="align-middle"><?= $sm['title']; ?></span>
+                            <?php if ($sm['title'] === 'Pertanyaan') : ?>
+                                <span class="sidebar-badge badge bg-primary" id="notif_sidebar_pertanyaan">0</span>
+                            <?php endif; ?>
                         </a>
                     </li>
                 <?php endforeach; ?>

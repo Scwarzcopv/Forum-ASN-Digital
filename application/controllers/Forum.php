@@ -160,6 +160,10 @@ class Forum extends CI_Controller
                 foreach ($result_data as $result['row']) {
                     // var_dump($result['row']) $result['row']['id_notulen']
                     $index++;
+
+                    $info_notulen = $this->forum->info_notulen($id_forum)->row_array();
+                    $result['id_notulis'] = $info_notulen['id_notulis'];
+
                     $result['QNA'] = $this->forum->check_heartQNA($result['user']['id'], $result['row']['id_fp']);
                     $result['row']['index'] = $index;
                     $result['row']['id_penanya'] = $this->forum->info_user($result['row']['id_user_tanya']);
@@ -216,6 +220,9 @@ class Forum extends CI_Controller
         $data_forum = $this->forum->info_forum($result['id_forum'])->row_array();
         $result['komentar_active'] = $data_forum['komentar_active'];
         $result['nama_user_tanya'] = $this->input->post('nama_user_tanya');
+
+        $info_notulen = $this->forum->info_notulen($result['id_forum'])->row_array();
+        $result['id_notulis'] = $info_notulen['id_notulis'];
 
         if ($num_rows_1 > 0) {
             if ($num_rows_2 > 0) {
@@ -316,6 +323,9 @@ class Forum extends CI_Controller
         $data_forum = $this->forum->info_forum($result['id_forum'])->row_array();
         $result['komentar_active'] = $data_forum['komentar_active'];
         $result['nama_user_tanya'] = $this->input->post('nama_user_tanya');
+
+        $info_notulen = $this->forum->info_notulen($result['id_forum'])->row_array();
+        $result['id_notulis'] = $info_notulen['id_notulis'];
 
         // $output = $this->load->view('forum/data_balas_pertanyaan', $data, true);
         // if (!$this->input->post('limit')) redirect('forum');
@@ -490,6 +500,19 @@ class Forum extends CI_Controller
         }
         echo json_encode(['result' => $output]);
     }
+    function input_pertanyaan()
+    {
+        if (!$this->input->post('id_forum')) redirect('forum');
+
+        $output = '';
+        $id_forum = $this->input->post('id_forum');
+        $user = $this->data['user'];
+        $key_narasumber = $this->input->post('key_narasumber');
+        $pertanyaan = $this->input->post('pertanyaan');
+        $output = $this->forum->input_pertanyaan($id_forum, $user['id'], $key_narasumber, $pertanyaan);
+
+        echo json_encode(['result' => $output]);
+    }
 
 
 
@@ -601,5 +624,221 @@ class Forum extends CI_Controller
         $data_next = $this->iscroll->forum((int)$limit + 1, $start, $id_user, $keyword, $order);
         if ($data_next['num_rows_3'] != $data['num_rows_3']) $next = true;
         echo json_encode(['data' => $output, 'num_rows' => $num_rows_2, 'next' => $next]);
+    }
+    function info_fp()
+    {
+        if (!$this->input->post('id_fp')) redirect('forum');
+
+        $id_fp = $this->input->post('id_fp');
+        $output = '';
+        $output = $this->forum->info_forum_pertanyaan($id_fp)->row_array();
+        echo json_encode(['data' => $output]);
+    }
+
+    function total_pertanyaan()
+    {
+        if (!$this->input->post('id_forum')) redirect('forum');
+        $id_forum = $this->input->post('id_forum');
+        $info_forum = $this->forum->info_forum($id_forum)->row_array();
+        $info_notulen = $this->forum->info_notulen($info_forum['id_notulen'])->row_array();
+        $user = $this->data['user'];
+
+        $admin_notulen = false;
+        if ($user['id'] == $info_notulen['id_notulis']) $admin_notulen = true;
+        $total = $this->forum->total_pertanyaan($id_forum, $admin_notulen, $user['id']);
+        echo json_encode(['total_pending' => $total['pending'], 'total_approved' => $total['approved'], 'total_published' => $total['published'], 'total_deleted' => $total['deleted']]);
+    }
+    function fetch_pertanyaan_pending()
+    {
+        if (!$this->input->post('id_forum')) redirect('forum');
+
+        $output = '';
+        $narasumber = null;
+        $id_forum = $this->input->post('id_forum');
+        $info_forum = $this->forum->info_forum($id_forum)->row_array();
+        $info_notulen = $this->forum->info_notulen($info_forum['id_notulen'])->row_array();
+        $user = $this->data['user'];
+
+        $admin_notulen = false;
+        if ($user['id'] == $info_notulen['id_notulis']) $admin_notulen = true;
+
+        if ($info_notulen['narasumber']) $narasumber = explode('+', $info_notulen['narasumber']);
+
+        if ($narasumber) {
+            foreach ($narasumber as $key => $n) {
+                $result['key_narasumber'] = $key;
+                $result['total_sub_pertanyaan_pending'] = $this->forum->info_pertanyaan_pending($id_forum, $key, $admin_notulen, $user['id'])->num_rows();
+                $result['narasumber'] = $n;
+                $output .= $this->load->view('forum/pertanyaan/data_pending', $result, true);
+            }
+        }
+        echo json_encode(['result' => $output]);
+    }
+    function fetch_sub_pertanyaan_pending()
+    {
+        if (!$this->input->post('id_forum')) redirect('forum');
+
+        $result['id_forum'] = $this->input->post('id_forum');
+        $result['user'] = $this->data['user'];
+
+        $output = '';
+        $next = 'false';
+        $limit = (int)$this->input->post('limit');
+        $start = (int)$this->input->post('start');
+        $id_forum = $result['id_forum'];
+        $key_narasumber = (int)$this->input->post('key_narasumber');
+        $result['narasumber'] = $this->input->post('narasumber');
+
+        $data_forum = $this->forum->info_forum($result['id_forum'])->row_array();
+        $data_notulen = $this->forum->info_notulen($data_forum['id_notulen'])->row_array();
+        $result['id_notulis'] = $data_notulen['id_notulis'];
+
+        $admin_notulen = false;
+        if ($result['user']['id'] === $data_notulen['id_notulis']) $admin_notulen = true;
+        $data = $this->iscroll->data_pertanyaan_pending($limit, $start, $id_forum, $key_narasumber, $admin_notulen, $result['user']['id']);
+        $result_data = $data['2']->result_array();
+        $num_rows_1 = $data['num_rows_1'];
+        $num_rows_2 = $data['num_rows_2'];
+
+        if ($num_rows_1 > 0) {
+            if ($num_rows_2 > 0) {
+                $index = $start;
+                foreach ($result_data as $result['row']) {
+                    $index++;
+                    $result['key_anonim'] = $index;
+                    // $result['data_user_komen'] = $this->forum->info_user($result['row']['id_user']);
+                    // created_at
+                    $created_at = strtotime($result['row']['created_at_fp']);
+                    $result['created_at_carbon'] = $this->time->getTimeAgo($created_at);
+                    // // updated_at_fp
+                    // $result['row']['updated_at_carbon'] = null;
+                    // if ($result['row']['updated_at'] != null || $result['row']['updated_at'] != '') {
+                    //     $updated_at = strtotime($result['row']['updated_at']);
+                    //     $result['row']['updated_at_carbon'] = $this->time->getTimeAgo($updated_at);
+                    // }
+
+                    $output .= $this->load->view('forum/pertanyaan/data_sub_pertanyaan', $result, true);
+                }
+            } else {
+                $output = 'null2';
+            }
+        } else {
+            $output = 'null';
+        }
+        // Buat cek apakah masih ada data selanjutnya
+        $data_next =  $this->iscroll->data_pertanyaan_pending($limit + 1, $start, $id_forum, $key_narasumber, $admin_notulen, $result['user']['id']);
+        if ($data_next['num_rows_2'] != $data['num_rows_2']) $next = 'true';
+        echo json_encode(['data' => $output, 'num_rows' => $num_rows_1, 'next' => $next]);
+    }
+    function fetch_pertanyaan_excPending()
+    {
+        if (!$this->input->post('id_forum')) redirect('forum');
+
+        $result['id_forum'] = $this->input->post('id_forum');
+        $result['user'] = $this->data['user'];
+
+        $output = '';
+        $narasumber = null;
+        $next = 'false';
+        $limit = (int)$this->input->post('limit');
+        $start = (int)$this->input->post('start');
+        $id_forum = $result['id_forum'];
+        $pane = $this->input->post('pane');
+        // $key_narasumber = (int)$this->input->post('key_narasumber');
+        // $result['narasumber'] = $this->input->post('narasumber');
+        $info_notulen = $this->forum->info_notulen($id_forum)->row_array();
+        if ($info_notulen['narasumber']) $narasumber = explode('+', $info_notulen['narasumber']);
+
+        $data_forum = $this->forum->info_forum($result['id_forum'])->row_array();
+        $data_notulen = $this->forum->info_notulen($data_forum['id_notulen'])->row_array();
+        $result['id_notulis'] = $data_notulen['id_notulis'];
+
+        $admin_notulen = false;
+        if ($result['user']['id'] === $data_notulen['id_notulis']) $admin_notulen = true;
+        $data = $this->iscroll->data_pertanyaan_excPending($limit, $start, $id_forum, $pane, $admin_notulen, $result['user']['id']);
+        $result_data = $data['2']->result_array();
+        $num_rows_1 = $data['num_rows_1'];
+        $num_rows_2 = $data['num_rows_2'];
+
+        if ($num_rows_1 > 0) {
+            if ($num_rows_2 > 0) {
+                $index = $start;
+                foreach ($result_data as $result['row']) {
+                    $index++;
+                    $key_narasumber = (int)$result['row']['narasumber'];
+                    $result['key_anonim'] = $index;
+                    $result['narasumber'] = $narasumber[$key_narasumber];
+                    if ($pane == 'published') {
+                        $result['penjawab'] = $this->forum->info_user($result['row']['id_admin']);
+                        // answered_at
+                        $created_at = strtotime($result['row']['answered_at']);
+                        $result['answered_at_carbon'] = $this->time->getTimeAgo($created_at);
+                        // updated_at
+                        $created_at = strtotime($result['row']['updated_at_fp']);
+                        $result['updated_at_carbon'] = $this->time->getTimeAgo($created_at);
+                    }
+                    // created_at
+                    $created_at = strtotime($result['row']['created_at_fp']);
+                    $result['created_at_carbon'] = $this->time->getTimeAgo($created_at);
+
+                    $output .= $this->load->view('forum/pertanyaan/data_sub_pertanyaan', $result, true);
+                }
+            } else {
+                $output = 'null2';
+            }
+        } else {
+            $output = 'null';
+        }
+        // Buat cek apakah masih ada data selanjutnya
+        $data_next =  $this->iscroll->data_pertanyaan_excPending($limit + 1, $start, $id_forum, $pane, $admin_notulen, $result['user']['id']);
+        if ($data_next['num_rows_2'] != $data['num_rows_2']) $next = 'true';
+        echo json_encode(['data' => $output, 'num_rows' => $num_rows_1, 'next' => $next]);
+    }
+    function approve()
+    {
+        if (!$this->input->post('id_fp')) redirect('forum');
+
+        $output = '';
+        $id_fp = (int)$this->input->post('id_fp');
+        $output = $this->forum->approve($id_fp);
+        echo json_encode(['result' => $output]);
+    }
+    function approved()
+    {
+        if (!$this->input->post('id_fp')) redirect('forum');
+
+        $output = '';
+        $id_fp = (int)$this->input->post('id_fp');
+        $output = $this->forum->approved($id_fp);
+        echo json_encode(['result' => $output]);
+    }
+    function reject()
+    {
+        if (!$this->input->post('id_fp')) redirect('forum');
+
+        $output = '';
+        $id_fp = (int)$this->input->post('id_fp');
+        $output = $this->forum->reject($id_fp);
+        echo json_encode(['result' => $output]);
+    }
+    function restore()
+    {
+        if (!$this->input->post('id_fp')) redirect('forum');
+
+        $output = '';
+        $id_fp = $this->input->post('id_fp');
+        $output = $this->forum->restore($id_fp);
+        echo json_encode(['data' => $output]);
+    }
+    function publish()
+    {
+        if (!$this->input->post('id_fp')) redirect('forum');
+        $id_admin = $this->data['user']['id'];
+        $id_fp = (int)$this->input->post('id_fp');
+        $isi_jawaban = $this->input->post('isi_jawaban');
+
+        $output = '';
+        $output = $this->forum->publish($id_admin, $id_fp, $isi_jawaban);
+        echo json_encode(['result' => $output]);
     }
 }

@@ -23,7 +23,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://localhost/forum_asn_digital/';
+// $config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
+// $config['base_url'] .= "://" . $_SERVER['HTTP_HOST'];
+// $config['base_url'] .= str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
+// $ip = file_get_contents('https://api.ipify.org');
+// $config['base_url'] = 'http://' . $ip . '/forum_asn_digital/';
+// Function to get the client IP address
+$host = gethostname();
+$ip = gethostbyname($host);
+$config['base_url'] = 'http://' . $ip . '/forum_asn_digital/';
+// $config['base_url'] = 'http://192.168.1.66/forum_asn_digital/';
 
 /*
 |--------------------------------------------------------------------------

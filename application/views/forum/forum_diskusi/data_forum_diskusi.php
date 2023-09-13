@@ -1,5 +1,5 @@
 <?php
-($komentar_active == 1 || $user['role_id'] < 3) ? ($komentar_active = null) : ($komentar_active = 'd-none');
+($komentar_active == 1 || $user['id'] == $id_notulis) ? ($komentar_active = null) : ($komentar_active = 'd-none');
 
 // Penanya
 $anonim = null; // 
@@ -18,10 +18,10 @@ $answer_updated_at = null; //
 
 $hapus_pertanyaan = null; // 
 $btn_ubah_jawaban = null; // 
-if ($user['role_id'] <= 2) {
-    $hapus_pertanyaan = '<a class="btn btn-sm btn-outline-danger mt-1 ms-auto rounded" id="btn_hapus_pertanyaan"><i class="fa-solid fa-trash-can"></i></a>';
+if ($user['id'] == $id_notulis) {
     if ($user['id'] === $row['id_admin']) {
         $btn_ubah_jawaban = '<a class="btn btn-sm btn-info mt-1 mb-2 rounded" id="btn_ubah_komentar"><i class="fa-solid fa-pen-clip"></i> Ubah</a>';
+        $hapus_pertanyaan = '<a class="btn btn-sm btn-outline-danger mt-1 ms-auto rounded" id="btn_hapus_pertanyaan"><i class="fa-solid fa-trash-can"></i></a>';
     }
 }
 

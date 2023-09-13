@@ -1,18 +1,19 @@
 <?php
-$tanya_active = 'disabled';
+$tanya_active = 'd-none';
 // $komentar_active = 'disabled';
-($info_notulen['tanya_active'] == 1 || $user['role_id'] < 3) ? ($tanya_active = null) : ($tanya_active = 'd-none');
+($info_notulen['tanya_active'] == 1 || $user['id'] == $info_notulen['id_notulis']) ? ($tanya_active = null) : ($tanya_active = 'd-none');
 // ($info_notulen['komentar_active'] == 1) ? ($komentar_active = null) : ($komentar_active = 'disabled');
+if ($info_notulen['narasumber']) $narasumber = explode('+', $info_notulen['narasumber']);
 ?>
 <!-- <style>
     .toast {
         opacity: 1 !important;
     }
 </style> -->
-<main class="content ps-1 pe-3 px-sm-3 px-md-5">
+<main class="content px-1 px-md-3 px-lg-5">
     <div class="container-fluid p-0">
         <div class="row  justify-content-end">
-            <span class="show_hide text-secondary mb-2 user-select-none" style="cursor: pointer;"><i class="fa-solid fa-circle-chevron-down transition-05"></i> Tampilkan Informasi Kegiatan</span>
+            <span class="show_hide text-secondary ps-3 mb-2 user-select-none" style="cursor: pointer;"><i class="fa-solid fa-circle-chevron-down transition-05"></i> Tampilkan Informasi Kegiatan</span>
             <!-- INFORMASI KEGIATAN / DETAIL KEGIATAN -->
             <main class="col-12 col-sm-5 col-lg-4 px-0 px-md-3" id="detail_kegiatan" style="height: fit-content;">
                 <div class="card mb-3 mb-md-0">
@@ -75,8 +76,8 @@ $tanya_active = 'disabled';
                                             </div>
                                             <div class="<?= $tanya_active; ?>">
                                                 <!-- Button trigger modal Tambah Pertanyaan -->
-                                                <button type="button" class="btn btn-primary ms-auto btn_open_modal d-none d-lg-block" <?= $tanya_active; ?>>Input Pertanyaan <i class="fas fa-comment-plus ms-1"></i></button>
-                                                <button type="button" class="btn btn-primary ms-auto btn_open_modal d-block d-lg-none" <?= $tanya_active; ?>>Pertanyaan <i class="fas fa-comment-plus ms-1"></i></button>
+                                                <button type="button" class="btn btn-primary ms-auto btn_open_modal d-none d-lg-block">Input Pertanyaan <i class="fas fa-comment-plus ms-1"></i></button>
+                                                <button type="button" class="btn btn-primary ms-auto btn_open_modal d-block d-lg-none">Pertanyaan <i class="fas fa-comment-plus ms-1"></i></button>
                                             </div>
                                         </div>
                                         <div class="col-12 d-block d-lg-none px-0">
@@ -84,7 +85,7 @@ $tanya_active = 'disabled';
                                         </div>
                                     </div>
                                 </div>
-                                <?php if ($user['role_id'] < 3) : ?>
+                                <?php if ($user['id'] == $info_notulen['id_notulis']) : ?>
                                     <div class="mt-3 user-select-none">
                                         <table class="">
                                             <tr class="">
@@ -166,10 +167,9 @@ $tanya_active = 'disabled';
                                                 <div class="col-12 col-md-8 m-0 p-0">
                                                     <select class="form-select" aria-label="Select Narasumber" id="pilih_narasumber">
                                                         <option value="disabled" selected disabled class="fw-bold">Pilih Narasumber</option>
-                                                        <option value="1">Narasumber-1 (Uzumaki Sudarsono)</option>
-                                                        <option value="1">Narasumber-2 (Moh. Sumbul)</option>
-                                                        <option value="2">Narasumber-3 (James Born)</option>
-                                                        <option value="3">Narasumber-4 (Joko)</option>
+                                                        <?php foreach ($narasumber as $key => $n) : ?>
+                                                            <option value="<?= $key; ?>"><?= $n; ?></option>
+                                                        <?php endforeach; ?>
                                                     </select>
                                                 </div>
                                             </div>
@@ -209,7 +209,7 @@ $tanya_active = 'disabled';
     const min_heght_baca_selengkapnya = 100; //Harus sinkron
     const grow_baca_selengkapnya = 100;
     const limit_pertanyaan = 4;
-    const limit_komentar = 4;
+    const limit_komentar = 5;
     // Effect
     const placeholder_timer = 2000;
     const spinner_timer = 500;
@@ -522,36 +522,40 @@ $tanya_active = 'disabled';
     }
     // Auto Match Width
     function auto_width_textarea() {
-        $("textarea").each(function() {
-            this.setAttribute("style", "height:" + (this.scrollHeight) + "px;overflow-y:hidden;");
-        }).on("input", function() {
-            this.style.height = 0;
-            this.style.height = (this.scrollHeight) + "px";
-        });
-        $(document).delegate("textarea", "input", function() {
-            this.setAttribute("style", "height:" + (this.scrollHeight) + "px;overflow-y:hidden;");
-            this.style.height = 0;
-            this.style.height = (this.scrollHeight) + "px";
-        });
-        $('.sidebar-toggle').on('click', function() {
-            setTimeout(function() {
-                $("textarea").each(function() {
-                    this.setAttribute("style", "height:" + (this.scrollHeight) + "px;overflow-y:hidden;");
-                    this.style.height = 0;
-                    this.style.height = (this.scrollHeight) + "px";
-                })
-            }, 300);
-        });
+        if ($(window).width() > 992) {
+            $("textarea").each(function() {
+                this.setAttribute("style", "height:" + (this.scrollHeight) + "px;overflow-y:hidden;");
+            }).on("input", function() {
+                this.style.height = 0;
+                this.style.height = (this.scrollHeight) + "px";
+            });
+            $(document).delegate("textarea", "input", function() {
+                this.setAttribute("style", "height:" + (this.scrollHeight) + "px;overflow-y:hidden;");
+                this.style.height = 0;
+                this.style.height = (this.scrollHeight) + "px";
+            });
+            $('.sidebar-toggle').on('click', function() {
+                setTimeout(function() {
+                    $("textarea").each(function() {
+                        this.setAttribute("style", "height:" + (this.scrollHeight) + "px;overflow-y:hidden;");
+                        this.style.height = 0;
+                        this.style.height = (this.scrollHeight) + "px";
+                    })
+                }, 300);
+            });
+        }
         $('.show_hide').on('click', function() {
-            var timer = 500;
-            ($('#detail_kegiatan').is(':visible')) ? (timer = 500) : (timer = 200);
-            setTimeout(function() {
-                $("textarea").each(function() {
-                    this.setAttribute("style", "height:" + (this.scrollHeight) + "px;overflow-y:hidden;");
-                    this.style.height = 0;
-                    this.style.height = (this.scrollHeight) + "px";
-                })
-            }, timer);
+            if ($(window).width() > 992) {
+                var timer = 500;
+                ($('#detail_kegiatan').is(':visible')) ? (timer = 500) : (timer = 200);
+                setTimeout(function() {
+                    $("textarea").each(function() {
+                        this.setAttribute("style", "height:" + (this.scrollHeight) + "px;overflow-y:hidden;");
+                        this.style.height = 0;
+                        this.style.height = (this.scrollHeight) + "px";
+                    })
+                }, timer);
+            }
         });
     }
 
@@ -1301,9 +1305,11 @@ $tanya_active = 'disabled';
                             self.html('<i class="fa-solid fa-paper-plane"></i> Simpan</a>');
 
                             input_edit_komentar.each(function() {
-                                this.setAttribute("style", "height:" + (this.scrollHeight) + "px;overflow-y:hidden;");
-                                this.style.height = 0;
-                                this.style.height = (this.scrollHeight) + "px";
+                                if ($(window).width() > 992) {
+                                    this.setAttribute("style", "height:" + (this.scrollHeight) + "px;overflow-y:hidden;");
+                                    this.style.height = 0;
+                                    this.style.height = (this.scrollHeight) + "px";
+                                }
                             });
                         } else if (resp.result == '1') {
                             failed('Komentar telah disembunyikan oleh admin');
@@ -1401,7 +1407,8 @@ $tanya_active = 'disabled';
 
             Swal.fire({
                 title: "Hapus pertanyaan?",
-                html: "Semua data terkait pertanyaan ini akan dihapus <br><span class='fw-bold'>secara permanen</span>.",
+                // html: "Semua data terkait pertanyaan ini akan dihapus <br><span class='fw-bold'>secara permanen</span>.",
+                html: "Semua data terkait pertanyaan ini akan dimasukkan ke <br><span class='fw-bold'>daftar sampah</span>.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -1420,8 +1427,9 @@ $tanya_active = 'disabled';
                                 $('#total_pertanyaan').html(resp.total_pertanyaan);
                                 balasan.slideUp(500, function() {
                                     self_find.fadeOut(300, function() {
+                                        self_find.remove();
                                         var new_limit = start + limit_pertanyaan;
-                                        console.log(new_limit);
+                                        // console.log(new_limit);
                                         load_data(new_limit, 0, id_forum, true, function() {
                                             Custom.fire({
                                                 icon: 'success',
@@ -1730,6 +1738,56 @@ $tanya_active = 'disabled';
                 disabled2 = true;
             }
             check();
+        });
+        $('#btn_input_pertanyaan').on('click', function() {
+            self = $(this);
+            var data = {};
+            data['id_forum'] = <?= $id_forum; ?>;
+            data['key_narasumber'] = $('#pilih_narasumber').val();
+            data['pertanyaan'] = $('#input_pertanyaan').val();
+            console.log(data);
+            Swal.fire({
+                title: "Kirim pertanyaan?",
+                html: "Pertanyaan yang sudah dikirim <span class='fw-bold'>tidak dapat</span> diedit.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Kirim',
+                cancelButtonText: 'Batal',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "<?php echo base_url(); ?>forum/input_pertanyaan",
+                        method: "POST",
+                        data: data,
+                        dataType: "JSON",
+                        success: function(resp) {
+                            if (resp.result == true) {
+                                $('#modalTambahPertanyaan').modal('hide');
+                                $('#input_pertanyaan').val('');
+                                $('#pilih_narasumber').val('disabled');
+                                disabled1 = true;
+                                disabled2 = true;
+                                self.addClass('disabled');
+                                Custom.fire({
+                                    icon: 'success',
+                                    title: 'Input berhasil',
+                                });
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.log(errorThrown);
+                            // console.error(this.props.url, status, err.toString());
+                            Swal.fire({
+                                icon: 'error',
+                                title: textStatus,
+                                text: errorThrown,
+                            });
+                        }
+                    });
+                }
+            });
         });
     }
     // Saklar Tampilkan komentar

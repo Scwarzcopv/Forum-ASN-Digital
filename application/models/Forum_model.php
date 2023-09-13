@@ -277,6 +277,20 @@ class Forum_model extends CI_Model
     }
     function hapus_forum_diskusi_pertanyaan($id_forum, $id_fp)
     {
+        $this->db->set('deleted', 1)
+            ->where('id', $id_fp)
+            ->update('forum_pertanyaan');
+        if ($this->db->affected_rows() || !$this->db->_error_message()) {
+            return true;
+            // if ($this->db->trans_status() === false) {
+            //     return false;
+            // }
+        } else {
+            return false;
+        }
+    }
+    function true_hapus_forum_diskusi_pertanyaan($id_forum, $id_fp)
+    {
         $this->db
             ->where('id_forum', $id_forum)
             ->where('id_forum_pertanyaan', $id_fp)
@@ -474,6 +488,184 @@ class Forum_model extends CI_Model
                 ->update('forum_comment');
             $this->db->trans_complete();
             return $heartTotalC;
+        }
+    }
+    function input_pertanyaan($id_forum, $id_penanya, $key_narasumber, $pertanyaan)
+    {
+        $total_anonim = $this->db->select_max('id_anonim')
+            ->from('forum_pertanyaan')
+            // ->where('narasumber', $key_narasumber)
+            ->where('id_forum', $id_forum)
+            ->get()
+            ->result_array()[0]['id_anonim'];
+
+        $now = date('Y-m-d H:i:s', time());
+        $data_insert = array(
+            'id_forum' => $id_forum,
+            'id_user_tanya' => $id_penanya,
+            'narasumber' => $key_narasumber,
+            'isi_pertanyaan' => $pertanyaan,
+            'created_at' => $now,
+            'id_anonim' => $total_anonim + 1,
+        );
+        $this->db->trans_start();
+        $this->db->insert('forum_pertanyaan', $data_insert);
+        $this->db->trans_complete();
+        if ($this->db->trans_status() === false) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+
+
+    function total_pertanyaan($id_forum, $admin_notulen, $id_user)
+    {
+        $this->db->select('*')
+            ->from('forum_pertanyaan')
+            ->where('id_forum', $id_forum)
+            ->where('approved', null)
+            ->where('valid', null)
+            ->where('deleted', null);
+        if ($admin_notulen == false) $this->db->where('id_user_tanya', $id_user);
+        $result['pending'] = $this->db->get()->num_rows();
+        $this->db->select('*')
+            ->from('forum_pertanyaan')
+            ->where('id_forum', $id_forum)
+            ->where('approved', 1)
+            ->where('valid', null)
+            ->where('deleted', null);
+        if ($admin_notulen == false) $this->db->where('id_user_tanya', $id_user);
+        $result['approved'] = $this->db->get()->num_rows();
+        $this->db->select('*')
+            ->from('forum_pertanyaan')
+            ->where('id_forum', $id_forum)
+            ->where('valid', 1)
+            ->where('deleted', null);
+        if ($admin_notulen == false) $this->db->where('id_user_tanya', $id_user);
+        $result['published'] = $this->db->get()->num_rows();
+        $this->db->select('*')
+            ->from('forum_pertanyaan')
+            ->where('id_forum', $id_forum)
+            ->where('deleted', 1);
+        if ($admin_notulen == false) $this->db->where('id_user_tanya', $id_user);
+        $result['deleted'] = $this->db->get()->num_rows();
+        return $result;
+    }
+    function info_pertanyaan_pending($id_forum, $key_narasumber, $admin_notulen, $id_user)
+    {
+        $this->db->select('*')
+            ->from('forum_pertanyaan')
+            ->where('id_forum', $id_forum)
+            ->where('narasumber', $key_narasumber)
+            ->where('approved', null)
+            ->where('valid', null)
+            ->where('deleted', null);
+        if ($admin_notulen == false) $this->db->where('id_user_tanya', $id_user);
+        $result = $this->db->get();
+        return $result;
+    }
+    function approve($id_fp)
+    {
+        $data = array(
+            'approved' => 1,
+        );
+        $this->db->trans_start();
+        $this->db
+            ->where('id', $id_fp)
+            ->update('forum_pertanyaan', $data);
+        $this->db->trans_complete();
+        if ($this->db->affected_rows() == '1') {
+            return true;
+        } else {
+            if ($this->db->trans_status() === false) {
+                return false;
+            }
+            return true;
+        }
+    }
+    function approved($id_fp)
+    {
+        $data = array(
+            'approved' => null,
+        );
+        $this->db->trans_start();
+        $this->db
+            ->where('id', $id_fp)
+            ->update('forum_pertanyaan', $data);
+        $this->db->trans_complete();
+        if ($this->db->affected_rows() == '1') {
+            return true;
+        } else {
+            if ($this->db->trans_status() === false) {
+                return false;
+            }
+            return true;
+        }
+    }
+    function reject($id_fp)
+    {
+        $data = array(
+            'deleted' => 1,
+        );
+        $this->db->trans_start();
+        $this->db
+            ->where('id', $id_fp)
+            ->update('forum_pertanyaan', $data);
+        $this->db->trans_complete();
+        if ($this->db->affected_rows() == '1') {
+            return true;
+        } else {
+            if ($this->db->trans_status() === false) {
+                return false;
+            }
+            return true;
+        }
+    }
+    function restore($id_fp)
+    {
+        $data = array(
+            'deleted' => null,
+        );
+        $this->db->trans_start();
+        $this->db
+            ->where('id', $id_fp)
+            ->update('forum_pertanyaan', $data);
+        $this->db->trans_complete();
+        if ($this->db->affected_rows() == '1') {
+            return true;
+        } else {
+            if ($this->db->trans_status() === false) {
+                return false;
+            }
+            return true;
+        }
+    }
+    function publish($id_admin, $id_fp, $isi_jawaban)
+    {
+        $data = array(
+            'id_admin' => $id_admin,
+            'valid' => 1,
+            'isi_jawaban' => $isi_jawaban,
+            'total_like' => 0,
+            'total_like_jawaban' => 0,
+        );
+        $this->db->trans_start();
+        $this->db->set('answered_at', 'NOW()', FALSE);
+        $this->db->set('updated_at', 'NOW()', FALSE);
+        $this->db
+            ->where('id', $id_fp)
+            ->update('forum_pertanyaan', $data);
+        $this->db->trans_complete();
+        if ($this->db->affected_rows() == '1') {
+            return true;
+        } else {
+            if ($this->db->trans_status() === false) {
+                return false;
+            }
+            return true;
         }
     }
 }

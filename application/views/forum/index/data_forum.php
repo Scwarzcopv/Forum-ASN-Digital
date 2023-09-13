@@ -12,7 +12,7 @@
                             <img src="<?= base_url('assets'); ?>/img/icons/discussdark.png" alt="Envelope" class="img-thumbnail-custom rounded mx-auto d-block bg-transparent border-0" />
                         </div>
                     </div>
-                    <div class="<?php echo ($user['role_id'] <= 2) ? 'col-12 col-sm-8 col-lg-9' : 'col-sm-8 col-lg-11'; ?> col-12 my-auto card-button cursor-pointer position-relative closest ">
+                    <div class="<?php echo ($user['id'] == $row['id_notulis']) ? 'col-12 col-sm-8 col-lg-9' : 'col-sm-8 col-lg-11'; ?> col-12 my-auto card-button cursor-pointer position-relative closest ">
                         <a href="<?= base_url('forum/forum_diskusi/' . $row['id'] . ''); ?>">
                             <span class="linkSpanner"></span>
                         </a>
@@ -40,7 +40,7 @@
                             </tr>
                         </table>
                     </div>
-                    <?php if ($user['role_id'] <= 2) : ?>
+                    <?php if ($user['id'] == $row['id_notulis']) : ?>
                         <div class="col-12 col-sm-2 col-lg-2 user-select-none d-flex align-items-center justify-content-end">
                             <div class="row ">
                                 <div class="col-12 d-flex justify-content-end">

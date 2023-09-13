@@ -22,7 +22,7 @@
                     </a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-icon pe-md-0 dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                    <a class="nav-icon pe-0 dropdown-toggle" href="#" data-bs-toggle="dropdown">
                         <img src="<?= base_url('assets'); ?>/img/avatars/<?= $user['image']; ?>" class="avatar img-fluid rounded-circle" alt="avatar.jpg" />
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">

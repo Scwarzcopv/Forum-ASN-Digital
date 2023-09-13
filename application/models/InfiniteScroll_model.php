@@ -62,7 +62,8 @@ class InfiniteScroll_model extends CI_Model
             // Total Seluruh Data
             $this->db->select('*')
                 ->from('forum a')
-                ->join('notulen_hasil_rapat b', 'a.id_notulen = b.id', 'left');
+                ->join('notulen_hasil_rapat b', 'a.id_notulen = b.id', 'left')
+                ->where('b.id_notulis', $id_user);
             $query['1'] = $this->db->get();
             $query['num_rows_1'] = $query['1']->num_rows();
 
@@ -70,6 +71,7 @@ class InfiniteScroll_model extends CI_Model
             $this->db->select('*')
                 ->from('forum a')
                 ->join('notulen_hasil_rapat b', 'a.id_notulen = b.id', 'left')
+                ->where('b.id_notulis', $id_user)
                 ->group_start()
                 ->like('no_surat', $keyword)
                 ->or_like('agenda_rapat', $keyword)
@@ -84,6 +86,7 @@ class InfiniteScroll_model extends CI_Model
             $this->db->select('*')
                 ->from('forum a')
                 ->join('notulen_hasil_rapat b', 'a.id_notulen = b.id', 'left')
+                ->where('b.id_notulis', $id_user)
                 ->group_start()
                 ->like('no_surat', $keyword)
                 ->or_like('agenda_rapat', $keyword)
@@ -152,7 +155,7 @@ class InfiniteScroll_model extends CI_Model
         $this->db->select(
             [
                 // Tabel Forum Pertanyaan
-                'a.id AS id_fp', 'a.id_forum', 'a.id_user_tanya', 'a.isi_pertanyaan', 'a.created_at AS created_at_fp', 'a.valid', 'a.id_admin', 'a.isi_jawaban', 'a.answered_at', 'a.updated_at AS updated_at_fp', 'a.total_like AS total_like_fp', 'a.total_like_jawaban',
+                'a.id AS id_fp', 'a.id_forum', 'a.id_user_tanya', 'a.isi_pertanyaan', 'a.narasumber', 'a.created_at AS created_at_fp', 'a.approved', 'a.valid', 'a.deleted', 'a.id_admin', 'a.isi_jawaban', 'a.answered_at', 'a.updated_at AS updated_at_fp', 'a.total_like AS total_like_fp', 'a.total_like_jawaban',
                 // Tabel Forum
                 'b.*',
                 // Tabel Forum Komen
@@ -163,14 +166,16 @@ class InfiniteScroll_model extends CI_Model
         $this->db->join('forum b', 'a.id_forum = b.id', 'left');
         // $this->db->join('forum_comment c', 'a.id_forum = c.id_forum', 'left');
         $this->db->where('a.id_forum', $id_forum);
+        $this->db->where('a.approved', 1);
         $this->db->where('a.valid', 1);
+        $this->db->where('a.deleted', null);
         $query['1'] = $this->db->get();
         $query['num_rows_1'] = $query['1']->num_rows();
         // Total Data Limit
         $this->db->select(
             [
                 // Tabel Forum Pertanyaan
-                'a.id AS id_fp', 'a.id_forum', 'a.id_user_tanya', 'a.isi_pertanyaan', 'a.created_at AS created_at_fp', 'a.valid', 'a.id_admin', 'a.isi_jawaban', 'a.answered_at', 'a.updated_at AS updated_at_fp', 'a.total_like AS total_like_fp', 'a.total_like_jawaban',
+                'a.id AS id_fp', 'a.id_forum', 'a.id_user_tanya', 'a.isi_pertanyaan', 'a.narasumber', 'a.created_at AS created_at_fp', 'a.approved', 'a.valid', 'a.deleted', 'a.id_admin', 'a.isi_jawaban', 'a.answered_at', 'a.updated_at AS updated_at_fp', 'a.total_like AS total_like_fp', 'a.total_like_jawaban',
                 // Tabel Forum
                 'b.*',
                 // Tabel Forum Komen
@@ -181,7 +186,9 @@ class InfiniteScroll_model extends CI_Model
         $this->db->join('forum b', 'a.id_forum = b.id', 'left');
         // $this->db->join('forum_comment c', 'a.id_forum = c.id_forum', 'left');
         $this->db->where('a.id_forum', $id_forum);
+        $this->db->where('a.approved', 1);
         $this->db->where('a.valid', 1);
+        $this->db->where('a.deleted', null);
         $this->db->order_by('a.total_like', 'DESC');
         $this->db->limit($limit, $start);
         $query['2'] = $this->db->get();
@@ -235,6 +242,145 @@ class InfiniteScroll_model extends CI_Model
         $query['2'] = $this->db->get();
         $query['num_rows_2'] = $query['2']->num_rows();
 
+        return $query;
+    }
+
+    function data_pertanyaan_pending($limit, $start, $id_forum, $narasumber_key, $admin_notulen, $id_user)
+    {
+        // Total Seluruh Data
+        $this->db->select(
+            [
+                // Tabel Forum Pertanyaan
+                'a.id AS id_fp', 'a.id_forum', 'a.id_user_tanya', 'a.isi_pertanyaan', 'a.narasumber', 'a.created_at AS created_at_fp', 'a.approved', 'a.valid', 'a.deleted', 'a.id_admin', 'a.isi_jawaban', 'a.answered_at', 'a.updated_at AS updated_at_fp', 'a.total_like AS total_like_fp', 'a.total_like_jawaban', 'a.id_anonim',
+                // Tabel Forum
+                'b.*',
+                // Tabel Forum Komen
+                // 'c.*'
+            ]
+        );
+        $this->db->from('forum_pertanyaan a');
+        $this->db->join('forum b', 'a.id_forum = b.id', 'left');
+        // $this->db->join('forum_comment c', 'a.id_forum = c.id_forum', 'left');
+        $this->db->where('a.id_forum', $id_forum);
+        $this->db->where('a.approved', null);
+        $this->db->where('a.valid', null);
+        $this->db->where('a.deleted', null);
+        $this->db->where('a.narasumber', $narasumber_key);
+        if ($admin_notulen == false) {
+            $this->db->where('a.id_user_tanya', $id_user);
+        }
+        $query['1'] = $this->db->get();
+        $query['num_rows_1'] = $query['1']->num_rows();
+
+        // Total Data Limit
+        $this->db->select(
+            [
+                // Tabel Forum Pertanyaan
+                'a.id AS id_fp', 'a.id_forum', 'a.id_user_tanya', 'a.isi_pertanyaan', 'a.narasumber', 'a.created_at AS created_at_fp', 'a.approved', 'a.valid', 'a.deleted', 'a.id_admin', 'a.isi_jawaban', 'a.answered_at', 'a.updated_at AS updated_at_fp', 'a.total_like AS total_like_fp', 'a.total_like_jawaban', 'a.id_anonim',
+                // Tabel Forum
+                'b.*',
+                // Tabel Forum Komen
+                // 'c.*'
+            ]
+        );
+        $this->db->from('forum_pertanyaan a');
+        $this->db->join('forum b', 'a.id_forum = b.id', 'left');
+        // $this->db->join('forum_comment c', 'a.id_forum = c.id_forum', 'left');
+        $this->db->where('a.id_forum', $id_forum);
+        $this->db->where('a.approved', null);
+        $this->db->where('a.valid', null);
+        $this->db->where('a.deleted', null);
+        $this->db->where('a.narasumber', $narasumber_key);
+        if ($admin_notulen == false) {
+            $this->db->where('a.id_user_tanya', $id_user);
+        }
+        $this->db->order_by('a.id', 'ASC');
+        $this->db->limit($limit, $start);
+        $query['2'] = $this->db->get();
+        $query['num_rows_2'] = $query['2']->num_rows();
+        return $query;
+    }
+    function data_pertanyaan_excPending($limit, $start, $id_forum, $pane, $admin_notulen, $id_user)
+    {
+        // =========== Total Seluruh Data ===========
+        $this->db->select(
+            [
+                // Tabel Forum Pertanyaan
+                'a.id AS id_fp', 'a.id_forum', 'a.id_user_tanya', 'a.isi_pertanyaan', 'a.narasumber', 'a.created_at AS created_at_fp', 'a.approved', 'a.valid', 'a.deleted', 'a.id_admin', 'a.isi_jawaban', 'a.answered_at', 'a.updated_at AS updated_at_fp', 'a.total_like AS total_like_fp', 'a.total_like_jawaban', 'a.id_anonim',
+                // Tabel Forum
+                'b.*',
+            ]
+        );
+        $this->db->from('forum_pertanyaan a');
+        $this->db->join('forum b', 'a.id_forum = b.id', 'left');
+        $this->db->where('a.id_forum', $id_forum);
+        // Data Approved
+        if ($pane == 'approved') {
+            $this->db->where('a.approved', 1)
+                ->where('a.valid', null)
+                ->where('a.deleted', null);
+            if ($admin_notulen == false) {
+                $this->db->where('a.id_user_tanya', $id_user);
+            }
+        }
+        // Data Published
+        if ($pane == 'published') {
+            $this->db->where('a.valid', 1)
+                ->where('a.deleted', null);
+            if ($admin_notulen == false) {
+                $this->db->where('a.id_user_tanya', $id_user);
+            }
+        }
+        // Data Deleted
+        if ($pane == 'deleted') {
+            $this->db->where('a.deleted', 1);
+            if ($admin_notulen == false) {
+                $this->db->where('a.id_user_tanya', $id_user);
+            }
+        }
+        $query['1'] = $this->db->get();
+        $query['num_rows_1'] = $query['1']->num_rows();
+
+        // =========== Total Data Limit ===========
+        $this->db->select(
+            [
+                // Tabel Forum Pertanyaan
+                'a.id AS id_fp', 'a.id_forum', 'a.id_user_tanya', 'a.isi_pertanyaan', 'a.narasumber', 'a.created_at AS created_at_fp', 'a.approved', 'a.valid', 'a.deleted', 'a.id_admin', 'a.isi_jawaban', 'a.answered_at', 'a.updated_at AS updated_at_fp', 'a.total_like AS total_like_fp', 'a.total_like_jawaban', 'a.id_anonim',
+                // Tabel Forum
+                'b.*',
+            ]
+        );
+        $this->db->from('forum_pertanyaan a');
+        $this->db->join('forum b', 'a.id_forum = b.id', 'left');
+        $this->db->where('a.id_forum', $id_forum);
+        // Data Approved
+        if ($pane == 'approved') {
+            $this->db->where('a.approved', 1)
+                ->where('a.valid', null)
+                ->where('a.deleted', null);
+            if ($admin_notulen == false) {
+                $this->db->where('a.id_user_tanya', $id_user);
+            }
+        }
+        // Data Published
+        if ($pane == 'published') {
+            $this->db->where('a.valid', 1)
+                ->where('a.deleted', null);
+            if ($admin_notulen == false) {
+                $this->db->where('a.id_user_tanya', $id_user);
+            }
+        }
+        // Data Deleted
+        if ($pane == 'deleted') {
+            $this->db->where('a.deleted', 1);
+            if ($admin_notulen == false) {
+                $this->db->where('a.id_user_tanya', $id_user);
+            }
+        }
+        $this->db->order_by('a.id', 'ASC');
+        $this->db->limit($limit, $start);
+        $query['2'] = $this->db->get();
+        $query['num_rows_2'] = $query['2']->num_rows();
         return $query;
     }
 }
